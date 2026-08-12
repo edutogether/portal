@@ -32,15 +32,9 @@
   /* soft neon arcade background, kept faint/blurred so cards stay the focus */
   body::before {
     content: ""; position: fixed; inset: 0; z-index: -2;
-    background:
-      radial-gradient(45% 45% at 18% 22%, rgba(123,92,255,.30), transparent 70%),
-      radial-gradient(42% 42% at 82% 26%, rgba(53,184,255,.24), transparent 70%),
-      radial-gradient(50% 50% at 50% 92%, rgba(255,92,168,.20), transparent 72%),
-      #0b0e1f;
+    background: linear-gradient(rgba(11,14,31,.42), rgba(11,14,31,.58)),
+      url("./assets/bg-main.webp") center/cover no-repeat;
   }
-  .bg-deco { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
-    filter: blur(3px); opacity: .10; }
-  .bg-deco span { position: absolute; font-size: 92px; }
 
   header { text-align: center; margin: 0 0 40px; }
   .brand-line {
@@ -107,19 +101,13 @@
   .name { font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; letter-spacing: -.01em; }
   .desc { font-size: clamp(12px, 1.1vw, 14px); color: var(--muted); line-height: 1.55; }
 
-  /* quiz card — fresh arcade-styled thumbnail */
-  .thumb.quiz { background: linear-gradient(135deg, #7b5cff 0%, #35b8ff 100%); }
-  .thumb.quiz .art { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 12px; color: #fff; }
-  .thumb.quiz .qmark { font-size: 66px; font-weight: 900; line-height: 1; text-shadow: 0 4px 16px rgba(0,0,0,.30); }
-  .thumb.quiz .ox { display: flex; flex-direction: column; gap: 9px; }
-  .thumb.quiz .ox span { width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 23px; font-weight: 900; background: rgba(255,255,255,.20); }
-
   footer { margin-top: 40px; color: var(--muted); font-size: 12.5px; text-align: center; }
 
   /* arcade loading screen */
   #loader {
     position: fixed; inset: 0; z-index: 50;
-    background: radial-gradient(60% 60% at 50% 40%, #1a1f42 0%, #0b0e1f 75%);
+    background: linear-gradient(rgba(11,14,31,.5), rgba(11,14,31,.62)),
+      url("./assets/bg-loading.webp") center/cover no-repeat;
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px;
     transition: opacity .5s ease, visibility .5s ease;
   }
@@ -141,14 +129,6 @@
 </style>
 </head>
 <body>
-  <div class="bg-deco" aria-hidden="true">
-    <span style="top:8%; left:6%">🕹️</span>
-    <span style="top:16%; right:8%">🎮</span>
-    <span style="bottom:12%; left:12%">🪙</span>
-    <span style="bottom:18%; right:10%">👾</span>
-    <span style="top:44%; left:48%">⭐</span>
-  </div>
-
   <div id="loader">
     <div class="logo">같교오락실</div>
     <div class="bar" aria-hidden="true"><i></i></div>
@@ -164,8 +144,8 @@
   <main>
     <a class="app" href="http://joo.is/같이교육퀴즈">
       <span class="badge">1</span>
-      <div class="thumb quiz">
-        <div class="art" aria-hidden="true"><span class="qmark">?</span><span class="ox"><span>O</span><span>X</span></span></div>
+      <div class="thumb">
+        <img src="./assets/quiz.webp" alt="같이교육 퀴즈 미리보기" loading="lazy" />
         <span class="play" aria-hidden="true"></span>
       </div>
       <div class="body">
