@@ -32,8 +32,11 @@
   /* soft neon arcade background, kept faint/blurred so cards stay the focus */
   body::before {
     content: ""; position: fixed; inset: 0; z-index: -2;
-    background: linear-gradient(rgba(11,14,31,.42), rgba(11,14,31,.58)),
-      url("./assets/bg-main.webp") center/cover no-repeat;
+    background:
+      radial-gradient(45% 45% at 18% 22%, rgba(123,92,255,.30), transparent 70%),
+      radial-gradient(42% 42% at 82% 26%, rgba(53,184,255,.24), transparent 70%),
+      radial-gradient(50% 50% at 50% 92%, rgba(255,92,168,.20), transparent 72%),
+      #0b0e1f;
   }
 
   header { text-align: center; margin: 0 0 40px; }
@@ -107,7 +110,7 @@
   #loader {
     position: fixed; inset: 0; z-index: 50;
     background: linear-gradient(rgba(11,14,31,.5), rgba(11,14,31,.62)),
-      url("./assets/bg-loading.webp") center/cover no-repeat;
+      url("./assets/bg-main.webp") center/cover no-repeat;
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px;
     transition: opacity .5s ease, visibility .5s ease;
   }
@@ -166,7 +169,7 @@
       </div>
     </a>
 
-    <a class="app" href="https://incheon.edutogether.kr" target="_blank" rel="noopener noreferrer">
+    <a class="app" href="https://edutogether.github.io/aiways-incheon/" target="_blank" rel="noopener noreferrer">
       <span class="badge">3</span>
       <div class="thumb">
         <img src="./assets/incheon.webp" alt="AI Ways Incheon 미리보기" loading="lazy" />
