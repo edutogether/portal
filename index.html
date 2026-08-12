@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>함께교육 | 체험 선택</title>
+<meta name="description" content="함께교육이 만든 교육용 웹앱을 골라 체험해 보세요." />
+<style>
+  :root {
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --ink: #1b2430;
+    --muted: #5b6675;
+    --line: rgba(20, 30, 50, .10);
+    --brand: #2f6bff;
+    --shadow: 0 10px 30px rgba(28, 42, 74, .10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --card: #161c26;
+      --ink: #eef2f8;
+      --muted: #9aa6b6;
+      --line: rgba(255, 255, 255, .10);
+      --brand: #6f9bff;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 20px 40px;
+  }
+  header { text-align: center; max-width: 640px; margin: 8px 0 26px; }
+  .kicker {
+    display: inline-block;
+    font-size: 13px; font-weight: 700; letter-spacing: .04em;
+    color: var(--brand);
+    background: color-mix(in srgb, var(--brand) 12%, transparent);
+    padding: 6px 14px; border-radius: 999px; margin-bottom: 14px;
+  }
+  h1 { font-size: clamp(24px, 5vw, 34px); margin: 0 0 10px; letter-spacing: -.01em; }
+  header p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.6; }
+  main {
+    width: 100%; max-width: 760px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+  }
+  @media (max-width: 560px) { main { grid-template-columns: 1fr; } }
+  .app {
+    display: flex; flex-direction: column;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px; overflow: hidden;
+    text-decoration: none; color: inherit;
+    box-shadow: var(--shadow);
+    transition: transform .16s ease, border-color .16s ease;
+  }
+  .app:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--brand) 45%, var(--line)); }
+  .app:active { transform: translateY(-1px); }
+
+  .thumb {
+    position: relative; width: 100%; aspect-ratio: 16 / 9;
+    background: #d9e0ec center/cover no-repeat;
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .play {
+    position: absolute; inset: 0; margin: auto;
+    width: 58px; height: 58px; border-radius: 50%;
+    background: rgba(15, 22, 38, .55); backdrop-filter: blur(2px);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .16s ease, background .16s ease;
+  }
+  .play::after {
+    content: ""; width: 0; height: 0; margin-left: 4px;
+    border-left: 18px solid #fff;
+    border-top: 11px solid transparent; border-bottom: 11px solid transparent;
+  }
+  .app:hover .play { transform: scale(1.08); background: var(--brand); }
+
+  .body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 6px; }
+  .name { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+  .desc { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+
+  /* Quiz — freshly designed thumbnail (no source image) */
+  .thumb.quiz { background: linear-gradient(135deg, #7b5cff 0%, #2f6bff 100%); }
+  .thumb.quiz .quiz-art {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    gap: 10px; color: #fff;
+  }
+  .thumb.quiz .qmark {
+    font-size: 62px; font-weight: 900; line-height: 1;
+    text-shadow: 0 4px 14px rgba(0,0,0,.25);
+  }
+  .thumb.quiz .ox { display: flex; flex-direction: column; gap: 8px; }
+  .thumb.quiz .ox span {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 900; background: rgba(255,255,255,.18);
+  }
+  footer { margin-top: 34px; color: var(--muted); font-size: 12.5px; text-align: center; }
+</style>
+</head>
+<body>
+  <header>
+    <span class="kicker">함께교육 체험관</span>
+    <h1>어떤 걸 먼저 해볼까요?</h1>
+    <p>함께교육이 만든 교육용 웹앱입니다. 눌러서 바로 체험하고, 끝나면 다시 여기로 돌아올 수 있어요.</p>
+  </header>
+
+  <main>
+    <a class="app" href="https://classcade.edutogether.kr">
+      <div class="thumb">
+        <img src="./assets/classcade.webp" alt="CLASSCADE 미리보기" loading="lazy" />
+        <span class="play" aria-hidden="true"></span>
+      </div>
+      <div class="body">
+        <span class="name">CLASSCADE</span>
+        <span class="desc">나의 교사 유형을 발견하고, 선택으로 우리반 게임을 완성합니다.</span>
+      </div>
+    </a>
+
+    <a class="app" href="https://googler.edutogether.kr">
+      <div class="thumb">
+        <img src="./assets/googler.webp" alt="Be a Googler 미리보기" loading="lazy" />
+        <span class="play" aria-hidden="true"></span>
+      </div>
+      <div class="body">
+        <span class="name">Be a Googler</span>
+        <span class="desc">호기심을 가이드 삼아 배우고 만들고 성장하는 구글러의 학습 모험.</span>
+      </div>
+    </a>
+
+    <a class="app" href="https://incheon.edutogether.kr">
+      <div class="thumb">
+        <img src="./assets/incheon.webp" alt="AI Ways Incheon 미리보기" loading="lazy" />
+        <span class="play" aria-hidden="true"></span>
+      </div>
+      <div class="body">
+        <span class="name">AI Ways Incheon</span>
+        <span class="desc">AI와 데이터로 실천하는 학교 자원순환, 3초 분리배출 판단 도우미.</span>
+      </div>
+    </a>
+
+    <a class="app" href="http://joo.is/같이교육퀴즈">
+      <div class="thumb quiz">
+        <div class="quiz-art" aria-hidden="true">
+          <span class="qmark">?</span>
+          <span class="ox"><span>O</span><span>X</span></span>
+        </div>
+        <span class="play" aria-hidden="true"></span>
+      </div>
+      <div class="body">
+        <span class="name">같이교육 퀴즈</span>
+        <span class="desc">가볍게 풀어보는 O/X 교육 퀴즈. 얼마나 알고 있는지 확인해 보세요.</span>
+      </div>
+    </a>
+  </main>
+
+  <footer>ⓒ 함께교육 · edutogether.kr</footer>
+</body>
+</html>
