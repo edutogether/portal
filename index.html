@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>같교오락실 | 같이교육 체험관</title>
 <meta name="description" content="같이교육이 만든 교육용 웹앱을 골라 체험하는 같교오락실." />
+<link id="favicon" rel="icon" type="image/svg+xml" />
+
 <style>
   :root {
     --ink: #f3f5ff;
@@ -219,6 +221,23 @@
       // hide when the fill animation finishes, with a safety fallback
       bar.addEventListener('animationend', hide, { once: true });
       setTimeout(hide, 3200);
+    })();
+
+    (function () {
+      // 🕹️ favicon; desaturated to gray while the tab is inactive
+      var link = document.getElementById('favicon');
+      var svg = function (gray) {
+        return "data:image/svg+xml," + encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' +
+          (gray ? '<filter id="g"><feColorMatrix type="saturate" values="0"/></filter>' : '') +
+          '<text x="50" y="54" font-size="82" text-anchor="middle" dominant-baseline="central"' +
+          (gray ? ' filter="url(#g)"' : '') + '>🕹️</text></svg>'
+        );
+      };
+      var color = svg(false), gray = svg(true);
+      var apply = function () { link.href = document.hidden ? gray : color; };
+      document.addEventListener('visibilitychange', apply);
+      apply();
     })();
   </script>
 </body>
