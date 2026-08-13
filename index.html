@@ -39,6 +39,13 @@
       #0b0e1f;
   }
 
+  /* floating soft bubble orbs */
+  .orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(34px); opacity: .30;
+    animation: float 22s ease-in-out infinite; }
+  @keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-22px) } }
+  @media (prefers-reduced-motion: reduce) { .orb { animation: none; } }
+
   header { text-align: center; margin: 0 0 40px; }
   .brand-line {
     display: inline-flex; align-items: center; gap: 8px;
@@ -132,6 +139,17 @@
 </style>
 </head>
 <body>
+  <div class="orbs" aria-hidden="true">
+    <span class="orb" style="width:300px;height:300px;top:5%;left:7%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:24s"></span>
+    <span class="orb" style="width:240px;height:240px;top:11%;right:9%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:20s;animation-delay:-4s"></span>
+    <span class="orb" style="width:260px;height:260px;top:42%;left:-4%;background:radial-gradient(circle,#ff5ca8,transparent 70%);animation-duration:26s;animation-delay:-8s"></span>
+    <span class="orb" style="width:220px;height:220px;top:52%;right:1%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:23s;animation-delay:-2s"></span>
+    <span class="orb" style="width:280px;height:280px;bottom:7%;left:15%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:27s;animation-delay:-6s"></span>
+    <span class="orb" style="width:240px;height:240px;bottom:10%;right:17%;background:radial-gradient(circle,#ff5ca8,transparent 70%);animation-duration:21s;animation-delay:-10s"></span>
+    <span class="orb" style="width:200px;height:200px;top:28%;left:45%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:25s;animation-delay:-3s"></span>
+    <span class="orb" style="width:180px;height:180px;bottom:30%;left:62%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:22s;animation-delay:-7s"></span>
+  </div>
+
   <div id="loader">
     <div class="logo">같교오락실</div>
     <div class="bar" aria-hidden="true"><i></i></div>
