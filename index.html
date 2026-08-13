@@ -55,10 +55,16 @@
 
   /* floating soft bubble orbs */
   .orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-  .orb { position: absolute; border-radius: 50%; filter: blur(34px); opacity: .30;
+  .orb { position: absolute; border-radius: 50%; filter: blur(44px); opacity: .20;
     animation: float 22s ease-in-out infinite; }
-  .orb2 { position: absolute; border-radius: 50%; filter: blur(12px);
+  .orb2 { position: absolute; border-radius: 50%; filter: blur(24px); opacity: .22;
     animation: float 22s ease-in-out infinite; }
+  .orb-xl { position: absolute; border-radius: 50%; filter: blur(120px); opacity: .16;
+    animation: float 34s ease-in-out infinite; }
+  .orb-md { position: absolute; border-radius: 50%; filter: blur(30px); opacity: .36;
+    animation: float 24s ease-in-out infinite; }
+  .orb-sm2 { position: absolute; border-radius: 50%; filter: blur(16px); opacity: .46;
+    animation: float 20s ease-in-out infinite; }
   @keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-22px) } }
 
   header { text-align: center; margin: auto 0 40px; }
@@ -86,18 +92,167 @@
   @media (max-width: 1180px) { main { grid-template-columns: repeat(2, 1fr); max-width: 820px; } }
   @media (max-width: 560px)  { main { grid-template-columns: 1fr; max-width: 420px; } }
 
+  /* desktop-only: left music player + right 2x2 app grid, split around center */
+  .stage {
+    width: 100%; max-width: 1560px;
+    display: flex; align-items: stretch; justify-content: center;
+    gap: 2.5vw;
+  }
+  .stage main { width: auto; max-width: 640px; grid-template-columns: repeat(2, 1fr); }
+  .player { width: min(640px, 44vw); flex: 0 0 auto; }
+
+  .player {
+    position: relative; overflow: hidden;
+    display: flex; align-items: stretch; gap: 34px;
+    border-radius: 28px;
+    padding: 36px 34px 36px 22px;
+    height: 560px; /* fallback until JS measures main's real height and syncs it exactly */
+    box-shadow: 0 20px 54px rgba(0,0,0,.5);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .player:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 28px 64px rgba(0,0,0,.6);
+  }
+  .player:hover .player-bg { filter: blur(60px) saturate(1.6) brightness(.5); }
+  .player-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background: url("./assets/gaegujangi-cover.jpg") center/cover no-repeat;
+    filter: blur(60px) saturate(1.5) brightness(.42);
+    transform: scale(1.3);
+  }
+  .player-bg::after {
+    content: ""; position: absolute; inset: 0; background: rgba(8,10,20,.32);
+  }
+  .player > * { position: relative; z-index: 1; }
+
+  .player-left { width: 47%; flex: none; display: flex; flex-direction: column; }
+  .cover {
+    width: 100%; aspect-ratio: 1 / 1; border-radius: 12px; object-fit: cover;
+    box-shadow: 0 14px 34px rgba(0,0,0,.55);
+  }
+  .track-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-top: 18px; }
+  .track-title { font-size: 18px; font-weight: 800; color: #fff; }
+  .track-artist { margin-top: 4px; font-size: 14px; color: rgba(255,255,255,.62); }
+  .track-actions { display: flex; align-items: center; gap: 8px; flex: none; padding-top: 2px; }
+  .icon-btn {
+    background: none; border: none; cursor: pointer; padding: 2px;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,.5); transition: color .15s ease;
+  }
+  .icon-btn svg { width: 16px; height: 16px; }
+  #favBtn.active { color: #fff; }
+  #favBtn.active svg { fill: currentColor; }
+  #moreBtn:hover { color: #fff; }
+
+  .transport { margin-top: auto; padding-top: 20px; }
+  .seek {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 3px; margin: 0;
+    background: rgba(255,255,255,.28); border-radius: 999px; outline: none; cursor: pointer;
+  }
+  .seek::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%;
+    background: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,.15);
+  }
+  .seek::-moz-range-thumb { width: 11px; height: 11px; border: none; border-radius: 50%; background: #fff; }
+  .time-row {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: rgba(255,255,255,.55); margin-top: 7px;
+  }
+  .controls-row { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 16px; }
+  .toggle-btn svg { width: 17px; height: 17px; }
+  .toggle-btn.active { color: var(--neon-b); opacity: 1; }
+  .play-btn {
+    background: none; border: none; cursor: pointer; color: #fff;
+    padding: 4px; display: flex; align-items: center; justify-content: center;
+  }
+  .play-btn svg { width: 22px; height: 22px; }
+  .skip-btn {
+    background: none; border: none; cursor: pointer; color: #fff; opacity: .82;
+    padding: 4px; display: flex; align-items: center; justify-content: center;
+  }
+  .skip-btn:hover { opacity: 1; }
+  .skip-btn svg { width: 19px; height: 19px; }
+
+  .volume {
+    position: relative;
+    display: flex; align-items: center; gap: 9px;
+    margin-top: 22px;
+    margin-left: -28px; width: calc(100% + 28px);
+  }
+  .vol-icon-btn {
+    background: none; border: none; cursor: pointer; padding: 0; flex: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .vol-icon-btn svg { width: 19px; height: 19px; }
+  .vol-icon-btn .spk-body { fill: #fff; }
+  .vol-icon-btn .wave1, .vol-icon-btn .wave2, .vol-icon-btn .wave3 { stroke: rgba(255,255,255,.28); }
+  .vol-icon-btn.vol-lo .wave1 { stroke: #fff; }
+  .vol-icon-btn.vol-mid .wave1, .vol-icon-btn.vol-mid .wave2 { stroke: #fff; }
+  .vol-icon-btn.vol-hi .wave1, .vol-icon-btn.vol-hi .wave2, .vol-icon-btn.vol-hi .wave3 { stroke: #fff; }
+  .vol-icon-btn .mute-x { display: none; }
+  .vol-icon-btn.muted .spk-body { fill: var(--muted); }
+  .vol-icon-btn.muted .wave1, .vol-icon-btn.muted .wave2, .vol-icon-btn.muted .wave3 { display: none; }
+  .vol-icon-btn.muted .mute-x { display: block; stroke: var(--muted); }
+  .volume input {
+    -webkit-appearance: none; appearance: none; flex: 1; height: 3px; margin: 0;
+    background: rgba(255,255,255,.28); border-radius: 999px; outline: none; cursor: pointer;
+  }
+  .volume input::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: #fff;
+  }
+  .volume input::-moz-range-thumb { width: 10px; height: 10px; border: none; border-radius: 50%; background: #fff; }
+
+  .lyrics {
+    flex: 1; min-width: 0; height: 100%; overflow: hidden; position: relative;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+            mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+  }
+  .lyrics-track {
+    display: flex; flex-direction: column;
+    padding: 260px 0;
+    will-change: transform;
+  }
+  .lyrics-track p {
+    margin: 0; padding: 14px 0;
+    font-size: 21px; font-weight: 700; line-height: 1.4;
+    color: rgba(255,255,255,.32);
+  }
+  .lyrics-track p.active { color: #fff; }
+  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    .lyrics-track p.active {
+      background-image: linear-gradient(to right, #fff 50%, rgba(255,255,255,.3) 50%);
+      background-size: 200% 100%;
+      background-position: 100% 0;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+  }
+
+  @media (max-width: 1400px) {
+    .lyrics-track p { font-size: 18px; }
+  }
+
+  @media (max-width: 1180px) {
+    .stage { display: block; }
+    .player { display: none; }
+    .stage main { width: 100%; max-width: 820px; margin: 0 auto; grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .stage main { grid-template-columns: 1fr; max-width: 420px; }
+  }
+
   .app {
     position: relative; display: flex; flex-direction: column;
-    background: var(--card);
-    border: 1px solid var(--card-line);
+    background: rgba(23,26,46,.6);
+    backdrop-filter: blur(18px) saturate(1.3);
+    -webkit-backdrop-filter: blur(18px) saturate(1.3);
     border-radius: 22px; overflow: hidden;
     text-decoration: none; color: inherit;
     box-shadow: 0 14px 40px rgba(0,0,0,.45);
-    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    transition: transform .18s ease, box-shadow .18s ease;
   }
   .app:hover { transform: translateY(-6px);
-    border-color: color-mix(in srgb, var(--neon-a) 55%, var(--card-line));
-    box-shadow: 0 22px 54px rgba(0,0,0,.55), 0 0 0 1px rgba(123,92,255,.35); }
+    box-shadow: 0 22px 54px rgba(0,0,0,.55); }
   .app:active { transform: translateY(-2px); }
   .badge {
     position: absolute; top: 12px; left: 12px; z-index: 2;
@@ -127,7 +282,7 @@
   .name { font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; letter-spacing: -.01em; }
   .desc { font-size: clamp(12px, 1.1vw, 14px); color: var(--muted); line-height: 1.55; }
 
-  footer { margin: 40px 0 auto; color: var(--muted); font-size: 12.5px; text-align: center; }
+  footer { margin: 40px 0 auto; color: var(--muted); font-size: 13.5px; text-align: center; }
 
   /* arcade loading screen */
   #loader {
@@ -173,6 +328,24 @@
     <span class="orb2" style="width:100px;height:100px;bottom:6%;right:34%;background:radial-gradient(circle,#ff5ca8,transparent 70%);animation-duration:18s;animation-delay:-2s"></span>
     <span class="orb2" style="width:240px;height:240px;top:14%;left:38%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:26s;animation-delay:-7s"></span>
     <span class="orb2" style="width:110px;height:110px;bottom:34%;left:8%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:20s;animation-delay:-4s"></span>
+
+    <span class="orb-xl" style="width:640px;height:640px;top:-14%;left:-12%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-delay:-4s"></span>
+    <span class="orb-xl" style="width:600px;height:600px;top:-10%;right:-14%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-delay:-16s"></span>
+    <span class="orb-xl" style="width:680px;height:680px;bottom:-20%;left:20%;background:radial-gradient(circle,#ff5ca8,transparent 70%);animation-delay:-9s"></span>
+    <span class="orb-xl" style="width:560px;height:560px;bottom:-16%;right:-10%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-delay:-22s"></span>
+    <span class="orb-xl" style="width:520px;height:520px;top:32%;left:38%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-delay:-13s"></span>
+
+    <span class="orb-md" style="width:220px;height:220px;top:3%;left:38%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:23s"></span>
+    <span class="orb-md" style="width:190px;height:190px;top:18%;right:4%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:26s;animation-delay:-6s"></span>
+    <span class="orb-md" style="width:250px;height:250px;bottom:22%;left:6%;background:radial-gradient(circle,#ff5ca8,transparent 70%);animation-duration:21s;animation-delay:-12s"></span>
+    <span class="orb-md" style="width:200px;height:200px;bottom:5%;right:30%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:25s;animation-delay:-3s"></span>
+    <span class="orb-md" style="width:230px;height:230px;top:60%;left:3%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:22s;animation-delay:-9s"></span>
+
+    <span class="orb-sm2" style="width:80px;height:80px;top:15%;left:15%;background:radial-gradient(circle,#ff5ca8,transparent 70%);animation-duration:16s"></span>
+    <span class="orb-sm2" style="width:110px;height:110px;top:6%;right:45%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:18s;animation-delay:-5s"></span>
+    <span class="orb-sm2" style="width:70px;height:70px;bottom:28%;right:12%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:15s;animation-delay:-8s"></span>
+    <span class="orb-sm2" style="width:95px;height:95px;bottom:8%;left:45%;background:radial-gradient(circle,#ff5ca8,transparent 70%);animation-duration:17s;animation-delay:-2s"></span>
+    <span class="orb-sm2" style="width:85px;height:85px;top:48%;right:8%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:19s;animation-delay:-11s"></span>
   </div>
 
   <div id="loader">
@@ -184,8 +357,91 @@
   <header>
     <span class="brand-line">같이교육 제작 앱 체험관</span>
     <h1>같교오락실</h1>
-    <p>같이교육의 선생님들이 직접 개발한 다양한 앱들을 직접 체험해보세요 !</p>
+    <p>같이교육 선생님들이 직접 개발한 다양한 앱들을 직접 체험해보세요 !</p>
   </header>
+
+  <div class="stage">
+  <div class="player">
+    <div class="player-bg" aria-hidden="true"></div>
+    <div class="player-left">
+      <img class="cover" id="coverImg" src="./assets/gaegujangi-cover.jpg" alt="개구장이 앨범 커버" />
+      <div class="track-row">
+        <div class="track-meta">
+          <div class="track-title" id="trackTitle">개구장이</div>
+          <div class="track-artist" id="trackArtist">산울림 — 개구장이</div>
+        </div>
+        <div class="track-actions">
+          <button class="icon-btn" id="favBtn" aria-label="즐겨찾기" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 3 2.7 5.9 6.3.7-4.7 4.4 1.2 6.3L12 17.5l-5.5 2.8 1.2-6.3-4.7-4.4 6.3-.7L12 3Z"/>
+            </svg>
+          </button>
+          <button class="icon-btn" id="moreBtn" aria-label="더보기" type="button">
+            <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="transport">
+        <input type="range" class="seek" id="seek" min="0" max="100" value="0" step="0.1" />
+        <div class="time-row"><span id="curTime">0:00</span><span id="durTime">-0:00</span></div>
+        <div class="controls-row">
+          <button class="skip-btn toggle-btn" id="shuffleBtn" aria-label="셔플" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m18 14 4 4-4 4"/>
+              <path d="m18 2 4 4-4 4"/>
+              <path d="M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22"/>
+              <path d="M2 6h1.973a4 4 0 0 1 3.3 1.7l5.454 8.6a4 4 0 0 0 3.3 1.7H22"/>
+            </svg>
+          </button>
+          <button class="skip-btn" id="prevBtn" aria-label="이전 곡" type="button">
+            <svg viewBox="0 0 24 24">
+              <path d="M18.5 5.5v13a.9.9 0 0 1-1.38.76L7.6 13.02a1.15 1.15 0 0 1 0-1.94l9.52-6.34a.9.9 0 0 1 1.38.76Z" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/>
+              <rect x="4.3" y="4.5" width="2.4" height="15" rx="1.2" fill="currentColor"/>
+            </svg>
+          </button>
+          <button class="play-btn" id="playBtn" aria-label="재생/일시정지" type="button">
+            <svg id="iconPlay" viewBox="0 0 24 24">
+              <path d="M8 5.14v13.72a1 1 0 0 0 1.5.87l11.5-6.86a1 1 0 0 0 0-1.74L9.5 4.27A1 1 0 0 0 8 5.14Z" fill="currentColor" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+            </svg>
+            <svg id="iconPause" viewBox="0 0 24 24" style="display:none">
+              <rect x="5.5" y="4" width="4.4" height="16" rx="1.6" fill="currentColor"/>
+              <rect x="14.1" y="4" width="4.4" height="16" rx="1.6" fill="currentColor"/>
+            </svg>
+          </button>
+          <button class="skip-btn" id="nextBtn" aria-label="다음 곡" type="button">
+            <svg viewBox="0 0 24 24">
+              <path d="M5.5 5.5v13a.9.9 0 0 0 1.38.76l9.52-6.24a1.15 1.15 0 0 0 0-1.94L6.88 4.74A.9.9 0 0 0 5.5 5.5Z" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/>
+              <rect x="17.3" y="4.5" width="2.4" height="15" rx="1.2" fill="currentColor"/>
+            </svg>
+          </button>
+          <button class="skip-btn toggle-btn active" id="repeatBtn" aria-label="반복" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m17 2 4 4-4 4"/>
+              <path d="M3 11v-1a4 4 0 0 1 4-4h14"/>
+              <path d="m7 22-4-4 4-4"/>
+              <path d="M21 13v1a4 4 0 0 1-4 4H3"/>
+            </svg>
+          </button>
+        </div>
+        <div class="volume">
+          <button class="vol-icon-btn" id="muteBtn" aria-label="음소거" type="button">
+            <svg viewBox="0 0 24 24">
+              <path class="spk-body" d="M4.5 9.2v5.6a.8.8 0 0 0 .8.8h2.9l4.6 4.53a.7.7 0 0 0 1.2-.5V4.37a.7.7 0 0 0-1.2-.5L8.2 8.4H5.3a.8.8 0 0 0-.8.8Z"/>
+              <path class="wave1" d="M15.4 9.3a4 4 0 0 1 0 5.4" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+              <path class="wave2" d="M17.3 7a7.3 7.3 0 0 1 0 10" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+              <path class="wave3" d="M19.2 4.7a10.6 10.6 0 0 1 0 14.6" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+              <path class="mute-x" d="M15.6 8.6l5 6.8M20.6 8.6l-5 6.8" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <input type="range" id="vol" min="0" max="1" step="0.01" value="1" />
+        </div>
+      </div>
+    </div>
+    <div class="lyrics" id="lyricsMask">
+      <div class="lyrics-track" id="lyricsTrack"></div>
+    </div>
+    <audio id="audio" preload="metadata"></audio>
+  </div>
 
   <main>
     <a class="app" href="http://joo.is/같이교육퀴즈" target="_blank" rel="noopener noreferrer">
@@ -236,6 +492,7 @@
       </div>
     </a>
   </main>
+  </div>
 
   <footer>ⓒ 같이교육 · EDUTOGETHER</footer>
 
@@ -264,6 +521,352 @@
       var apply = function () { link.href = document.hidden ? gray : color; };
       document.addEventListener('visibilitychange', apply);
       apply();
+    })();
+
+    (function () {
+      // 플레이어 높이를 우측 2x2 카드 그리드(main)의 실제 렌더 높이에 정확히 맞춤
+      var playerEl = document.querySelector('.player');
+      var mainEl = document.querySelector('.stage main');
+      function syncPlayerHeight() {
+        if (window.matchMedia('(max-width: 1180px)').matches) {
+          playerEl.style.height = '';
+          return;
+        }
+        playerEl.style.height = mainEl.getBoundingClientRect().height + 'px';
+      }
+      window.addEventListener('load', syncPlayerHeight);
+      window.addEventListener('resize', syncPlayerHeight);
+      syncPlayerHeight();
+    })();
+
+    (function () {
+      // 개구쟁이 뮤직 플레이어 — 플레이리스트 구조로 짜서 나중에 곡을 더 추가해도
+      // PLAYLIST 배열에 항목만 늘리면 이전/다음/셔플/반복이 그대로 동작함.
+      // 가사 타임스탬프는 추정치(자동 무음 감지로는 구간을 못 잘라서 구조
+      // 추정 + 균등분배로 잡음). 들어보면서 t 값(초)만 조정하면 됨.
+      var PLAYLIST = [
+        {
+          title: '개구장이',
+          artist: '산울림 — 개구장이',
+          cover: './assets/gaegujangi-cover.jpg',
+          src: './assets/gaegujangi.m4a',
+          lyrics: [
+            // 사용자가 직접 들으며 초 단위로 확인해준 실측 데이터(시작~끝).
+            // 1절: 그대로 입력값. 2절: "1절과 동일 패턴, 1:09~1:49"라고 주어져서
+            // 1절의 내부 비율(줄 길이·줄 사이 간격)을 40/30배로 늘려 그대로 적용.
+            { t: 5,      end: 8,      text: '우리 같이 놀아요' },
+            { t: 8,      end: 12,     text: '뜀을 뛰며 공을 차며 놀아요' },
+            { t: 14,     end: 17,     text: '우리 같이 불러요' },
+            { t: 17,     end: 21,     text: '예쁜 노래 고운 노래 불러요' },
+            { t: 23,     end: 28,     text: '이마엔 땀방울 마음엔 꽃방울' },
+            { t: 29,     end: 34,     text: '나무에 오를래 하늘에 오를래' },
+            { t: 34,     end: 35,     text: '개구쟁이' },
+            { t: 39, end: 40, text: ' ' },
+            { t: 43, end: 44, text: ' ' },
+            { t: 47, end: 48, text: ' ' },
+            { t: 51, end: 52, text: ' ' },
+            { t: 55, end: 56, text: ' ' },
+            { t: 59, end: 60, text: ' ' },
+            { t: 63, end: 64, text: ' ' },
+            { t: 67, end: 68, text: ' ' },
+            { t: 69, end: 71, text: '우리 같이 놀아요' },
+            { t: 72, end: 75, text: '뜀을 뛰며 공을 차며 놀아요' },
+            { t: 78, end: 80, text: '우리 같이 불러요' },
+            { t: 80, end: 84, text: '예쁜 노래 고운 노래 불러요' },
+            { t: 86, end: 91, text: '이마엔 땀방울 마음엔 꽃방울' },
+            { t: 92, end: 97, text: '나무에 오를래 하늘에 오를래' },
+            { t: 99, end: 100, text: '개구장이' },
+            { t: 104, end: 105, text: ' ' },
+            { t: 108, end: 109, text: ' ' },
+            { t: 112, end: 113, text: ' ' },
+            { t: 116, end: 117, text: ' ' },
+            { t: 120, end: 121, text: ' ' },
+            { t: 124, end: 125, text: ' ' },
+          ]
+        }
+      ];
+
+      var audio = document.getElementById('audio');
+      var playBtn = document.getElementById('playBtn');
+      var prevBtn = document.getElementById('prevBtn');
+      var nextBtn = document.getElementById('nextBtn');
+      var shuffleBtn = document.getElementById('shuffleBtn');
+      var repeatBtn = document.getElementById('repeatBtn');
+      var favBtn = document.getElementById('favBtn');
+      var seek = document.getElementById('seek');
+      var curTimeEl = document.getElementById('curTime');
+      var durTimeEl = document.getElementById('durTime');
+      var vol = document.getElementById('vol');
+      var muteBtn = document.getElementById('muteBtn');
+      var mask = document.getElementById('lyricsMask');
+      var track = document.getElementById('lyricsTrack');
+      var coverImg = document.getElementById('coverImg');
+      var trackTitleEl = document.getElementById('trackTitle');
+      var trackArtistEl = document.getElementById('trackArtist');
+
+      var currentIndex = 0;
+      var shuffleOn = false;
+      var repeatOn = true; // 기본은 "반복 켜짐"
+      var lineEls = [];
+      var lastActiveIndex = -2;
+      var scrollAnchors = []; // [{t, pos}] — pos는 트랙 내부 좌표(줄 중심)
+
+      function fmt(s) {
+        s = Math.max(0, Math.floor(s || 0));
+        var m = Math.floor(s / 60), r = s % 60;
+        return m + ':' + (r < 10 ? '0' : '') + r;
+      }
+
+      function wrapIndex(i) {
+        return ((i % PLAYLIST.length) + PLAYLIST.length) % PLAYLIST.length;
+      }
+
+      // 각 줄(빈 줄 포함)의 등장 시각을 앵커로 삼아 그 사이를 선형보간한다.
+      // 절 안에서는 원래 줄 간격(자연스러운 한 줄 높이)을 그대로 쓰고,
+      // 간주 구간은 LYRICS 데이터에 빈 줄을 더 촘촘히 끼워 넣어서 속도를 맞춘다.
+      function computeScrollAnchors() {
+        if (!lineEls.length) { scrollAnchors = []; return; }
+        var lyrics = PLAYLIST[currentIndex].lyrics;
+        var lineHeight = lineEls[0].clientHeight + 28;
+        var anchors = [];
+        anchors.push({ t: 0, pos: lineEls[0].offsetTop + lineEls[0].clientHeight / 2 - lineHeight });
+        lineEls.forEach(function (el, i) {
+          anchors.push({ t: lyrics[i].t, pos: el.offsetTop + el.clientHeight / 2 });
+        });
+        var lastEl = lineEls[lineEls.length - 1];
+        var endT = audio.duration && isFinite(audio.duration) ? audio.duration : (lyrics[lyrics.length - 1].t + 10);
+        anchors.push({ t: Math.max(endT, lyrics[lyrics.length - 1].t + 1), pos: lastEl.offsetTop + lastEl.clientHeight / 2 + lineHeight });
+        scrollAnchors = anchors;
+      }
+
+      function updateScrollPosition(currentTime) {
+        if (scrollAnchors.length < 2 || !mask.clientHeight) return;
+        var a = scrollAnchors[0], b = scrollAnchors[scrollAnchors.length - 1];
+        if (currentTime <= a.t) { b = a; }
+        else if (currentTime >= b.t) { a = b; }
+        else {
+          for (var i = 0; i < scrollAnchors.length - 1; i++) {
+            if (currentTime >= scrollAnchors[i].t && currentTime <= scrollAnchors[i + 1].t) {
+              a = scrollAnchors[i]; b = scrollAnchors[i + 1];
+              break;
+            }
+          }
+        }
+        var span = b.t - a.t;
+        var progress = span > 0 ? (currentTime - a.t) / span : 0;
+        var pos = a.pos + (b.pos - a.pos) * progress;
+        track.style.transform = 'translateY(' + (-(pos - mask.clientHeight / 2)) + 'px)';
+      }
+
+      function loadTrack(index, autoplay) {
+        currentIndex = wrapIndex(index);
+        var t = PLAYLIST[currentIndex];
+        audio.src = t.src;
+        coverImg.src = t.cover;
+        coverImg.alt = t.title + ' 앨범 커버';
+        trackTitleEl.textContent = t.title;
+        trackArtistEl.textContent = t.artist;
+
+        track.innerHTML = '';
+        t.lyrics.forEach(function (line) {
+          var p = document.createElement('p');
+          p.textContent = line.text;
+          track.appendChild(p);
+        });
+        lineEls = track.querySelectorAll('p');
+        lastActiveIndex = -2;
+        track.style.transform = '';
+        computeScrollAnchors();
+        updateScrollPosition(0);
+
+        audio.loop = repeatOn;
+        audio.load();
+        if (autoplay) {
+          var playPromise = audio.play();
+          if (playPromise && playPromise.catch) {
+            playPromise.catch(function () {
+              // 브라우저 자동재생 정책에 막히면, 페이지 아무 곳이나 처음 클릭/터치/키
+              // 입력이 들어오는 순간 바로 재생 시작
+              var startOnInteract = function () { audio.play(); };
+              document.addEventListener('click', startOnInteract, { once: true });
+              document.addEventListener('touchstart', startOnInteract, { once: true });
+              document.addEventListener('keydown', startOnInteract, { once: true });
+            });
+          }
+        }
+      }
+
+      function pickAdjacentIndex(direction) {
+        // direction: +1(다음) / -1(이전). 셔플 켜져 있고 플레이리스트가 여럿이면 무작위(직전 곡 제외).
+        if (shuffleOn && PLAYLIST.length > 1) {
+          var r;
+          do { r = Math.floor(Math.random() * PLAYLIST.length); } while (r === currentIndex);
+          return r;
+        }
+        return currentIndex + direction;
+      }
+
+      loadTrack(0, true);
+
+      audio.addEventListener('loadedmetadata', function () {
+        seek.max = audio.duration;
+        durTimeEl.textContent = '-' + fmt(audio.duration);
+        computeScrollAnchors();
+        updateScrollPosition(audio.currentTime);
+      });
+      window.addEventListener('resize', function () {
+        computeScrollAnchors();
+        updateScrollPosition(audio.currentTime);
+      });
+
+      // timeupdate는 브라우저가 내부적으로 불규칙한 간격(대략 250ms~수백ms, 들쭉날쭉)
+      // 으로만 쏴줘서, 그거에만 의존하면 CSS transition이 다음 이벤트가 오기 전에
+      // 먼저 끝나버려 "멈췄다 가다"가 반복되는 버벅임이 생김. 그래서 스크롤 위치만은
+      // 재생 중엔 50ms 고정 주기 타이머로 따로 갱신한다(요청 프레임 대신 setInterval을
+      // 쓴 이유: 탭이 화면에 안 보이는 상태에선 requestAnimationFrame 자체가 아예 멈춰서
+      // 그게 더 위험함 — setInterval은 그런 상황에서도 계속 돎).
+      var scrollTimer = null;
+      function startScrollTimer() {
+        if (scrollTimer) return;
+        scrollTimer = setInterval(function () { updateScrollPosition(audio.currentTime); }, 40);
+      }
+      function stopScrollTimer() {
+        if (scrollTimer) { clearInterval(scrollTimer); scrollTimer = null; }
+      }
+      audio.addEventListener('play', startScrollTimer);
+      audio.addEventListener('pause', stopScrollTimer);
+      audio.addEventListener('ended', stopScrollTimer);
+
+      var seeking = false;
+      audio.addEventListener('seeked', function () { updateScrollPosition(audio.currentTime); });
+      audio.addEventListener('timeupdate', function () {
+        if (!seeking) seek.value = audio.currentTime;
+        curTimeEl.textContent = fmt(audio.currentTime);
+        durTimeEl.textContent = '-' + fmt(audio.duration - audio.currentTime);
+
+        // 흰색 채우기 애니메이션은 그 줄이 실제로 불리는 구간에서만 — 스크롤 위치는
+        // 위 setInterval 타이머가 처리하므로 여기서는 "활성 줄"만 판정한다.
+        var lyrics = PLAYLIST[currentIndex].lyrics;
+        var activeIndex = -1;
+        for (var i = 0; i < lyrics.length; i++) {
+          if (audio.currentTime >= lyrics[i].t) activeIndex = i; else break;
+        }
+
+        if (activeIndex !== lastActiveIndex) {
+          lineEls.forEach(function (el) {
+            el.classList.remove('active');
+            el.style.transition = '';
+            el.style.backgroundPosition = '';
+          });
+          if (activeIndex >= 0) {
+            var el = lineEls[activeIndex];
+            var cur = lyrics[activeIndex];
+            var next = lyrics[activeIndex + 1];
+            var lineEnd = cur.end != null ? cur.end : (next ? next.t : cur.t + 3);
+            var dur = lineEnd - cur.t;
+            el.classList.add('active');
+            // 즉시 "안 채워진" 상태로 되돌린 뒤(트랜지션 없이), 한 프레임 뒤
+            // 왼쪽→오른쪽으로 부드럽게 채워지도록 transition을 건다.
+            el.style.transition = 'none';
+            el.style.backgroundPosition = '100% 0';
+            void el.offsetWidth;
+            el.style.transition = 'background-position ' + Math.max(dur, 0.4) + 's linear';
+            el.style.backgroundPosition = '0% 0';
+          }
+          lastActiveIndex = activeIndex;
+        }
+      });
+
+      seek.addEventListener('mousedown', function () { seeking = true; });
+      seek.addEventListener('touchstart', function () { seeking = true; });
+      seek.addEventListener('change', function () {
+        audio.currentTime = seek.value;
+        seeking = false;
+      });
+      seek.addEventListener('input', function () {
+        curTimeEl.textContent = fmt(seek.value);
+      });
+
+      var iconPlay = document.getElementById('iconPlay');
+      var iconPause = document.getElementById('iconPause');
+      function showPlaying(isPlaying) {
+        iconPlay.style.display = isPlaying ? 'none' : '';
+        iconPause.style.display = isPlaying ? '' : 'none';
+      }
+      playBtn.addEventListener('click', function () {
+        if (audio.paused) audio.play(); else audio.pause();
+      });
+      audio.addEventListener('play', function () { showPlaying(true); });
+      audio.addEventListener('pause', function () { showPlaying(false); });
+      audio.addEventListener('ended', function () {
+        showPlaying(false);
+        // repeat가 꺼져 있을 때만 여기로 옴(켜져 있으면 audio.loop가 알아서 반복).
+        // 플레이리스트가 끝까지 가면 다음 곡(1곡뿐이면 같은 곡)으로 자연스럽게 이어짐.
+        loadTrack(pickAdjacentIndex(1), true);
+      });
+
+      // 이전 곡: 애플뮤직처럼 재생 3초 넘었으면 처음부터, 아니면 진짜 이전 곡으로 이동
+      prevBtn.addEventListener('click', function () {
+        if (audio.currentTime > 3) {
+          audio.currentTime = 0;
+          audio.play();
+        } else {
+          loadTrack(pickAdjacentIndex(-1), true);
+        }
+      });
+      nextBtn.addEventListener('click', function () {
+        loadTrack(pickAdjacentIndex(1), true);
+      });
+
+      // 셔플: 지금은 곡이 1개뿐이라 실질적 변화는 없지만, PLAYLIST에 곡이
+      // 늘어나면 이전/다음이 무작위로 곡을 고르도록 이미 연결되어 있음
+      shuffleBtn.addEventListener('click', function () {
+        shuffleOn = !shuffleOn;
+        shuffleBtn.classList.toggle('active', shuffleOn);
+      });
+      // 반복: audio.loop과 실제로 연동 (기본 on)
+      repeatBtn.addEventListener('click', function () {
+        repeatOn = !repeatOn;
+        audio.loop = repeatOn;
+        repeatBtn.classList.toggle('active', repeatOn);
+      });
+
+      // 즐겨찾기: 저장은 안 되지만(세션 한정) 클릭할 때마다 실제로 켜짐/꺼짐 토글
+      favBtn.addEventListener('click', function () {
+        favBtn.classList.toggle('active');
+      });
+      // 더보기: 넣을 메뉴가 없어서 클릭 동작은 안 만들고, 호버 시 밝아지는 것만 (CSS #moreBtn:hover)
+
+      // 볼륨 슬라이더 + 음소거 버튼(막대 3개: 낮음 1개 흰색 / 중간 2개 / 높음 3개)
+      var lastVolume = 1;
+      function updateVolIcon() {
+        var v = audio.volume;
+        var muted = audio.muted || v <= 0;
+        muteBtn.classList.toggle('muted', muted);
+        muteBtn.classList.remove('vol-lo', 'vol-mid', 'vol-hi');
+        if (!muted) {
+          if (v < 1 / 3) muteBtn.classList.add('vol-lo');
+          else if (v < 2 / 3) muteBtn.classList.add('vol-mid');
+          else muteBtn.classList.add('vol-hi');
+        }
+      }
+      audio.volume = parseFloat(vol.value);
+      updateVolIcon();
+      vol.addEventListener('input', function () {
+        audio.volume = parseFloat(vol.value);
+        if (audio.volume > 0) { audio.muted = false; lastVolume = audio.volume; }
+        updateVolIcon();
+      });
+      muteBtn.addEventListener('click', function () {
+        if (audio.muted || audio.volume === 0) {
+          audio.muted = false;
+          if (audio.volume === 0) { audio.volume = lastVolume || 1; vol.value = audio.volume; }
+        } else {
+          lastVolume = audio.volume;
+          audio.muted = true;
+        }
+        updateVolIcon();
+      });
     })();
   </script>
 </body>
