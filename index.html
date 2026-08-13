@@ -38,7 +38,7 @@
     color: var(--ink);
     font-family: "Pretendard", "Pretendard Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
     min-height: 100dvh;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
     padding: 40px 32px;
     overflow-x: hidden;
   }
@@ -61,7 +61,7 @@
     animation: float 22s ease-in-out infinite; }
   @keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-22px) } }
 
-  header { text-align: center; margin: 0 0 40px; }
+  header { text-align: center; margin: auto 0 40px; }
   .brand-line {
     display: inline-flex; align-items: center; gap: 8px;
     font-size: 14px; font-weight: 700; letter-spacing: .12em;
@@ -127,7 +127,7 @@
   .name { font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; letter-spacing: -.01em; }
   .desc { font-size: clamp(12px, 1.1vw, 14px); color: var(--muted); line-height: 1.55; }
 
-  footer { margin-top: 40px; color: var(--muted); font-size: 12.5px; text-align: center; }
+  footer { margin: 40px 0 auto; color: var(--muted); font-size: 12.5px; text-align: center; }
 
   /* arcade loading screen */
   #loader {
