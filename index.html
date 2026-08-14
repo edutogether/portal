@@ -20,6 +20,7 @@
 <link id="favicon" rel="icon" type="image/svg+xml" />
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" />
 
 <style>
   :root {
@@ -55,19 +56,60 @@
 
   /* floating soft bubble orbs */
   .orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .memorial-bg {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: url("./assets/memorial-butterflies.png") center/cover no-repeat;
+  }
+
+  /* 반딧불이 효과 — CLASSCADE(entry-shared.css)에서 그대로 가져옴. 나비 이미지
+     자체는 정지시켜두고, 개별 입자가 저마다 다른 위치·속도·밝기로 떠다니게 해서
+     "살아있는" 느낌을 냄(전체 이미지를 통째로 흔드는 것과 달리 다 같이 출렁이지
+     않음). box-shadow만 쓰고 filter/backdrop-filter는 안 써서 가벼움. */
+  .motes { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .motes i {
+    animation: mote-drift var(--dur, 7s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+    background: #fff3bb;
+    border-radius: 50%;
+    box-shadow: 0 0 4px #ffdc77, 0 0 15px rgba(246, 189, 66, .84);
+    height: calc(var(--s, 3) * 1px);
+    left: var(--x, 50%);
+    position: absolute;
+    top: var(--y, 40%);
+    width: calc(var(--s, 3) * 1px);
+  }
+  .motes i:nth-child(3n) { background: #ffd98a; box-shadow: 0 0 4px rgba(255,214,118,.6), 0 0 10px rgba(246,189,66,.45); }
+  .motes i:nth-child(5n) { background: #fff9df; box-shadow: 0 0 6px #ffeaa6, 0 0 22px rgba(250,204,88,.95), 0 0 40px rgba(246,189,66,.4); }
+  @keyframes mote-drift {
+    0%, 100% { opacity: .12; transform: translate3d(calc(var(--dx, -4) * -1px), calc(var(--amp, 16) * .75px), 0) scale(.72); }
+    44% { opacity: .86; transform: translate3d(calc(var(--dx, -4) * 1px), calc(var(--amp, 16) * -1px), 0) scale(1.08); }
+    72% { opacity: .35; transform: translate3d(calc(var(--dx, -4) * .4px), calc(var(--amp, 16) * -1.8px), 0) scale(.88); }
+  }
   .orb { position: absolute; border-radius: 50%; filter: blur(44px); opacity: .20;
-    animation: float 22s ease-in-out infinite; }
+    animation: float 22s ease-in-out infinite; animation-play-state: paused; }
   .orb2 { position: absolute; border-radius: 50%; filter: blur(24px); opacity: .22;
-    animation: float 22s ease-in-out infinite; }
+    animation: float 22s ease-in-out infinite; animation-play-state: paused; }
   .orb-xl { position: absolute; border-radius: 50%; filter: blur(120px); opacity: .16;
-    animation: float 34s ease-in-out infinite; }
+    animation: float 34s ease-in-out infinite; animation-play-state: paused; }
   .orb-md { position: absolute; border-radius: 50%; filter: blur(30px); opacity: .36;
-    animation: float 24s ease-in-out infinite; }
+    animation: float 24s ease-in-out infinite; animation-play-state: paused; }
   .orb-sm2 { position: absolute; border-radius: 50%; filter: blur(16px); opacity: .46;
-    animation: float 20s ease-in-out infinite; }
+    animation: float 20s ease-in-out infinite; animation-play-state: paused; }
+  /* 성능 때문에 원 대부분은 정적으로 고정하고, 이 클래스가 붙은 소수만 움직임
+     (backdrop-filter 5곳이 매 프레임 다시 블러 계산하는 걸 피하려는 목적 — 카드
+     뒤에 깐 원들은 특히 절대 움직이면 안 됨) */
+  .orbs .float { animation-play-state: running; }
   @keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-22px) } }
 
   header { text-align: center; margin: auto 0 40px; }
+  .memorial-notice {
+    margin: 0 0 18px;
+    font-family: "Nanum Myeongjo", "Pretendard", serif;
+    font-size: clamp(16px, 1.7vw, 20px); font-weight: 700;
+    letter-spacing: .04em;
+    color: rgba(232, 210, 165, .92);
+    text-shadow: 0 0 16px rgba(232, 210, 165, .35);
+  }
   .brand-line {
     display: inline-flex; align-items: center; gap: 8px;
     font-size: 14px; font-weight: 700; letter-spacing: .12em;
@@ -144,6 +186,22 @@
   #favBtn.active { color: #fff; }
   #favBtn.active svg { fill: currentColor; }
   #moreBtn:hover { color: #fff; }
+
+  .toast {
+    position: fixed; top: 50%; left: 50%; z-index: 100;
+    transform: translate(-50%, -50%) scale(.96);
+    background: rgba(23,26,46,.55);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border-radius: 12px;
+    padding: 10px 20px;
+    color: #fff; font-size: 14px; font-weight: 600;
+    letter-spacing: -.01em;
+    box-shadow: 0 16px 40px rgba(0,0,0,.5);
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s ease, transform .25s ease;
+  }
+  .toast.open { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
   .transport { margin-top: auto; padding-top: 20px; }
   .seek {
@@ -311,8 +369,8 @@
 </head>
 <body>
   <div class="orbs" aria-hidden="true">
-    <span class="orb" style="width:300px;height:300px;top:5%;left:7%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:24s"></span>
-    <span class="orb" style="width:240px;height:240px;top:11%;right:9%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:20s;animation-delay:-4s"></span>
+    <span class="orb float" style="width:300px;height:300px;top:5%;left:7%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:24s"></span>
+    <span class="orb float" style="width:240px;height:240px;top:11%;right:9%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:20s;animation-delay:-4s"></span>
     <span class="orb" style="width:260px;height:260px;top:42%;left:-4%;background:radial-gradient(circle,#ff5ca8,transparent 70%);animation-duration:26s;animation-delay:-8s"></span>
     <span class="orb" style="width:220px;height:220px;top:52%;right:1%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:23s;animation-delay:-2s"></span>
     <span class="orb" style="width:280px;height:280px;bottom:7%;left:15%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:27s;animation-delay:-6s"></span>
@@ -320,7 +378,7 @@
     <span class="orb" style="width:200px;height:200px;top:28%;left:45%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:25s;animation-delay:-3s"></span>
     <span class="orb" style="width:180px;height:180px;bottom:30%;left:62%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:22s;animation-delay:-7s"></span>
 
-    <span class="orb2" style="width:120px;height:120px;top:20%;left:22%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:19s"></span>
+    <span class="orb2 float" style="width:120px;height:120px;top:20%;left:22%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:19s"></span>
     <span class="orb2" style="width:170px;height:170px;top:8%;right:28%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:24s;animation-delay:-5s"></span>
     <span class="orb2" style="width:90px;height:90px;top:60%;left:30%;background:radial-gradient(circle,#ff5ca8,transparent 70%);animation-duration:17s;animation-delay:-3s"></span>
     <span class="orb2" style="width:210px;height:210px;bottom:18%;left:40%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:28s;animation-delay:-9s"></span>
@@ -333,15 +391,15 @@
     <span class="orb-xl" style="width:600px;height:600px;top:-10%;right:-14%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-delay:-16s"></span>
     <span class="orb-xl" style="width:680px;height:680px;bottom:-20%;left:20%;background:radial-gradient(circle,#ff5ca8,transparent 70%);animation-delay:-9s"></span>
     <span class="orb-xl" style="width:560px;height:560px;bottom:-16%;right:-10%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-delay:-22s"></span>
-    <span class="orb-xl" style="width:520px;height:520px;top:32%;left:38%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-delay:-13s"></span>
+    <span class="orb-xl float" style="width:520px;height:520px;top:32%;left:38%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-delay:-13s"></span>
 
-    <span class="orb-md" style="width:220px;height:220px;top:3%;left:38%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:23s"></span>
+    <span class="orb-md float" style="width:220px;height:220px;top:3%;left:38%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:23s"></span>
     <span class="orb-md" style="width:190px;height:190px;top:18%;right:4%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:26s;animation-delay:-6s"></span>
     <span class="orb-md" style="width:250px;height:250px;bottom:22%;left:6%;background:radial-gradient(circle,#ff5ca8,transparent 70%);animation-duration:21s;animation-delay:-12s"></span>
     <span class="orb-md" style="width:200px;height:200px;bottom:5%;right:30%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:25s;animation-delay:-3s"></span>
     <span class="orb-md" style="width:230px;height:230px;top:60%;left:3%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:22s;animation-delay:-9s"></span>
 
-    <span class="orb-sm2" style="width:80px;height:80px;top:15%;left:15%;background:radial-gradient(circle,#ff5ca8,transparent 70%);animation-duration:16s"></span>
+    <span class="orb-sm2 float" style="width:80px;height:80px;top:15%;left:15%;background:radial-gradient(circle,#ff5ca8,transparent 70%);animation-duration:16s"></span>
     <span class="orb-sm2" style="width:110px;height:110px;top:6%;right:45%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:18s;animation-delay:-5s"></span>
     <span class="orb-sm2" style="width:70px;height:70px;bottom:28%;right:12%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:15s;animation-delay:-8s"></span>
     <span class="orb-sm2" style="width:95px;height:95px;bottom:8%;left:45%;background:radial-gradient(circle,#ff5ca8,transparent 70%);animation-duration:17s;animation-delay:-2s"></span>
@@ -359,6 +417,9 @@
     <span class="orb-sm2" style="width:150px;height:150px;top:73%;left:74%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:20s;animation-delay:-7s"></span>
   </div>
 
+  <div class="memorial-bg" aria-hidden="true"></div>
+  <div class="motes" id="motes" aria-hidden="true"></div>
+
   <div id="loader">
     <div class="logo">같교오락실</div>
     <div class="bar" aria-hidden="true"><i></i></div>
@@ -366,6 +427,7 @@
   </div>
 
   <header>
+    <p class="memorial-notice">8.14 일본군 '위안부' 피해자 기림의 날</p>
     <span class="brand-line">같이교육 제작 앱 체험관</span>
     <h1>같교오락실</h1>
     <p>같이교육 선생님들이 직접 개발한 다양한 앱들을 직접 체험해보세요 !</p>
@@ -382,7 +444,7 @@
           <div class="track-artist" id="trackArtist">산울림 — 개구장이</div>
         </div>
         <div class="track-actions">
-          <button class="icon-btn" id="favBtn" aria-label="즐겨찾기" type="button">
+          <button class="icon-btn active" id="favBtn" aria-label="즐겨찾기" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="m12 3 2.7 5.9 6.3.7-4.7 4.4 1.2 6.3L12 17.5l-5.5 2.8 1.2-6.3-4.7-4.4 6.3-.7L12 3Z"/>
             </svg>
@@ -507,6 +569,8 @@
 
   <footer>ⓒ 같이교육 · EDUTOGETHER</footer>
 
+  <div class="toast" id="modalOverlay" aria-hidden="true">앞으로 추가될 플레이리스트를 기대해주세요 !</div>
+
   <script>
     (function () {
       var loader = document.getElementById('loader');
@@ -515,6 +579,30 @@
       // hide when the fill animation finishes, with a safety fallback
       bar.addEventListener('animationend', hide, { once: true });
       setTimeout(hide, 3200);
+    })();
+
+    (function () {
+      // 반딧불이 입자 생성 — CLASSCADE의 moteHash 그대로 포팅(결정적 의사난수라
+      // 새로고침해도 배치가 안 튀고, 인덱스마다 위치/속도/밝기가 확실히 갈림).
+      function moteHash(seed) {
+        var t = (seed + 0x6d2b79f5) | 0;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      }
+      var motesEl = document.getElementById('motes');
+      var MOTE_COUNT = 150;
+      for (var i = 0; i < MOTE_COUNT; i++) {
+        var el = document.createElement('i');
+        el.style.setProperty('--x', (moteHash(i * 7 + 1) * 94 + 2).toFixed(1) + '%');
+        el.style.setProperty('--y', (moteHash(i * 7 + 2) * 86 + 4).toFixed(1) + '%');
+        el.style.setProperty('--s', 3 + Math.floor(moteHash(i * 7 + 3) * 8));
+        el.style.setProperty('--dur', (5.5 + moteHash(i * 7 + 4) * 6).toFixed(2) + 's');
+        el.style.setProperty('--delay', '-' + (moteHash(i * 7 + 5) * 12).toFixed(2) + 's');
+        el.style.setProperty('--dx', (moteHash(i * 7 + 6) * 12 - 6).toFixed(1));
+        el.style.setProperty('--amp', (8 + moteHash(i * 7 + 0) * 22).toFixed(1));
+        motesEl.appendChild(el);
+      }
     })();
 
     (function () {
@@ -604,6 +692,7 @@
       var shuffleBtn = document.getElementById('shuffleBtn');
       var repeatBtn = document.getElementById('repeatBtn');
       var favBtn = document.getElementById('favBtn');
+      var moreBtn = document.getElementById('moreBtn');
       var seek = document.getElementById('seek');
       var curTimeEl = document.getElementById('curTime');
       var durTimeEl = document.getElementById('durTime');
@@ -846,7 +935,20 @@
       favBtn.addEventListener('click', function () {
         favBtn.classList.toggle('active');
       });
-      // 더보기: 넣을 메뉴가 없어서 클릭 동작은 안 만들고, 호버 시 밝아지는 것만 (CSS #moreBtn:hover)
+      // 더보기: 짧게 떴다가 자동으로 사라지는 토스트
+      var modalOverlay = document.getElementById('modalOverlay');
+      var toastTimer = null;
+      moreBtn.addEventListener('click', function () {
+        modalOverlay.classList.add('open');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          modalOverlay.classList.remove('open');
+        }, 2200);
+      });
+      modalOverlay.addEventListener('click', function () {
+        clearTimeout(toastTimer);
+        modalOverlay.classList.remove('open');
+      });
 
       // 볼륨 슬라이더 + 음소거 버튼(막대 3개: 낮음 1개 흰색 / 중간 2개 / 높음 3개)
       var lastVolume = 1;
