@@ -183,9 +183,9 @@
     color: rgba(255,255,255,.5); transition: color .15s ease;
   }
   .icon-btn svg { width: 16px; height: 16px; }
-  #favBtn.active { color: #fff; }
-  #favBtn.active svg { fill: currentColor; }
-  #moreBtn:hover { color: #fff; }
+  .icon-btn.active { color: #fff; }
+  .icon-btn.active svg { fill: currentColor; }
+  #moreBtn:hover, #moreBtnM:hover { color: #fff; }
 
   .toast {
     position: fixed; top: 50%; left: 50%; z-index: 100;
@@ -197,11 +197,15 @@
     padding: 10px 20px;
     color: #fff; font-size: 14px; font-weight: 600;
     letter-spacing: -.01em;
+    white-space: nowrap;
     box-shadow: 0 16px 40px rgba(0,0,0,.5);
     opacity: 0; pointer-events: none;
     transition: opacity .25s ease, transform .25s ease;
   }
   .toast.open { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  @media (max-width: 480px) {
+    .toast { font-size: 12px; padding: 9px 14px; max-width: calc(100vw - 40px); }
+  }
 
   .transport { margin-top: auto; padding-top: 20px; }
   .seek {
@@ -290,14 +294,84 @@
     .lyrics-track p { font-size: 18px; }
   }
 
+  .player-mobile { display: none; }
   @media (max-width: 1180px) {
     .stage { display: block; }
     .player { display: none; }
+    .player-mobile { display: block; }
+    .stage { padding-bottom: 150px; } /* 하단 고정 플레이어에 카드가 안 가리게 */
     .stage main { width: 100%; max-width: 820px; margin: 0 auto; grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 560px) {
     .stage main { grid-template-columns: 1fr; max-width: 420px; }
   }
+
+  /* 모바일 압축 플레이어 — 화면 맨 아래 고정, 본문은 그 뒤에서 따로 스크롤됨 */
+  .player-mobile {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    width: 100%;
+    background: rgba(15,18,34,.9);
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    border-radius: 20px 20px 0 0;
+    padding: 14px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -10px 30px rgba(0,0,0,.45);
+  }
+  .pm-top { display: flex; align-items: flex-start; gap: 10px; }
+  .pm-cover { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; flex: none; }
+  .pm-meta { flex: 1; min-width: 0; align-self: flex-start; } /* 앨범커버 위쪽에 맞춤 */
+  .pm-title { font-size: 15px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pm-artist { margin-top: 2px; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pm-top .icon-btn { flex: none; padding-top: 3px; }
+  .pm-seek {
+    width: 100%; margin-top: 10px;
+    -webkit-appearance: none; appearance: none; height: 3px;
+    background: rgba(255,255,255,.28); border-radius: 999px; outline: none; cursor: pointer;
+  }
+  .pm-seek::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%; background: #fff; }
+  .pm-seek::-moz-range-thumb { width: 11px; height: 11px; border: none; border-radius: 50%; background: #fff; }
+  .pm-time-row { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--muted); margin-top: 4px; }
+
+  .pm-lyric-mask {
+    display: none; /* 모바일에서는 정신없다는 피드백으로 안 보이게만 처리 —
+      JS 쪽 스크롤/채우기 로직은 그대로 둬서 다시 켤 때 안전하게 되돌릴 수 있음 */
+    height: 18px; overflow: hidden; position: relative; margin-top: 3px;
+  }
+  .pm-lyric-track {
+    display: flex; flex-direction: column; align-items: flex-start;
+    padding: 160px 0;
+    will-change: transform;
+  }
+  .pm-lyric-track p {
+    margin: 0; padding: 2px 0;
+    font-size: 12px; font-weight: 700; line-height: 1.4;
+    color: rgba(255,255,255,.32);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+  }
+  .pm-lyric-track p.active { color: #fff; }
+  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    .pm-lyric-track p.active {
+      background-image: linear-gradient(to right, #fff 50%, rgba(255,255,255,.3) 50%);
+      background-size: 200% 100%;
+      background-position: 100% 0;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+  }
+
+  .pm-controls { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .pm-controls .play-btn { background: none; border: none; cursor: pointer; color: #fff; padding: 2px; display: flex; flex: none; }
+  .pm-controls .play-btn svg { width: 24px; height: 24px; }
+  .pm-controls .skip-btn svg { width: 16px; height: 16px; }
+  .pm-controls .toggle-btn svg { width: 14px; height: 14px; }
+  .pm-volume { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; }
+  .pm-volume .vol-icon-btn { flex: none; }
+  .pm-volume .vol-icon-btn svg { width: 15px; height: 15px; }
+  .pm-volume input {
+    flex: 1; min-width: 0; -webkit-appearance: none; appearance: none; height: 3px;
+    background: rgba(255,255,255,.28); border-radius: 999px; outline: none; cursor: pointer;
+  }
+  .pm-volume input::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: #fff; }
+  .pm-volume input::-moz-range-thumb { width: 10px; height: 10px; border: none; border-radius: 50%; background: #fff; }
 
   .app {
     position: relative; display: flex; flex-direction: column;
@@ -516,6 +590,78 @@
     <audio id="audio" preload="metadata"></audio>
   </div>
 
+  <div class="player-mobile" id="playerMobile">
+    <div class="pm-top">
+      <img class="pm-cover" id="coverImgM" src="./assets/gaegujangi-cover.jpg" alt="개구장이 앨범 커버" />
+      <div class="pm-meta">
+        <div class="pm-title" id="trackTitleM">개구장이</div>
+        <div class="pm-artist" id="trackArtistM">산울림 — 개구장이</div>
+        <div class="pm-lyric-mask" id="lyricMaskM"><div class="pm-lyric-track" id="lyricTrackM"></div></div>
+      </div>
+      <button class="icon-btn active" id="favBtnM" aria-label="즐겨찾기" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12 3 2.7 5.9 6.3.7-4.7 4.4 1.2 6.3L12 17.5l-5.5 2.8 1.2-6.3-4.7-4.4 6.3-.7L12 3Z"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="moreBtnM" aria-label="더보기" type="button">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+      </button>
+    </div>
+    <input type="range" class="pm-seek" id="seekM" min="0" max="100" value="0" step="0.1" />
+    <div class="pm-time-row"><span id="curTimeM">0:00</span><span id="durTimeM">-0:00</span></div>
+    <div class="pm-controls">
+      <button class="skip-btn toggle-btn" id="shuffleBtnM" aria-label="셔플" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m18 14 4 4-4 4"/>
+          <path d="m18 2 4 4-4 4"/>
+          <path d="M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22"/>
+          <path d="M2 6h1.973a4 4 0 0 1 3.3 1.7l5.454 8.6a4 4 0 0 0 3.3 1.7H22"/>
+        </svg>
+      </button>
+      <button class="skip-btn" id="prevBtnM" aria-label="이전 곡" type="button">
+        <svg viewBox="0 0 24 24">
+          <path d="M18.5 5.5v13a.9.9 0 0 1-1.38.76L7.6 13.02a1.15 1.15 0 0 1 0-1.94l9.52-6.34a.9.9 0 0 1 1.38.76Z" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/>
+          <rect x="4.3" y="4.5" width="2.4" height="15" rx="1.2" fill="currentColor"/>
+        </svg>
+      </button>
+      <button class="play-btn" id="playBtnM" aria-label="재생/일시정지" type="button">
+        <svg id="iconPlayM" viewBox="0 0 24 24">
+          <path d="M8 5.14v13.72a1 1 0 0 0 1.5.87l11.5-6.86a1 1 0 0 0 0-1.74L9.5 4.27A1 1 0 0 0 8 5.14Z" fill="currentColor" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+        </svg>
+        <svg id="iconPauseM" viewBox="0 0 24 24" style="display:none">
+          <rect x="5.5" y="4" width="4.4" height="16" rx="1.6" fill="currentColor"/>
+          <rect x="14.1" y="4" width="4.4" height="16" rx="1.6" fill="currentColor"/>
+        </svg>
+      </button>
+      <button class="skip-btn" id="nextBtnM" aria-label="다음 곡" type="button">
+        <svg viewBox="0 0 24 24">
+          <path d="M5.5 5.5v13a.9.9 0 0 0 1.38.76l9.52-6.24a1.15 1.15 0 0 0 0-1.94L6.88 4.74A.9.9 0 0 0 5.5 5.5Z" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/>
+          <rect x="17.3" y="4.5" width="2.4" height="15" rx="1.2" fill="currentColor"/>
+        </svg>
+      </button>
+      <button class="skip-btn toggle-btn active" id="repeatBtnM" aria-label="반복" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m17 2 4 4-4 4"/>
+          <path d="M3 11v-1a4 4 0 0 1 4-4h14"/>
+          <path d="m7 22-4-4 4-4"/>
+          <path d="M21 13v1a4 4 0 0 1-4 4H3"/>
+        </svg>
+      </button>
+      <div class="pm-volume">
+        <button class="vol-icon-btn" id="muteBtnM" aria-label="음소거" type="button">
+          <svg viewBox="0 0 24 24">
+            <path class="spk-body" d="M4.5 9.2v5.6a.8.8 0 0 0 .8.8h2.9l4.6 4.53a.7.7 0 0 0 1.2-.5V4.37a.7.7 0 0 0-1.2-.5L8.2 8.4H5.3a.8.8 0 0 0-.8.8Z"/>
+            <path class="wave1" d="M15.4 9.3a4 4 0 0 1 0 5.4" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <path class="wave2" d="M17.3 7a7.3 7.3 0 0 1 0 10" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <path class="wave3" d="M19.2 4.7a10.6 10.6 0 0 1 0 14.6" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <path class="mute-x" d="M15.6 8.6l5 6.8M20.6 8.6l-5 6.8" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <input type="range" id="volM" min="0" max="1" step="0.01" value="1" />
+      </div>
+    </div>
+  </div>
+
   <main>
     <a class="app" href="https://joo.is/같이교육퀴즈" target="_blank" rel="noopener noreferrer">
       <span class="badge">1</span>
@@ -704,12 +850,36 @@
       var trackTitleEl = document.getElementById('trackTitle');
       var trackArtistEl = document.getElementById('trackArtist');
 
+      // 모바일 압축 플레이어 — 데스크탑과 같은 오디오/상태를 공유하고, 화면에
+      // 보이는 요소만 다름(둘 다 항상 DOM엔 있고 CSS로 한쪽만 보임).
+      var playBtnM = document.getElementById('playBtnM');
+      var iconPlayM = document.getElementById('iconPlayM');
+      var iconPauseM = document.getElementById('iconPauseM');
+      var favBtnM = document.getElementById('favBtnM');
+      var seekM = document.getElementById('seekM');
+      var curTimeElM = document.getElementById('curTimeM');
+      var durTimeElM = document.getElementById('durTimeM');
+      var volM = document.getElementById('volM');
+      var coverImgM = document.getElementById('coverImgM');
+      var trackTitleElM = document.getElementById('trackTitleM');
+      var trackArtistElM = document.getElementById('trackArtistM');
+      var moreBtnM = document.getElementById('moreBtnM');
+      var shuffleBtnM = document.getElementById('shuffleBtnM');
+      var prevBtnM = document.getElementById('prevBtnM');
+      var nextBtnM = document.getElementById('nextBtnM');
+      var repeatBtnM = document.getElementById('repeatBtnM');
+      var muteBtnM = document.getElementById('muteBtnM');
+      var maskM = document.getElementById('lyricMaskM');
+      var trackM = document.getElementById('lyricTrackM');
+
       var currentIndex = 0;
       var shuffleOn = false;
       var repeatOn = true; // 기본은 "반복 켜짐"
       var lineEls = [];
+      var lineElsM = [];
       var lastActiveIndex = -2;
       var scrollAnchors = []; // [{t, pos}] — pos는 트랙 내부 좌표(줄 중심)
+      var scrollAnchorsM = [];
 
       function fmt(s) {
         s = Math.max(0, Math.floor(s || 0));
@@ -724,30 +894,35 @@
       // 각 줄(빈 줄 포함)의 등장 시각을 앵커로 삼아 그 사이를 선형보간한다.
       // 절 안에서는 원래 줄 간격(자연스러운 한 줄 높이)을 그대로 쓰고,
       // 간주 구간은 LYRICS 데이터에 빈 줄을 더 촘촘히 끼워 넣어서 속도를 맞춘다.
-      function computeScrollAnchors() {
-        if (!lineEls.length) { scrollAnchors = []; return; }
+      function computeAnchorsFor(lineElsArr) {
+        if (!lineElsArr.length) return [];
         var lyrics = PLAYLIST[currentIndex].lyrics;
-        var lineHeight = lineEls[0].clientHeight + 28;
+        var lineHeight = lineElsArr[0].clientHeight + 28;
         var anchors = [];
-        anchors.push({ t: 0, pos: lineEls[0].offsetTop + lineEls[0].clientHeight / 2 - lineHeight });
-        lineEls.forEach(function (el, i) {
+        anchors.push({ t: 0, pos: lineElsArr[0].offsetTop + lineElsArr[0].clientHeight / 2 - lineHeight });
+        lineElsArr.forEach(function (el, i) {
           anchors.push({ t: lyrics[i].t, pos: el.offsetTop + el.clientHeight / 2 });
         });
-        var lastEl = lineEls[lineEls.length - 1];
+        var lastEl = lineElsArr[lineElsArr.length - 1];
         var endT = audio.duration && isFinite(audio.duration) ? audio.duration : (lyrics[lyrics.length - 1].t + 10);
         anchors.push({ t: Math.max(endT, lyrics[lyrics.length - 1].t + 1), pos: lastEl.offsetTop + lastEl.clientHeight / 2 + lineHeight });
-        scrollAnchors = anchors;
+        return anchors;
       }
 
-      function updateScrollPosition(currentTime) {
-        if (scrollAnchors.length < 2 || !mask.clientHeight) return;
-        var a = scrollAnchors[0], b = scrollAnchors[scrollAnchors.length - 1];
+      function computeScrollAnchors() {
+        scrollAnchors = computeAnchorsFor(lineEls);
+        scrollAnchorsM = computeAnchorsFor(lineElsM);
+      }
+
+      function applyScrollPosition(trackEl, maskEl, anchorsArr, currentTime) {
+        if (anchorsArr.length < 2 || !maskEl.clientHeight) return;
+        var a = anchorsArr[0], b = anchorsArr[anchorsArr.length - 1];
         if (currentTime <= a.t) { b = a; }
         else if (currentTime >= b.t) { a = b; }
         else {
-          for (var i = 0; i < scrollAnchors.length - 1; i++) {
-            if (currentTime >= scrollAnchors[i].t && currentTime <= scrollAnchors[i + 1].t) {
-              a = scrollAnchors[i]; b = scrollAnchors[i + 1];
+          for (var i = 0; i < anchorsArr.length - 1; i++) {
+            if (currentTime >= anchorsArr[i].t && currentTime <= anchorsArr[i + 1].t) {
+              a = anchorsArr[i]; b = anchorsArr[i + 1];
               break;
             }
           }
@@ -755,7 +930,12 @@
         var span = b.t - a.t;
         var progress = span > 0 ? (currentTime - a.t) / span : 0;
         var pos = a.pos + (b.pos - a.pos) * progress;
-        track.style.transform = 'translateY(' + (-(pos - mask.clientHeight / 2)) + 'px)';
+        trackEl.style.transform = 'translateY(' + (-(pos - maskEl.clientHeight / 2)) + 'px)';
+      }
+
+      function updateScrollPosition(currentTime) {
+        applyScrollPosition(track, mask, scrollAnchors, currentTime);
+        applyScrollPosition(trackM, maskM, scrollAnchorsM, currentTime);
       }
 
       function loadTrack(index, autoplay) {
@@ -766,26 +946,34 @@
         coverImg.alt = t.title + ' 앨범 커버';
         trackTitleEl.textContent = t.title;
         trackArtistEl.textContent = t.artist;
+        coverImgM.src = t.cover;
+        coverImgM.alt = t.title + ' 앨범 커버';
+        trackTitleElM.textContent = t.title;
+        trackArtistElM.textContent = t.artist;
 
         track.innerHTML = '';
+        trackM.innerHTML = '';
         t.lyrics.forEach(function (line) {
           var p = document.createElement('p');
           p.textContent = line.text;
           track.appendChild(p);
+          var pM = document.createElement('p');
+          pM.textContent = line.text;
+          trackM.appendChild(pM);
         });
         lineEls = track.querySelectorAll('p');
+        lineElsM = trackM.querySelectorAll('p');
         lastActiveIndex = -2;
         track.style.transform = '';
+        trackM.style.transform = '';
         computeScrollAnchors();
         updateScrollPosition(0);
 
         audio.loop = repeatOn;
         audio.load();
-        // 플레이어 자체가 안 보이는 좁은 화면(≤1180px, syncPlayerHeight와 동일 기준)에서는
-        // 자동재생도, "다음 클릭/터치에 재생" 폴백도 걸지 않음 — 끌 UI가 없는데 카드
-        // 탭이 곧 그 첫 터치가 되어버려 무음소거 배경음악이 재생되는 문제 방지.
-        var isNarrowViewport = window.matchMedia('(max-width: 1180px)').matches;
-        if (autoplay && !isNarrowViewport) {
+        // 모바일에도 하단 고정 플레이어(일시정지 버튼 포함)가 항상 보이므로
+        // 자동재생을 화면 폭과 상관없이 시도한다.
+        if (autoplay) {
           var playPromise = audio.play();
           if (playPromise && playPromise.catch) {
             playPromise.catch(function () {
@@ -814,6 +1002,7 @@
 
       audio.addEventListener('loadedmetadata', function () {
         seek.max = audio.duration;
+        seekM.max = audio.duration;
         durTimeEl.textContent = '-' + fmt(audio.duration);
         computeScrollAnchors();
         updateScrollPosition(audio.currentTime);
@@ -844,9 +1033,11 @@
       var seeking = false;
       audio.addEventListener('seeked', function () { updateScrollPosition(audio.currentTime); });
       audio.addEventListener('timeupdate', function () {
-        if (!seeking) seek.value = audio.currentTime;
+        if (!seeking) { seek.value = audio.currentTime; seekM.value = audio.currentTime; }
         curTimeEl.textContent = fmt(audio.currentTime);
         durTimeEl.textContent = '-' + fmt(audio.duration - audio.currentTime);
+        curTimeElM.textContent = fmt(audio.currentTime);
+        durTimeElM.textContent = '-' + fmt(audio.duration - audio.currentTime);
 
         // 흰색 채우기 애니메이션은 그 줄이 실제로 불리는 구간에서만 — 스크롤 위치는
         // 위 setInterval 타이머가 처리하므로 여기서는 "활성 줄"만 판정한다.
@@ -857,25 +1048,28 @@
         }
 
         if (activeIndex !== lastActiveIndex) {
-          lineEls.forEach(function (el) {
-            el.classList.remove('active');
-            el.style.transition = '';
-            el.style.backgroundPosition = '';
+          [lineEls, lineElsM].forEach(function (arr) {
+            arr.forEach(function (el) {
+              el.classList.remove('active');
+              el.style.transition = '';
+              el.style.backgroundPosition = '';
+            });
           });
           if (activeIndex >= 0) {
-            var el = lineEls[activeIndex];
             var cur = lyrics[activeIndex];
             var next = lyrics[activeIndex + 1];
             var lineEnd = cur.end != null ? cur.end : (next ? next.t : cur.t + 3);
             var dur = lineEnd - cur.t;
-            el.classList.add('active');
-            // 즉시 "안 채워진" 상태로 되돌린 뒤(트랜지션 없이), 한 프레임 뒤
-            // 왼쪽→오른쪽으로 부드럽게 채워지도록 transition을 건다.
-            el.style.transition = 'none';
-            el.style.backgroundPosition = '100% 0';
-            void el.offsetWidth;
-            el.style.transition = 'background-position ' + Math.max(dur, 0.4) + 's linear';
-            el.style.backgroundPosition = '0% 0';
+            [lineEls[activeIndex], lineElsM[activeIndex]].forEach(function (el) {
+              el.classList.add('active');
+              // 즉시 "안 채워진" 상태로 되돌린 뒤(트랜지션 없이), 한 프레임 뒤
+              // 왼쪽→오른쪽으로 부드럽게 채워지도록 transition을 건다.
+              el.style.transition = 'none';
+              el.style.backgroundPosition = '100% 0';
+              void el.offsetWidth;
+              el.style.transition = 'background-position ' + Math.max(dur, 0.4) + 's linear';
+              el.style.backgroundPosition = '0% 0';
+            });
           }
           lastActiveIndex = activeIndex;
         }
@@ -887,6 +1081,15 @@
         audio.currentTime = seek.value;
         seeking = false;
       });
+      seekM.addEventListener('mousedown', function () { seeking = true; });
+      seekM.addEventListener('touchstart', function () { seeking = true; });
+      seekM.addEventListener('change', function () {
+        audio.currentTime = seekM.value;
+        seeking = false;
+      });
+      seekM.addEventListener('input', function () {
+        curTimeElM.textContent = fmt(seekM.value);
+      });
       seek.addEventListener('input', function () {
         curTimeEl.textContent = fmt(seek.value);
       });
@@ -896,8 +1099,13 @@
       function showPlaying(isPlaying) {
         iconPlay.style.display = isPlaying ? 'none' : '';
         iconPause.style.display = isPlaying ? '' : 'none';
+        iconPlayM.style.display = isPlaying ? 'none' : '';
+        iconPauseM.style.display = isPlaying ? '' : 'none';
       }
       playBtn.addEventListener('click', function () {
+        if (audio.paused) audio.play(); else audio.pause();
+      });
+      playBtnM.addEventListener('click', function () {
         if (audio.paused) audio.play(); else audio.pause();
       });
       audio.addEventListener('play', function () { showPlaying(true); });
@@ -921,34 +1129,58 @@
       nextBtn.addEventListener('click', function () {
         loadTrack(pickAdjacentIndex(1), true);
       });
+      prevBtnM.addEventListener('click', function () {
+        if (audio.currentTime > 3) {
+          audio.currentTime = 0;
+          audio.play();
+        } else {
+          loadTrack(pickAdjacentIndex(-1), true);
+        }
+      });
+      nextBtnM.addEventListener('click', function () {
+        loadTrack(pickAdjacentIndex(1), true);
+      });
 
       // 셔플: 지금은 곡이 1개뿐이라 실질적 변화는 없지만, PLAYLIST에 곡이
       // 늘어나면 이전/다음이 무작위로 곡을 고르도록 이미 연결되어 있음
-      shuffleBtn.addEventListener('click', function () {
-        shuffleOn = !shuffleOn;
+      function setShuffle(on) {
+        shuffleOn = on;
         shuffleBtn.classList.toggle('active', shuffleOn);
-      });
+        shuffleBtnM.classList.toggle('active', shuffleOn);
+      }
+      shuffleBtn.addEventListener('click', function () { setShuffle(!shuffleOn); });
+      shuffleBtnM.addEventListener('click', function () { setShuffle(!shuffleOn); });
       // 반복: audio.loop과 실제로 연동 (기본 on)
-      repeatBtn.addEventListener('click', function () {
-        repeatOn = !repeatOn;
+      function setRepeat(on) {
+        repeatOn = on;
         audio.loop = repeatOn;
         repeatBtn.classList.toggle('active', repeatOn);
-      });
+        repeatBtnM.classList.toggle('active', repeatOn);
+      }
+      repeatBtn.addEventListener('click', function () { setRepeat(!repeatOn); });
+      repeatBtnM.addEventListener('click', function () { setRepeat(!repeatOn); });
 
       // 즐겨찾기: 저장은 안 되지만(세션 한정) 클릭할 때마다 실제로 켜짐/꺼짐 토글
       favBtn.addEventListener('click', function () {
         favBtn.classList.toggle('active');
+        favBtnM.classList.toggle('active', favBtn.classList.contains('active'));
+      });
+      favBtnM.addEventListener('click', function () {
+        favBtnM.classList.toggle('active');
+        favBtn.classList.toggle('active', favBtnM.classList.contains('active'));
       });
       // 더보기: 짧게 떴다가 자동으로 사라지는 토스트
       var modalOverlay = document.getElementById('modalOverlay');
       var toastTimer = null;
-      moreBtn.addEventListener('click', function () {
+      function showToast() {
         modalOverlay.classList.add('open');
         clearTimeout(toastTimer);
         toastTimer = setTimeout(function () {
           modalOverlay.classList.remove('open');
         }, 2200);
-      });
+      }
+      moreBtn.addEventListener('click', showToast);
+      moreBtnM.addEventListener('click', showToast);
       modalOverlay.addEventListener('click', function () {
         clearTimeout(toastTimer);
         modalOverlay.classList.remove('open');
@@ -959,31 +1191,46 @@
       function updateVolIcon() {
         var v = audio.volume;
         var muted = audio.muted || v <= 0;
-        muteBtn.classList.toggle('muted', muted);
-        muteBtn.classList.remove('vol-lo', 'vol-mid', 'vol-hi');
-        if (!muted) {
-          if (v < 1 / 3) muteBtn.classList.add('vol-lo');
-          else if (v < 2 / 3) muteBtn.classList.add('vol-mid');
-          else muteBtn.classList.add('vol-hi');
-        }
+        [muteBtn, muteBtnM].forEach(function (btn) {
+          btn.classList.toggle('muted', muted);
+          btn.classList.remove('vol-lo', 'vol-mid', 'vol-hi');
+          if (!muted) {
+            if (v < 1 / 3) btn.classList.add('vol-lo');
+            else if (v < 2 / 3) btn.classList.add('vol-mid');
+            else btn.classList.add('vol-hi');
+          }
+        });
       }
       audio.volume = parseFloat(vol.value);
       updateVolIcon();
       vol.addEventListener('input', function () {
         audio.volume = parseFloat(vol.value);
+        volM.value = vol.value;
         if (audio.volume > 0) { audio.muted = false; lastVolume = audio.volume; }
         updateVolIcon();
       });
-      muteBtn.addEventListener('click', function () {
+      volM.addEventListener('input', function () {
+        audio.volume = parseFloat(volM.value);
+        vol.value = volM.value;
+        if (audio.volume > 0) { audio.muted = false; lastVolume = audio.volume; }
+        updateVolIcon();
+      });
+      function toggleMute() {
         if (audio.muted || audio.volume === 0) {
           audio.muted = false;
-          if (audio.volume === 0) { audio.volume = lastVolume || 1; vol.value = audio.volume; }
+          if (audio.volume === 0) {
+            audio.volume = lastVolume || 1;
+            vol.value = audio.volume;
+            volM.value = audio.volume;
+          }
         } else {
           lastVolume = audio.volume;
           audio.muted = true;
         }
         updateVolIcon();
-      });
+      }
+      muteBtn.addEventListener('click', toggleMute);
+      muteBtnM.addEventListener('click', toggleMute);
     })();
   </script>
 </body>
