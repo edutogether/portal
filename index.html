@@ -974,17 +974,12 @@
         // 모바일에도 하단 고정 플레이어(일시정지 버튼 포함)가 항상 보이므로
         // 자동재생을 화면 폭과 상관없이 시도한다.
         if (autoplay) {
-          var playPromise = audio.play();
-          if (playPromise && playPromise.catch) {
-            playPromise.catch(function () {
-              // 브라우저 자동재생 정책에 막히면, 페이지 아무 곳이나 처음 클릭/터치/키
-              // 입력이 들어오는 순간 바로 재생 시작
-              var startOnInteract = function () { audio.play(); };
-              document.addEventListener('click', startOnInteract, { once: true });
-              document.addEventListener('touchstart', startOnInteract, { once: true });
-              document.addEventListener('keydown', startOnInteract, { once: true });
-            });
-          }
+          // 자동재생이 브라우저 정책에 막히면, 재생 버튼(playBtn/playBtnM)을
+          // 눌렀을 때 이미 audio.play()가 걸리므로 별도 폴백은 두지 않는다.
+          // (예전엔 document 전역 click/touchstart/keydown에 재생을 걸었는데,
+          // 앱 카드를 탭하는 것도 "첫 상호작용"으로 잡혀 카드가 새 탭으로 열리는
+          // 동시에 원래 탭에서 음악이 재생되는 부작용이 있었음)
+          audio.play().catch(function () {});
         }
       }
 
@@ -1171,19 +1166,25 @@
       });
       // 더보기: 짧게 떴다가 자동으로 사라지는 토스트
       var modalOverlay = document.getElementById('modalOverlay');
+      var modalOverlayDefaultText = modalOverlay.textContent;
       var toastTimer = null;
-      function showToast() {
+      function showToast(message) {
+        modalOverlay.textContent = message || modalOverlayDefaultText;
         modalOverlay.classList.add('open');
         clearTimeout(toastTimer);
         toastTimer = setTimeout(function () {
           modalOverlay.classList.remove('open');
         }, 2200);
       }
-      moreBtn.addEventListener('click', showToast);
-      moreBtnM.addEventListener('click', showToast);
+      moreBtn.addEventListener('click', function () { showToast(); });
+      moreBtnM.addEventListener('click', function () { showToast(); });
       modalOverlay.addEventListener('click', function () {
         clearTimeout(toastTimer);
         modalOverlay.classList.remove('open');
+      });
+      // 오디오 로드/재생 실패 시(파일 문제, 코덱 미지원 등) 조용히 죽지 않도록 안내
+      audio.addEventListener('error', function () {
+        showToast('재생할 수 없습니다');
       });
 
       // 볼륨 슬라이더 + 음소거 버튼(막대 3개: 낮음 1개 흰색 / 중간 2개 / 높음 3개)
