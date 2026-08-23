@@ -20,8 +20,11 @@
 <meta name="twitter:image" content="https://edutogether.kr/assets/og-thumb.jpg" />
 <link id="favicon" rel="icon" type="image/svg+xml" />
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
-  integrity="sha384-ei/b2Mz3F5J8nqTvpKS89CkzDCuD7Cc+/F+OsaPUKItzHgLNKnGq3rjtYq/B7RnO" crossorigin="anonymous" />
+<!-- SRI(integrity)를 시도했으나 jsdelivr가 이 URL에 매 요청마다 파일 내부 주석의
+     대소문자가 미묘하게 다른(바이트 단위로 불안정한) 응답을 줘서 해시가 계속
+     깨짐 — 2026-08-23에 실제 프로덕션에서 폰트 로드 전체가 막히는 사고로
+     확인됨. 이 CDN 리소스엔 SRI 적용 불가로 판단하고 되돌림. -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" />
 
 <style>
