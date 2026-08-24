@@ -6,7 +6,7 @@
 - **저장소**: `github.com/edutogether/portal` (2026-08-13 신규 생성)
 - **라이브**: `https://edutogether.kr` (GitHub Pages, `CNAME` 파일로 도메인 연결)
 - **구성**: `index.html` 단일 정적 파일(약 1220줄, PC 데스크탑 뮤직 플레이어 + 모바일 하단 고정 플레이어 포함) + `assets/` 이미지들 + `.github/workflows/link-healthcheck.yml`(4개 앱 링크 매일 자동 확인). **빌드 과정 없음** — npm/vite/테스트 스위트 전부 없다. 고치고 push하면 1~2분 뒤 라이브 반영.
-- **상태**: **프리즈됨** — 최신 태그 `portal-freeze-20260824`(그 이전 태그들은 옮기지 말고 보존: `20260813/14/14b/17/20/23/23b`)
+- **상태**: **프리즈됨** — 최신 태그 `portal-freeze-20260824b`(그 이전 태그들은 옮기지 말고 보존: `20260813/14/14b/17/20/23/23b/24`)
 
 ## 핵심 설계 결정 (되돌리지 말 것)
 
@@ -24,8 +24,12 @@
 | 4 | Be a Googler | `https://edutogether.github.io/googler/` |
 
 `.github/workflows/link-healthcheck.yml`이 매일 09:00 KST에 4개 링크를 전부 curl로
-확인한다. 하나라도 실패하면 워크플로우가 빨간 X로 실패하고 저장소 구독자에게
-GitHub가 자동으로 메일을 보낸다 — 전시 당일에야 링크가 죽은 걸 아는 일을 방지.
+확인하고, 응답 본문에 그 앱을 나타내는 문자열이 실제로 들어있는지까지 검사한다
+(HTTP 200이어도 내용이 깨져있으면 실패로 잡음). 실패하면 워크플로우가 빨간
+X로 표시되고, 기본적으로 GitHub이 그 워크플로우 파일을 마지막으로 고친 사람에게
+이메일을 보낸다(저장소 구독자 전체가 아니라 — 워치/알림 설정을 따로 켠 사람도
+포함될 수 있음). `keepalive.yml`이 매달 빈 커밋을 넣어 60일 뒤 이 예약 작업들이
+자동 비활성화되는 걸 막는다.
 
 ## 도메인 이전 이력 (2026-08-13) — 중요
 `edutogether.kr`은 원래 **classcade**가 쓰던 도메인이었다. 이 포털로 이전하면서:
@@ -65,6 +69,13 @@ GitHub가 자동으로 메일을 보낸다 — 전시 당일에야 링크가 죽
 | `quiz.webp` / `classcade.webp` / `incheon.webp` / `googler.webp` | 카드 썸네일 4종 |
 
 ## 작업 시 주의
+- `404.html`은 `index.html`을 그대로 복사한 파일이다(빌드 과정이 없어서 자동 동기화가
+  안 됨). **`index.html`을 고칠 때마다 `cp index.html 404.html`을 잊지 말 것** —
+  안 하면 존재하지 않는 경로로 들어온 방문자가 옛날 버전을 보게 된다.
+- `.claude/`(로컬 정적 서버 `static-server.js` + `launch.json`)는 `.gitignore` 처리돼
+  커밋 대상이 아니다. HTTP Range 요청을 지원해야 오디오 재생을 로컬에서 테스트할
+  수 있어서 직접 만든 도구. `node .claude/static-server.js` 실행 후
+  `http://localhost:4319`. 127.0.0.1에만 바인딩되고 상위 경로 접근은 차단된다.
 - 카카오톡은 썸네일을 강하게 캐싱한다. 공유 이미지를 바꾸면 [카카오 디버거](https://developers.kakao.com/tool/debugger/sharing)에서 `https://edutogether.kr` 초기화해야 갱신된다.
 - 브라우저 캐시 때문에 변경이 안 보일 수 있다. 확인할 땐 `?v=숫자`를 붙이거나 Ctrl+F5.
 - 배포 확인은 HTTP 200만으로 판단하지 말고, 실제 HTML 내용·자산 로드까지 확인한다(상위 CLAUDE.md 공통 원칙).
