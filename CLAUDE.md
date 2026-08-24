@@ -5,8 +5,8 @@
 ## 정체성
 - **저장소**: `github.com/edutogether/portal` (2026-08-13 신규 생성)
 - **라이브**: `https://edutogether.kr` (GitHub Pages, `CNAME` 파일로 도메인 연결)
-- **구성**: `index.html` 단일 정적 파일(약 270줄) + `assets/` 이미지 7개. **빌드 과정 없음** — npm/vite/테스트 스위트 전부 없다. 고치고 push하면 1~2분 뒤 라이브 반영.
-- **상태**: **프리즈됨** — 태그 `portal-freeze-20260813`
+- **구성**: `index.html` 단일 정적 파일(약 1220줄, PC 데스크탑 뮤직 플레이어 + 모바일 하단 고정 플레이어 포함) + `assets/` 이미지들 + `.github/workflows/link-healthcheck.yml`(4개 앱 링크 매일 자동 확인). **빌드 과정 없음** — npm/vite/테스트 스위트 전부 없다. 고치고 push하면 1~2분 뒤 라이브 반영.
+- **상태**: **프리즈됨** — 최신 태그 `portal-freeze-20260824`(그 이전 태그들은 옮기지 말고 보존: `20260813/14/14b/17/20/23/23b`)
 
 ## 핵심 설계 결정 (되돌리지 말 것)
 
@@ -15,13 +15,17 @@
 - 카드 순서: ① QUIZ TOGETHER ② CLASSCADE ③ AI Ways Incheon ④ Be a Googler (번호 뱃지 표시)
 - 전시장 기본 해상도 **1920×1080에서 4열 한 줄**, ≤1180 2열, ≤560 1열.
 
-## 현재 링크 (2026-08-13 기준, 전부 HTTP 200 확인)
+## 현재 링크 (2026-08-24 기준, 전부 HTTPS + 매일 자동 헬스체크)
 | # | 앱 | URL |
 |---|---|---|
-| 1 | QUIZ TOGETHER | `http://joo.is/같이교육퀴즈` (Google Apps Script로 리다이렉트) |
+| 1 | QUIZ TOGETHER | `https://joo.is/같이교육퀴즈` (Google Apps Script로 리다이렉트) |
 | 2 | CLASSCADE | `https://edutogether.github.io/classcade/` |
 | 3 | AI Ways Incheon | `https://edutogether.github.io/aiways-incheon/` |
 | 4 | Be a Googler | `https://edutogether.github.io/googler/` |
+
+`.github/workflows/link-healthcheck.yml`이 매일 09:00 KST에 4개 링크를 전부 curl로
+확인한다. 하나라도 실패하면 워크플로우가 빨간 X로 실패하고 저장소 구독자에게
+GitHub가 자동으로 메일을 보낸다 — 전시 당일에야 링크가 죽은 걸 아는 일을 방지.
 
 ## 도메인 이전 이력 (2026-08-13) — 중요
 `edutogether.kr`은 원래 **classcade**가 쓰던 도메인이었다. 이 포털로 이전하면서:
@@ -48,7 +52,9 @@
 ## 알려진 / 수용된 사항
 - `assets/bg-loading.webp`(83KB)는 **현재 미사용이나 재사용 대비 의도적으로 보존**(사용자 결정 2026-08-13). 지우지 말 것.
 - 로딩 애니메이션에 `prefers-reduced-motion` 정지 없음 — **사용자가 명시적으로 제거 요청**했다. 되살리지 말 것.
-- Pretendard는 외부 CDN(jsdelivr, 버전 고정 `@v1.3.9`) 의존. CDN 장애 시 시스템 폰트로 폴백되어 화면은 정상.
+- Pretendard는 외부 CDN(jsdelivr, 버전 고정 `@v1.3.9`) 의존. CDN 장애 시 시스템 폰트로 폴백되어 화면은 정상. **SRI(integrity) 재시도 금지** — 2026-08-23에 jsdelivr가 이 URL에 요청마다 바이트가 다른 응답을 줘서 SRI 해시를 넣자마자 프로덕션 폰트 로드가 전면 차단되는 사고가 났음(즉시 되돌림). Google Fonts도 UA별 응답이 달라 SRI 적용 불가 — 애초에 이제 이 사이트는 Google Fonts를 아예 안 쓴다(아래 참고).
+- **"8.14 일본군 위안부 피해자 기림의 날" 추모 문구 + 나비 배경 이미지는 2026-08-24에 완전히 제거됨**(사용자 결정). 이때 자가호스팅했던 Nanum Myeongjo 폰트(`assets/fonts/`)도 같이 삭제 — 그 폰트를 쓰던 곳이 그 문구뿐이었음. 반딧불이(`.motes`) 배경 효과는 그대로 유지.
+- 데스크탑/모바일 플레이어 컨트롤은 `players` 배열(길이 2) 하나로 통합돼 있음(2026-08-24 리팩터) — 컨트롤을 새로 추가할 땐 `players.forEach`로 양쪽에 자동 적용되게 짤 것, 예전처럼 `xxxBtn`/`xxxBtnM`을 따로따로 만들지 말 것.
 
 ## 자산 파일
 | 파일 | 용도 |
