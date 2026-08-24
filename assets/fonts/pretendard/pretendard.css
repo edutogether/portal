@@ -1,0 +1,32 @@
+/* 자가호스팅된 Pretendard — 사이트가 실제로 쓰는 5개 굵기(400/600/700/800/900)만
+   내려받음(원래 jsdelivr가 서비스하는 static woff2 파일 그대로, 재가공 없음). */
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 400;
+  font-display: swap;
+  src: local('Pretendard Regular'), url('./Pretendard-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 600;
+  font-display: swap;
+  src: local('Pretendard SemiBold'), url('./Pretendard-SemiBold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 700;
+  font-display: swap;
+  src: local('Pretendard Bold'), url('./Pretendard-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 800;
+  font-display: swap;
+  src: local('Pretendard ExtraBold'), url('./Pretendard-ExtraBold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 900;
+  font-display: swap;
+  src: local('Pretendard Black'), url('./Pretendard-Black.woff2') format('woff2');
+}
