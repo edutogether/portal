@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';" />
 <title>같교오락실 | 같이교육 체험관</title>
 <meta name="description" content="같이교육에서 만든 앱을 함께 체험해보세요 !" />
 <meta property="og:type" content="website" />
@@ -25,7 +25,10 @@
      깨짐 — 2026-08-23에 실제 프로덕션에서 폰트 로드 전체가 막히는 사고로
      확인됨. 이 CDN 리소스엔 SRI 적용 불가로 판단하고 되돌림. -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" />
+<!-- Nanum Myeongjo(추모 문구용, 700 Bold만)는 자가호스팅 — 방문자 IP가
+     Google로 나가는 경로를 없애기 위해 assets/fonts/에 필요한 글자만
+     내려받아 둠(전체 폰트가 아니라 이 페이지가 실제로 쓰는 글자만). -->
+<link rel="stylesheet" href="./assets/fonts/nanum-myeongjo.css" />
 
 <style>
   :root {
