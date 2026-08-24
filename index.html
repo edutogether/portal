@@ -1177,7 +1177,10 @@
       });
 
       // 볼륨 슬라이더 + 음소거 버튼(막대 3개: 낮음 1개 흰색 / 중간 2개 / 높음 3개)
-      var lastVolume = 1;
+      // lastVolume의 기본값도 0.5로 맞춘다 — 슬라이더를 0까지 내린 뒤 곧바로
+      // 음소거 버튼을 누르면 lastVolume이 갱신된 적 없이 이 초기값 그대로 쓰이는데,
+      // 여기가 1로 남아있으면 최대음량으로 튀는 버그가 있었음(2026-08-25 발견).
+      var lastVolume = 0.5;
       function updateVolIcon() {
         var v = audio.volume;
         var muted = audio.muted || v <= 0;
@@ -1205,7 +1208,7 @@
         if (audio.muted || audio.volume === 0) {
           audio.muted = false;
           if (audio.volume === 0) {
-            audio.volume = lastVolume || 1;
+            audio.volume = lastVolume || 0.5;
             players.forEach(function (p) { p.vol.value = audio.volume; });
           }
         } else {

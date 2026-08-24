@@ -1,5 +1,12 @@
 /* 자가호스팅된 Pretendard — 사이트가 실제로 쓰는 5개 굵기(400/600/700/800/900)만
-   내려받음(원래 jsdelivr가 서비스하는 static woff2 파일 그대로, 재가공 없음). */
+   내려받음(원래 jsdelivr가 서비스하는 static woff2 파일 그대로, 재가공 없음).
+ *
+ * Pretendard — Copyright (c) 2021, Kil Hyung-jin (https://github.com/orioncactus/pretendard),
+ * with Reserved Font Name 'Pretendard'. Licensed under the SIL Open Font
+ * License, Version 1.1 (https://scripts.sil.org/OFL). Full license text is
+ * bundled at ./OFL.txt in this same folder, per the license's redistribution
+ * requirement.
+ */
 @font-face {
   font-family: 'Pretendard';
   font-weight: 400;
