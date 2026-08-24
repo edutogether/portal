@@ -1,0 +1,30 @@
+name: 앱 링크 헬스체크
+
+on:
+  schedule:
+    # 매일 09:00 KST(UTC 00:00) — 4개 앱 링크가 살아있는지 확인
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 링크 4개 상태 확인
+        run: |
+          check() {
+            local name="$1" url="$2"
+            local code
+            code=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 15 "$url")
+            echo "$name: $code ($url)"
+            if [ "$code" -lt 200 ] || [ "$code" -ge 400 ]; then
+              echo "::error::$name 응답 실패 — HTTP $code ($url)"
+              return 1
+            fi
+          }
+          failed=0
+          check "QUIZ TOGETHER" "https://joo.is/%EA%B0%99%EC%9D%B4%EA%B5%90%EC%9C%A1%ED%80%B4%EC%A6%88" || failed=1
+          check "CLASSCADE" "https://edutogether.github.io/classcade/" || failed=1
+          check "AI Ways Incheon" "https://edutogether.github.io/aiways-incheon/" || failed=1
+          check "Be a Googler" "https://edutogether.github.io/googler/" || failed=1
+          exit $failed
