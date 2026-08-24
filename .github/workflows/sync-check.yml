@@ -1,0 +1,25 @@
+name: index.html / 404.html 동기화 확인
+
+# 이 사이트는 빌드 과정이 없어서 404.html이 index.html의 수동 복사본이다.
+# CLAUDE.md에 "고칠 때마다 cp index.html 404.html 잊지 말 것"이라고만
+# 적혀있어 사람 기억에만 의존하고 있었는데, 그 대신 push할 때마다 자동으로
+# 확인해서 둘이 달라지면 바로 잡아낸다.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: index.html과 404.html이 동일한지 확인
+        run: |
+          if ! cmp -s index.html 404.html; then
+            echo "::error::index.html과 404.html이 서로 다릅니다. index.html을 고쳤다면 'cp index.html 404.html'을 잊은 것입니다."
+            exit 1
+          fi
+          echo "index.html과 404.html 동일함 — OK"
