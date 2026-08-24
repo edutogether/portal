@@ -1,0 +1,29 @@
+name: 예약 워크플로우 유지용 월간 하트비트
+
+# GitHub은 60일 동안 커밋이 없는 저장소의 스케줄(cron) 워크플로우를 자동으로
+# 끈다. portal은 freeze 상태라 커밋이 뜸해질 수 있어서, 이 워크플로우가 매달
+# 빈 커밋 하나를 넣어 60일 타이머를 계속 리셋한다 — link-healthcheck.yml을
+# 포함해 이 저장소의 모든 예약 워크플로우가 계속 살아있게 하는 목적.
+# 이 워크플로우 자신도 스케줄이라 똑같이 60일 규칙 대상이지만, 매달 스스로
+# 커밋을 만들어 자기 자신의 타이머도 함께 리셋하므로 한 번 살아있는 한
+# 계속 스스로를 유지한다.
+
+on:
+  schedule:
+    - cron: '0 0 1 * *' # 매달 1일 09:00 KST(UTC 00:00)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: 빈 커밋 생성 및 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "chore: 월간 하트비트 — 예약 워크플로우 60일 자동비활성화 방지"
+          git push

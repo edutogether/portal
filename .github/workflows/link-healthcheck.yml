@@ -10,21 +10,30 @@ jobs:
   check-links:
     runs-on: ubuntu-latest
     steps:
-      - name: 링크 4개 상태 확인
+      - name: 링크 4개 상태 + 내용 확인
         run: |
+          # HTTP 200만으로는 부족하다 — classcade가 실제로 겪었던 것처럼(2026-08-17,
+          # 배포 환경변수 누락) 200을 받으면서도 기능이 죽어있는 경우가 있었음.
+          # 그래서 상태코드에 더해 응답 본문에 그 앱의 고유 문자열이 실제로
+          # 들어있는지까지 확인한다.
           check() {
-            local name="$1" url="$2"
-            local code
+            local name="$1" url="$2" expect="$3"
+            local body code
+            body=$(curl -sL --max-time 15 "$url")
             code=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 15 "$url")
             echo "$name: $code ($url)"
             if [ "$code" -lt 200 ] || [ "$code" -ge 400 ]; then
               echo "::error::$name 응답 실패 — HTTP $code ($url)"
               return 1
             fi
+            if ! echo "$body" | grep -qF "$expect"; then
+              echo "::error::$name 응답에 예상 문자열('$expect')이 없음 — HTTP는 정상이지만 내용이 깨졌을 수 있음 ($url)"
+              return 1
+            fi
           }
           failed=0
-          check "QUIZ TOGETHER" "https://joo.is/%EA%B0%99%EC%9D%B4%EA%B5%90%EC%9C%A1%ED%80%B4%EC%A6%88" || failed=1
-          check "CLASSCADE" "https://edutogether.github.io/classcade/" || failed=1
-          check "AI Ways Incheon" "https://edutogether.github.io/aiways-incheon/" || failed=1
-          check "Be a Googler" "https://edutogether.github.io/googler/" || failed=1
+          check "QUIZ TOGETHER" "https://joo.is/%EA%B0%99%EC%9D%B4%EA%B5%90%EC%9C%A1%ED%80%B4%EC%A6%88" "같이교육 퀴즈" || failed=1
+          check "CLASSCADE" "https://edutogether.github.io/classcade/" "CLASSCADE" || failed=1
+          check "AI Ways Incheon" "https://edutogether.github.io/aiways-incheon/" "AI Ways Incheon" || failed=1
+          check "Be a Googler" "https://edutogether.github.io/googler/" "Be a Googler" || failed=1
           exit $failed
