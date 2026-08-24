@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src https://cdn.jsdelivr.net; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';" />
 <title>같교오락실 | 같이교육 체험관</title>
 <meta name="description" content="같이교육에서 만든 앱을 함께 체험해보세요 !" />
 <meta property="og:type" content="website" />
@@ -25,10 +25,6 @@
      깨짐 — 2026-08-23에 실제 프로덕션에서 폰트 로드 전체가 막히는 사고로
      확인됨. 이 CDN 리소스엔 SRI 적용 불가로 판단하고 되돌림. -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-<!-- Nanum Myeongjo(추모 문구용, 700 Bold만)는 자가호스팅 — 방문자 IP가
-     Google로 나가는 경로를 없애기 위해 assets/fonts/에 필요한 글자만
-     내려받아 둠(전체 폰트가 아니라 이 페이지가 실제로 쓰는 글자만). -->
-<link rel="stylesheet" href="./assets/fonts/nanum-myeongjo.css" />
 
 <style>
   :root {
@@ -64,11 +60,6 @@
 
   /* floating soft bubble orbs */
   .orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-  .memorial-bg {
-    position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    background: url("./assets/memorial-butterflies.png") center/cover no-repeat;
-  }
-
   /* 반딧불이 효과 — CLASSCADE(entry-shared.css)에서 그대로 가져옴. 나비 이미지
      자체는 정지시켜두고, 개별 입자가 저마다 다른 위치·속도·밝기로 떠다니게 해서
      "살아있는" 느낌을 냄(전체 이미지를 통째로 흔드는 것과 달리 다 같이 출렁이지
@@ -110,14 +101,6 @@
   @keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-22px) } }
 
   header { text-align: center; margin: auto 0 40px; }
-  .memorial-notice {
-    margin: 0 0 18px;
-    font-family: "Nanum Myeongjo", "Pretendard", serif;
-    font-size: clamp(16px, 1.7vw, 20px); font-weight: 700;
-    letter-spacing: .04em;
-    color: rgba(232, 210, 165, .92);
-    text-shadow: 0 0 16px rgba(232, 210, 165, .35);
-  }
   .brand-line {
     display: inline-flex; align-items: center; gap: 8px;
     font-size: 14px; font-weight: 700; letter-spacing: .12em;
@@ -500,7 +483,6 @@
     <span class="orb-sm2" style="width:150px;height:150px;top:73%;left:74%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:20s;animation-delay:-7s"></span>
   </div>
 
-  <div class="memorial-bg" aria-hidden="true"></div>
   <div class="motes" id="motes" aria-hidden="true"></div>
 
   <div id="loader">
@@ -510,7 +492,6 @@
   </div>
 
   <header>
-    <p class="memorial-notice">8.14 일본군 '위안부' 피해자 기림의 날</p>
     <span class="brand-line">같이교육 제작 앱 체험관</span>
     <h1>같교오락실</h1>
     <p>같이교육 선생님들이 직접 개발한 다양한 앱들을 직접 체험해보세요 !</p>
@@ -520,7 +501,7 @@
   <div class="player">
     <div class="player-bg" aria-hidden="true"></div>
     <div class="player-left">
-      <img class="cover" id="coverImg" src="./assets/gaegujangi-cover.jpg" alt="개구장이 앨범 커버" />
+      <img class="cover" id="coverImg" src="./assets/gaegujangi-cover.jpg" alt="개구장이 앨범 커버" onerror="this.onerror=null;this.style.visibility='hidden';" />
       <div class="track-row">
         <div class="track-meta">
           <div class="track-title" id="trackTitle">개구장이</div>
@@ -601,7 +582,7 @@
 
   <div class="player-mobile" id="playerMobile">
     <div class="pm-top">
-      <img class="pm-cover" id="coverImgM" src="./assets/gaegujangi-cover.jpg" alt="개구장이 앨범 커버" />
+      <img class="pm-cover" id="coverImgM" src="./assets/gaegujangi-cover.jpg" alt="개구장이 앨범 커버" onerror="this.onerror=null;this.style.visibility='hidden';" />
       <div class="pm-meta">
         <div class="pm-title" id="trackTitleM">개구장이</div>
         <div class="pm-artist" id="trackArtistM">산울림 — 개구장이</div>
@@ -675,7 +656,7 @@
     <a class="app" href="https://joo.is/같이교육퀴즈" target="_blank" rel="noopener noreferrer">
       <span class="badge">1</span>
       <div class="thumb">
-        <img src="./assets/quiz.webp" alt="같이교육 퀴즈 미리보기" loading="lazy" />
+        <img src="./assets/quiz.webp" alt="같이교육 퀴즈 미리보기" loading="lazy" onerror="this.onerror=null;this.style.display='none';" />
         <span class="play" aria-hidden="true"></span>
       </div>
       <div class="body">
@@ -687,7 +668,7 @@
     <a class="app" href="https://edutogether.github.io/classcade/" target="_blank" rel="noopener noreferrer">
       <span class="badge">2</span>
       <div class="thumb">
-        <img src="./assets/classcade.webp" alt="CLASSCADE 미리보기" loading="lazy" />
+        <img src="./assets/classcade.webp" alt="CLASSCADE 미리보기" loading="lazy" onerror="this.onerror=null;this.style.display='none';" />
         <span class="play" aria-hidden="true"></span>
       </div>
       <div class="body">
@@ -699,7 +680,7 @@
     <a class="app" href="https://edutogether.github.io/aiways-incheon/" target="_blank" rel="noopener noreferrer">
       <span class="badge">3</span>
       <div class="thumb">
-        <img src="./assets/incheon.webp" alt="AI Ways Incheon 미리보기" loading="lazy" />
+        <img src="./assets/incheon.webp" alt="AI Ways Incheon 미리보기" loading="lazy" onerror="this.onerror=null;this.style.display='none';" />
         <span class="play" aria-hidden="true"></span>
       </div>
       <div class="body">
@@ -711,7 +692,7 @@
     <a class="app" href="https://edutogether.github.io/googler/" target="_blank" rel="noopener noreferrer">
       <span class="badge">4</span>
       <div class="thumb">
-        <img src="./assets/googler.webp" alt="Be a Googler 미리보기" loading="lazy" />
+        <img src="./assets/googler.webp" alt="Be a Googler 미리보기" loading="lazy" onerror="this.onerror=null;this.style.display='none';" />
         <span class="play" aria-hidden="true"></span>
       </div>
       <div class="body">
