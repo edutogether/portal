@@ -5,8 +5,11 @@
 ## 정체성
 - **저장소**: `github.com/edutogether/portal` (2026-08-13 신규 생성)
 - **라이브**: `https://edutogether.kr` (GitHub Pages, `CNAME` 파일로 도메인 연결)
-- **구성**: `index.html` 단일 정적 파일(약 1220줄, PC 데스크탑 뮤직 플레이어 + 모바일 하단 고정 플레이어 포함) + `assets/` 이미지들 + `.github/workflows/link-healthcheck.yml`(4개 앱 링크 매일 자동 확인). **빌드 과정 없음** — npm/vite/테스트 스위트 전부 없다. 고치고 push하면 1~2분 뒤 라이브 반영.
-- **상태**: **프리즈됨** — 최신 태그 `portal-freeze-20260825e`(그 이전 태그들은 옮기지 말고 보존: `20260813/14/14b/17/20/23/23b/24/24b/25/25b/824c/25c/25d`). `edutogether.kr`는 2026-08-25에 GitHub 조직 도메인 인증(Verified) 완료됨.
+- **구성**: `index.html` 단일 정적 파일(약 1220줄, PC 데스크탑 뮤직 플레이어 + 모바일 하단 고정 플레이어 포함) + `assets/` + `.github/workflows/`(링크 헬스체크·동기화 확인·월간 하트비트·재생 스모크 테스트). **배포 자체엔 빌드 과정 없음** — `index.html`을 고치고 push하면 1~2분 뒤 그대로 라이브 반영(변환/번들링 없음). 다만 2026-08-25부터 `package.json`/Playwright가 테스트 전용으로 추가됨(아래 "테스트" 항목) — 배포되는 건 여전히 index.html 그 자체.
+- **상태**: **프리즈됨** — 최신 태그 `portal-freeze-20260825f`(그 이전 태그들은 옮기지 말고 보존: `20260813/14/14b/17/20/23/23b/24/24b/25/25b/824c/25c/25d/25e`). `edutogether.kr`는 2026-08-25에 GitHub 조직 도메인 인증(Verified) 완료됨.
+- **테스트**: `tests/player.spec.js`(Playwright, 회귀 스모크 테스트 4개)가
+  push/PR마다 CI에서 돈다 — index.html 자체는 여전히 빌드 없는 정적 파일이고
+  package.json/playwright는 테스트 전용(배포 산출물과 무관).
 - **⚠️ 태그 이름의 날짜만 보고 "이게 최신이겠지"라고 판단하지 말 것.** 과거에
   UTC/KST 타임스탬프 혼선으로 `portal-freeze-20260825`가 실제로는
   `portal-freeze-20260824c`보다 더 과거 커밋을 가리키는 일이 있었다.
