@@ -1,0 +1,11 @@
+{
+  "name": "edutogether-portal-tests",
+  "private": true,
+  "description": "이 저장소는 빌드 과정 없음 — 이 package.json은 오직 재생 관련 회귀를 잡는 Playwright 스모크 테스트 전용이다. index.html은 지금처럼 그대로 정적 배포된다.",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0"
+  }
+}

@@ -1,0 +1,28 @@
+name: 재생 로직 스모크 테스트
+
+# 완벽한 커버리지가 목표가 아니라, 이미 3번 반복됐던 같은 유형 재생 버그
+# (모바일 남은시간 초기화 누락 2026-08-23, 볼륨 0에서 음소거 해제 시
+# 최대음량 2026-08-25, 반복꺼짐+단일곡 무한재생 2026-08-25)의 4번째 재발을
+# 자동으로 잡는 게 목표. index.html은 그대로 빌드 없는 정적 파일이고,
+# 이 워크플로우만 테스트 목적으로 node/playwright를 씀(배포엔 영향 없음).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 의존성 설치
+        run: npm install
+      - name: Playwright 브라우저 설치
+        run: npx playwright install --with-deps chromium
+      - name: 테스트 실행
+        run: npx playwright test
