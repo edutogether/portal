@@ -4,15 +4,16 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
-<!-- script-src는 'unsafe-inline' 대신 이 페이지의 유일한 인라인 <script> 블록의
-     sha256 해시로 좁혀뒀다. index.html의 <script>...</script> 내용을 단 한 글자라도
-     고치면 이 해시가 안 맞아 스크립트 전체가 CSP에 막혀 조용히 죽는다 —
-     스크립트를 고칠 때마다 해시를 다시 계산해서 여기 반영할 것:
-       python3 -c "import re,hashlib,base64; h=open('index.html',encoding='utf-8').read(); m=re.search(r'<script>\n(.*)</script>', h, re.S); print('sha256-'+base64.b64encode(hashlib.sha256(m.group(1).encode()).digest()).decode())"
-     (인라인 이벤트 핸들러 속성(onerror="" 등)도 script-src-attr 대상이라
-     hash 하나만으로는 못 막는다 — 그래서 이미지 로드 실패 폴백은 전부
-     addEventListener로 옮겨서 인라인 스크립트가 이 하나뿐이게 만들어뒀다.) -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jwS+eoSE/r+22iHX63SWsc80lCGjlDnDxCnxRO15Aq8='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';" />
+<!-- script-src를 sha256 해시로 좁히는 걸 2026-08-25에 시도했다가 되돌림 —
+     Python/Node.js/브라우저 자체 crypto.subtle.digest 세 가지 독립된 방법이
+     전부 똑같은 해시값을 냈는데, 실제 CSP 집행 엔진이 요구하는 값은 그와
+     달랐다(원인 특정 못 함). 원인을 확실히 설명 못 하는 채로 이런 걸 프로덕션에
+     내보내면 SRI 사고(CLAUDE.md 참고)와 똑같이, 스크립트를 한 글자만 고쳐도
+     사이트 전체가 조용히 먹통이 될 위험이 있어서 unsafe-inline으로 되돌림.
+     script-src가 이미 'self'로 제한돼있어 실제 악용 경로는 없었음(외부 스크립트
+     주입 자체가 불가능) — 이 해시 시도는 순수 방어선 추가 목적이었고 이득
+     대비 위험이 너무 컸음. 다시 시도하지 말 것. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';" />
 <title>같교오락실 | 같이교육 체험관</title>
 <meta name="description" content="같이교육에서 만든 앱을 함께 체험해보세요 !" />
 <meta property="og:type" content="website" />
@@ -1186,9 +1187,8 @@
       });
 
       // 배포 중 이미지 자산이 하나 빠져도 깨진 아이콘 대신 조용히 사라지도록.
-      // CSP script-src에서 'unsafe-inline'을 빼기 위해 onerror="" 속성 대신
-      // 여기서 addEventListener로 연결함(inline 이벤트 핸들러 속성도
-      // script-src-attr 대상이라 hash 하나만으로는 못 막음).
+      // 예전엔 onerror="" 인라인 속성이었는데, 여기 다른 리스너들과 통일해서
+      // addEventListener로 옮김.
       players.forEach(function (p) {
         p.coverImg.addEventListener('error', function () {
           p.coverImg.style.visibility = 'hidden';
