@@ -71,6 +71,8 @@
 - `.claude/`(로컬 정적 서버 `static-server.js` + `launch.json`)는 `.gitignore` 처리됨,
   로컬 전용 도구라 커밋 대상 아님. 로컬 재현하려면
   `node .claude/static-server.js` 실행 후 `http://localhost:4319`.
+  **(2026-08-26 갱신: `.claude/settings.json`만은 이후 다른 앱들과 맞춰 git
+  추적 대상으로 바뀌었다 — 최신 내용은 CLAUDE.md 참고.)**
 - `edutogether.kr` 도메인은 원래 CLASSCADE 소유였다가 포털로 이전된 것 — CLASSCADE 쪽에서
   다시 커스텀 도메인을 claim하면 포털이 깨짐.
 - 배포 확인 시 HTTP 200만 보지 말고 실제 DOM/자산 로드까지 확인할 것(상위 CLAUDE.md 원칙).
