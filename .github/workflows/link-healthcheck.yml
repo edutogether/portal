@@ -1,5 +1,9 @@
 name: 앱 링크 헬스체크 (portal 자체 포함)
 
+permissions:
+  contents: read
+  issues: write
+
 on:
   schedule:
     # 매일 09:00 KST(UTC 00:00) — 4개 앱 링크가 살아있는지 확인
@@ -16,6 +20,7 @@ jobs:
           # 배포 환경변수 누락) 200을 받으면서도 기능이 죽어있는 경우가 있었음.
           # 그래서 상태코드에 더해 응답 본문에 그 앱의 고유 문자열이 실제로
           # 들어있는지까지 확인한다.
+          : > /tmp/failures.txt
           check() {
             local name="$1" url="$2" expect="$3"
             local body code
@@ -24,10 +29,12 @@ jobs:
             echo "$name: $code ($url)"
             if [ "$code" -lt 200 ] || [ "$code" -ge 400 ]; then
               echo "::error::$name 응답 실패 — HTTP $code ($url)"
+              echo "- **$name**: HTTP $code ($url)" >> /tmp/failures.txt
               return 1
             fi
             if ! echo "$body" | grep -qF "$expect"; then
               echo "::error::$name 응답에 예상 문자열('$expect')이 없음 — HTTP는 정상이지만 내용이 깨졌을 수 있음 ($url)"
+              echo "- **$name**: HTTP $code 정상이지만 예상 문자열('$expect') 없음 ($url)" >> /tmp/failures.txt
               return 1
             fi
           }
@@ -38,3 +45,22 @@ jobs:
           check "AI Ways Incheon" "https://edutogether.github.io/aiways-incheon/" "AI Ways Incheon" || failed=1
           check "Be a Googler" "https://edutogether.github.io/googler/" "Be a Googler" || failed=1
           exit $failed
+
+      - name: 실패 시 GitHub 이슈 자동 생성
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # 며칠씩 계속 실패해도 매일 새 이슈를 만들지 않도록, 이미 열린
+          # healthcheck-failure 라벨 이슈가 있으면 새로 만들지 않고 넘어간다.
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --label healthcheck-failure --state open --json number --jq 'length')
+          if [ "$existing" -gt 0 ]; then
+            echo "이미 열린 헬스체크 실패 이슈가 있어 새로 만들지 않음"
+            exit 0
+          fi
+          gh issue create --repo "$GITHUB_REPOSITORY" \
+            --title "🔴 앱 링크 헬스체크 실패 ($(date -u +%Y-%m-%d))" \
+            --label healthcheck-failure \
+            --body "자동 헬스체크가 실패했습니다. [실행 로그]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)
+
+$(cat /tmp/failures.txt)"
