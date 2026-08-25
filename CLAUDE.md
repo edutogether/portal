@@ -61,7 +61,8 @@ X로 표시되고, 기본적으로 GitHub이 그 워크플로우 파일을 마�
 ## 알려진 / 수용된 사항
 - `assets/bg-loading.webp`(83KB)는 **현재 미사용이나 재사용 대비 의도적으로 보존**(사용자 결정 2026-08-13). 지우지 말 것.
 - 로딩 애니메이션에 `prefers-reduced-motion` 정지 없음 — **사용자가 명시적으로 제거 요청**했다. 되살리지 말 것.
-- **Pretendard는 2026-08-25부터 자가호스팅**(`assets/fonts/pretendard/`, 실사용 5개 굵기만, ~3.8MB) — 더 이상 jsdelivr CDN에 의존하지 않는다. SIL OFL 1.1 라이선스 고지(`OFL.txt`)를 같은 폴더에 동봉해뒀으니 지우지 말 것. **SRI(integrity) 재시도 금지** — 2026-08-23에 jsdelivr가 이 URL에 요청마다 바이트가 다른 응답을 줘서 SRI 해시를 넣자마자 프로덕션 폰트 로드가 전면 차단되는 사고가 났음(즉시 되돌림). Google Fonts도 UA별 응답이 달라 SRI 적용 불가 — 이 사이트는 Google Fonts를 아예 안 쓴다(아래 참고).
+- **Pretendard는 2026-08-25부터 자가호스팅**(`assets/fonts/pretendard/`, 실사용 5개 굵기만) — 더 이상 jsdelivr CDN에 의존하지 않는다. SIL OFL 1.1 라이선스 고지(`OFL.txt`)를 같은 폴더에 동봉해뒀으니 지우지 말 것. **SRI(integrity) 재시도 금지** — 2026-08-23에 jsdelivr가 이 URL에 요청마다 바이트가 다른 응답을 줘서 SRI 해시를 넣자마자 프로덕션 폰트 로드가 전면 차단되는 사고가 났음(즉시 되돌림). Google Fonts도 UA별 응답이 달라 SRI 적용 불가 — 이 사이트는 Google Fonts를 아예 안 쓴다(아래 참고).
+- **Pretendard는 pyftsubset으로 서브셋됨(2026-08-25)** — 사이트가 실제 쓰는 461자만 남겨서 5개 굵기 합쳐 3.94MB → 약 160KB. **`index.html`에 새 한글 텍스트(특히 새 가사)를 추가하면 서브셋에 없는 글자가 안 보일 수 있다** — 재서브셋 방법은 `assets/fonts/pretendard/pretendard.css` 상단 주석에 있음. 잊고 그냥 텍스트만 추가하면 그 글자만 시스템 폰트로 조용히 폴백될 수 있으니 주의.
 - **"8.14 일본군 위안부 피해자 기림의 날" 추모 문구 + 나비 배경 이미지는 2026-08-24에 완전히 제거됨**(사용자 결정). 이때 자가호스팅했던 Nanum Myeongjo 폰트(`assets/fonts/`)도 같이 삭제 — 그 폰트를 쓰던 곳이 그 문구뿐이었음. 반딧불이(`.motes`) 배경 효과는 그대로 유지.
 - 데스크탑/모바일 플레이어 컨트롤은 `players` 배열(길이 2) 하나로 통합돼 있음(2026-08-24 리팩터) — 컨트롤을 새로 추가할 땐 `players.forEach`로 양쪽에 자동 적용되게 짤 것, 예전처럼 `xxxBtn`/`xxxBtnM`을 따로따로 만들지 말 것.
 
