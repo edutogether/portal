@@ -58,9 +58,12 @@ jobs:
             echo "이미 열린 헬스체크 실패 이슈가 있어 새로 만들지 않음"
             exit 0
           fi
+          {
+            echo "자동 헬스체크가 실패했습니다. [실행 로그]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
+            echo ""
+            cat /tmp/failures.txt
+          } > /tmp/issue-body.txt
           gh issue create --repo "$GITHUB_REPOSITORY" \
             --title "🔴 앱 링크 헬스체크 실패 ($(date -u +%Y-%m-%d))" \
             --label healthcheck-failure \
-            --body "자동 헬스체크가 실패했습니다. [실행 로그]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)
-
-$(cat /tmp/failures.txt)"
+            --body-file /tmp/issue-body.txt
