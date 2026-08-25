@@ -6,7 +6,7 @@
 - **저장소**: `github.com/edutogether/portal` (2026-08-13 신규 생성)
 - **라이브**: `https://edutogether.kr` (GitHub Pages, `CNAME` 파일로 도메인 연결)
 - **구성**: `index.html` 단일 정적 파일(약 1220줄, PC 데스크탑 뮤직 플레이어 + 모바일 하단 고정 플레이어 포함) + `assets/` 이미지들 + `.github/workflows/link-healthcheck.yml`(4개 앱 링크 매일 자동 확인). **빌드 과정 없음** — npm/vite/테스트 스위트 전부 없다. 고치고 push하면 1~2분 뒤 라이브 반영.
-- **상태**: **프리즈됨** — 최신 태그 `portal-freeze-20260825c`(그 이전 태그들은 옮기지 말고 보존: `20260813/14/14b/17/20/23/23b/24/24b/25/25b/824c`). `edutogether.kr`는 2026-08-25에 GitHub 조직 도메인 인증(Verified) 완료됨.
+- **상태**: **프리즈됨** — 최신 태그 `portal-freeze-20260825d`(그 이전 태그들은 옮기지 말고 보존: `20260813/14/14b/17/20/23/23b/24/24b/25/25b/824c/25c`). `edutogether.kr`는 2026-08-25에 GitHub 조직 도메인 인증(Verified) 완료됨.
 - **⚠️ 태그 이름의 날짜만 보고 "이게 최신이겠지"라고 판단하지 말 것.** 과거에
   UTC/KST 타임스탬프 혼선으로 `portal-freeze-20260825`가 실제로는
   `portal-freeze-20260824c`보다 더 과거 커밋을 가리키는 일이 있었다.
