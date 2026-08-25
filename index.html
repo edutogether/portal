@@ -1102,7 +1102,7 @@
       }
       players.forEach(function (p) {
         p.playBtn.addEventListener('click', function () {
-          if (audio.paused) audio.play(); else audio.pause();
+          if (audio.paused) audio.play().catch(function () {}); else audio.pause();
         });
       });
       audio.addEventListener('play', function () { showPlaying(true); });
@@ -1122,7 +1122,7 @@
         p.prevBtn.addEventListener('click', function () {
           if (audio.currentTime > 3) {
             audio.currentTime = 0;
-            audio.play();
+            audio.play().catch(function () {});
           } else {
             loadTrack(pickAdjacentIndex(-1), true);
           }

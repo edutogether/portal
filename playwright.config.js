@@ -7,8 +7,10 @@ module.exports = defineConfig({
   webServer: {
     // .claude/static-server.js는 로컬 전용 도구라 .gitignore돼있어 CI엔 없다.
     // 이 스모크 테스트는 오디오 탐색(Range)이 필요 없어서(재생 시작만 확인)
-    // 파이썬 내장 서버로 충분하다.
-    command: 'python3 -m http.server 4319',
+    // 파이썬 내장 서버로 충분하다. --bind 127.0.0.1 필수 — 안 붙이면 파이썬
+    // 기본값이 0.0.0.0이라 같은 네트워크의 다른 사람이 테스트 도는 몇 분간
+    // 저장소 전체(음원 원본 포함)에 접근할 수 있었음(2026-08-25 발견).
+    command: 'python3 -m http.server 4319 --bind 127.0.0.1',
     url: 'http://127.0.0.1:4319',
     reuseExistingServer: !process.env.CI,
     timeout: 10000,
