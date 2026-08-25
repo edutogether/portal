@@ -1,0 +1,50 @@
+name: CSP 인라인 스크립트 해시 확인
+
+# index.html의 script-src는 'unsafe-inline' 대신 유일한 인라인 <script> 블록의
+# sha256 해시로 좁혀뒀다(2026-08-25). 이 해시가 실제 스크립트 내용과 안 맞으면
+# 브라우저가 스크립트 전체를 조용히 차단해서 사이트가 먹통이 된다 — 겉보기엔
+# 정상 로드된 것처럼 보이지만 재생/토글/이미지폴백 등 아무 인터랙션도 안 먹는
+# 상태가 되고, 흔히 쓰는 콘솔 확인 방법으로는 이 CSP 위반이 안 잡힐 수도 있다
+# (실측 확인함 — 2026-08-25). 그래서 push/PR마다 실제 계산값과 선언값을 대조한다.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-hash:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: 선언된 해시와 실제 계산값 비교
+        run: |
+          python3 - <<'PYEOF'
+          import re, hashlib, base64, sys
+
+          html = open('index.html', encoding='utf-8').read()
+
+          declared = re.search(r"script-src[^;]*'sha256-([^']+)'", html)
+          if not declared:
+              print("::error::CSP script-src에서 sha256 해시를 못 찾음")
+              sys.exit(1)
+
+          m = re.search(r'<script>\n(.*)</script>', html, re.S)
+          if not m:
+              print("::error::<script> 블록을 못 찾음")
+              sys.exit(1)
+
+          actual = base64.b64encode(hashlib.sha256(m.group(1).encode('utf-8')).digest()).decode()
+
+          print("declared:", declared.group(1))
+          print("actual:  ", actual)
+
+          if declared.group(1) != actual:
+              print("::error::CSP에 선언된 sha256 해시가 실제 <script> 내용과 다릅니다. "
+                    "index.html의 인라인 스크립트를 고쳤다면 해시를 다시 계산해서 "
+                    "meta http-equiv=\"Content-Security-Policy\"의 script-src에 반영하세요 "
+                    "(계산 방법은 그 meta 태그 바로 위 주석 참고).")
+              sys.exit(1)
+          print("일치 — OK")
+          PYEOF
