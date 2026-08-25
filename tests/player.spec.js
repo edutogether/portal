@@ -58,3 +58,54 @@ test('모바일 남은시간 표시가 loadedmetadata 시점에 데스크탑과 
   const durTimeM = await page.textContent('#durTimeM');
   expect(durTimeM).not.toBe('-0:00');
 });
+
+test('셔플 버튼을 누르면 데스크탑/모바일 버튼이 함께 active 상태로 바뀐다', async ({ page }) => {
+  await page.click('#shuffleBtn');
+  const [desktopActive, mobileActive] = await page.evaluate(() => [
+    document.getElementById('shuffleBtn').classList.contains('active'),
+    document.getElementById('shuffleBtnM').classList.contains('active'),
+  ]);
+  expect(desktopActive).toBe(true);
+  expect(mobileActive).toBe(true);
+});
+
+test('즐겨찾기는 기본 켜짐이고, 모바일 버튼을 눌러도 데스크탑과 같이 꺼진다', async ({ page }) => {
+  const initial = await page.evaluate(() => [
+    document.getElementById('favBtn').classList.contains('active'),
+    document.getElementById('favBtnM').classList.contains('active'),
+  ]);
+  expect(initial).toEqual([true, true]);
+
+  // favBtnM은 데스크탑 뷰포트에서 .player-mobile이 display:none이라
+  // Playwright의 실제 클릭(가시성 요구)이 아니라 DOM 클릭으로 직접 누른다.
+  await page.evaluate(() => document.getElementById('favBtnM').click());
+  const afterClick = await page.evaluate(() => [
+    document.getElementById('favBtn').classList.contains('active'),
+    document.getElementById('favBtnM').classList.contains('active'),
+  ]);
+  expect(afterClick).toEqual([false, false]);
+});
+
+test('탐색바를 드래그하면 현재 시간 표시가 그 값으로 갱신된다', async ({ page }) => {
+  await page.evaluate(() => {
+    const seek = document.getElementById('seek');
+    seek.value = '65'; // 1:05
+    seek.dispatchEvent(new Event('input'));
+  });
+  const curTime = await page.textContent('#curTime');
+  expect(curTime).toBe('1:05');
+});
+
+test('다음 곡 버튼을 누르면 트랙이 다시 로드된다(가사 줄 재구성 포함)', async ({ page }) => {
+  const loadCalls = await page.evaluate(() => {
+    return new Promise((resolve) => {
+      const audio = document.getElementById('audio');
+      const origLoad = audio.load.bind(audio);
+      let calls = 0;
+      audio.load = function () { calls++; return origLoad(); };
+      document.getElementById('nextBtn').click();
+      setTimeout(() => resolve(calls), 100);
+    });
+  });
+  expect(loadCalls).toBeGreaterThan(0);
+});
