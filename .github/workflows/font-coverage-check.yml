@@ -1,0 +1,22 @@
+name: Pretendard 서브셋 글자 커버리지 확인
+
+# 자가호스팅된 Pretendard는 사이트가 실제 쓰는 글자만 서브셋해둔 상태(2026-08-25).
+# 새 한글 텍스트(특히 새 가사)를 추가하고 재서브셋을 잊으면, 그 글자만 조용히
+# 시스템 폰트로 폴백된다 — 이 워크플로우가 push/PR마다 미리 잡는다.
+# 재서브셋 방법은 assets/fonts/pretendard/pretendard.css 상단 주석 참고.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: fonttools 설치
+        run: pip install fonttools brotli
+      - name: 글자 커버리지 확인
+        run: python3 scripts/check-font-coverage.py

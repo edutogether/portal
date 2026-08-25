@@ -1,3 +1,10 @@
 exclude:
   - CLAUDE.md
   - HANDOFF.md
+  - package.json
+  - package-lock.json
+  - playwright.config.js
+  - tests
+  - node_modules
+  - test-results
+  - playwright-report
