@@ -20,22 +20,30 @@
 
 - **앱 링크는 전부 새 탭(`target="_blank" rel="noopener noreferrer"`)으로 연다.** 새 탭으로 열면 포털이 원래 탭에 그대로 남아, 앱 탭만 닫으면 선택 화면으로 복귀한다. 이 결정 덕분에 **각 앱에 "포털로 돌아가기" 버튼을 넣을 필요가 없어졌다** — 앱 4개 코드를 한 줄도 안 건드리는 게 이 구조의 핵심 이점이다.
 - **앱 코드는 절대 여기서 수정하지 않는다.** 포털은 링크만 건다. 앱 자체 수정이 필요하면 그 앱 세션으로 넘긴다.
-- 카드 순서: ① QUIZ TOGETHER ② CLASSCADE ③ AI Ways Incheon ④ Be a Googler ⑤ Poster Studio ⑥ Voice Cinema (번호 뱃지 표시)
+- **카드 순서/번호(2026-08-26 최종 확정 — 아래 이력의 마지막 변경)**: 번호 뱃지(①~⑥)는
+  **완전히 제거됨** — 되살리지 말 것. 카드 DOM 순서는 Poster Studio → Voice Cinema →
+  QUIZ TOGETHER → CLASSCADE → AI Ways Incheon → Be a Googler이고, 데스크탑
+  3열x2행 열 우선(column) 채우기와 맞물려 화면 배치는 **윗줄: Poster Studio /
+  QUIZ TOGETHER / AI Ways Incheon, 아랫줄: Voice Cinema / CLASSCADE / Be a
+  Googler**가 된다(대표 지정). `.badge` CSS 규칙도 이제 안 쓰는 코드라 함께 삭제함 —
+  다시 추가하지 말 것.
 - 카드 그리드 열 수·채우기 방향(2026-08-26 최종 확정 — 같은 날 세 번 바뀜, 아래
   이력 참고): **>1180px(데스크탑, 왼쪽 플레이어+오른쪽 카드 그리드) 3열x2행,
-  열 우선(column) 채우기** — 윗줄이 ①③⑤, 아랫줄이 ②④⑥이 되어 아직 미배포인
-  ⑤⑥(InKY 카드)이 오른쪽 끝 열에 세로로 몰린다. CSS는 `grid-template-columns:
-  repeat(3,1fr)` + `grid-template-rows: repeat(2,1fr)` + `grid-auto-flow: column`
-  조합이고, 카드 DOM 순서(배지 번호)는 그대로 둔 채 배치 방향만 바꾼 것이라
-  카드 순서를 수동 재배열할 필요는 없다. ≤1180px(모바일 하단 고정 플레이어로
-  전환)는 2열, ≤560px는 1열, 두 breakpoint 모두 `grid-auto-flow: row`/
-  `grid-template-rows: none`으로 명시적으로 되돌려 데스크탑 column-flow가 새지
-  않게 해뒀다 — 임의로 되돌리지 말 것.
+  열 우선(column) 채우기** — CSS는 `grid-template-columns: repeat(3,1fr)` +
+  `grid-template-rows: repeat(2,1fr)` + `grid-auto-flow: column` 조합이고, 화면
+  배치는 카드 DOM 순서에 따라 결정된다(위 카드 순서 항목 참고). ≤1180px(모바일
+  하단 고정 플레이어로 전환)는 2열, ≤560px는 1열, 두 breakpoint 모두
+  `grid-auto-flow: row`/`grid-template-rows: none`으로 명시적으로 되돌려 데스크탑
+  column-flow가 새지 않게 해뒀다 — 임의로 되돌리지 말 것. 모바일은 이 DOM 순서
+  그대로 위→아래로 2열씩(Poster/Voice, Quiz/CLASSCADE, AI Ways/Googler) 쌓인다.
   - **이력**: 카드 4개→6개가 되며 2열 그대로 뒀다가(2열/3행) 플레이어가 그 3행
     높이를 따라가 불필요하게 길어지는 사고가 나서 3열/2행(행우선)으로 바꿨다가,
     대표가 "5·6번은 눈에 덜 띄게 아래로, 2열로 되돌려달라"고 해서 2열로
     재복귀했다가, 다시 "3열/2행은 유지하되 열 우선으로 채워서 5·6번이 오른쪽
-    열에 몰리게 해달라"고 최종 지정해 지금 형태로 정착.
+    열에 몰리게 해달라"고 해서 지금의 3열x2행 열우선 구조로 정착했고, 이후
+    대표가 카드 배치 자체를 Poster Studio/QUIZ TOGETHER/AI Ways Incheon(윗줄),
+    Voice Cinema/CLASSCADE/Be a Googler(아랫줄)로 재지정하며 번호 뱃지를
+    전부 없애 최종 확정.
   - **플레이어 높이 동기화**: `syncPlayerHeight`(JS)가 `.player` 높이를 그리드
     전체가 아니라 **위쪽 2행(첫 `cols`×2개 카드) 높이**에만 맞춘다(`SYNC_ROWS = 2`
     상수, `cols`는 `getComputedStyle`로 실측). 지금처럼 그리드가 정확히 3열x2행
@@ -59,15 +67,15 @@
     이제 좌우가 다른 게(오른쪽이 카드그리드 폭만큼 더 좁게 튀어나옴) 의도된
     결과다** — 좌우 여백을 다시 동일하게 맞추려고 되돌리지 말 것.
 
-## 현재 링크 (2026-08-26 기준)
+## 현재 링크 (2026-08-26 기준, 카드 DOM 순서와 동일 — 번호 뱃지는 화면에 없음)
 | # | 앱 | URL |
 |---|---|---|
-| 1 | QUIZ TOGETHER | `https://joo.is/같이교육퀴즈` (Google Apps Script로 리다이렉트) |
-| 2 | CLASSCADE | `https://edutogether.github.io/classcade/` |
-| 3 | AI Ways Incheon | `https://edutogether.github.io/aiways-incheon/` |
-| 4 | Be a Googler | `https://edutogether.github.io/googler/` |
-| 5 | Poster Studio | `https://edutogether.github.io/poster-studio/` (2026-08-26 실배포 완료) |
-| 6 | Voice Cinema | `https://edutogether.github.io/voice-cinema/` (2026-08-26 실배포 완료 — 단, 클립 6종이 전부 테스트용 플레이스홀더라 콘텐츠 교체 전까지는 실사용 불가) |
+| 1 | Poster Studio | `https://edutogether.github.io/poster-studio/` (2026-08-26 실배포 완료) |
+| 2 | Voice Cinema | `https://edutogether.github.io/voice-cinema/` (2026-08-26 실배포 완료 — 단, 클립 6종이 전부 테스트용 플레이스홀더라 콘텐츠 교체 전까지는 실사용 불가) |
+| 3 | QUIZ TOGETHER | `https://joo.is/같이교육퀴즈` (Google Apps Script로 리다이렉트) |
+| 4 | CLASSCADE | `https://edutogether.github.io/classcade/` |
+| 5 | AI Ways Incheon | `https://edutogether.github.io/aiways-incheon/` |
+| 6 | Be a Googler | `https://edutogether.github.io/googler/` |
 
 `.github/workflows/link-healthcheck.yml`이 매일 09:00 KST에 **6개 앱 전부(+포털 자기
 자신)**를 curl로 확인하고, 응답 본문에 그 앱을 나타내는 문자열이 실제로 들어있는지까지
