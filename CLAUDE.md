@@ -6,7 +6,7 @@
 - **저장소**: `github.com/edutogether/portal` (2026-08-13 신규 생성)
 - **라이브**: `https://edutogether.kr` (GitHub Pages, `CNAME` 파일로 도메인 연결)
 - **구성**: `index.html` 단일 정적 파일(약 1270줄, PC 데스크탑 뮤직 플레이어 + 모바일 하단 고정 플레이어 포함) + `assets/` + `.github/workflows/`(링크 헬스체크·동기화 확인·월간 하트비트·재생 스모크 테스트). **배포 자체엔 빌드 과정 없음** — `index.html`을 고치고 push하면 1~2분 뒤 그대로 라이브 반영(변환/번들링 없음). 다만 2026-08-25부터 `package.json`/Playwright가 테스트 전용으로 추가됨(아래 "테스트" 항목) — 배포되는 건 여전히 index.html 그 자체.
-- **상태**: **프리즈됨** — 최신 태그 `portal-freeze-20260826f2`(그 이전 태그들은 옮기지 말고 보존: `20260813/14/14b/17/20/23/23b/24/24b/25/25b/824c/25c/25d/25e/25f/25g/25h/26/26b/26c/26d/26e/26f`). `edutogether.kr`는 2026-08-25에 GitHub 조직 도메인 인증(Verified) 완료됨.
+- **상태**: **프리즈됨** — 최신 태그 `portal-freeze-20260826g`(그 이전 태그들은 옮기지 말고 보존: `20260813/14/14b/17/20/23/23b/24/24b/25/25b/824c/25c/25d/25e/25f/25g/25h/26/26b/26c/26d/26e/26f/26f2`). `edutogether.kr`는 2026-08-25에 GitHub 조직 도메인 인증(Verified) 완료됨.
 - **테스트**: `tests/player.spec.js`(Playwright, 회귀 스모크 테스트 8개)가
   push/PR마다 CI에서 돈다 — index.html 자체는 여전히 빌드 없는 정적 파일이고
   package.json/playwright는 테스트 전용(배포 산출물과 무관).
