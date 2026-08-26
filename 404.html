@@ -374,25 +374,25 @@
   .pm-seek::-moz-range-thumb { width: 11px; height: 11px; border: none; border-radius: 50%; background: #fff; }
   .pm-time-row { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--muted); margin-top: 4px; }
 
-  .pm-lyric-mask {
+  .pm-lyrics-mask {
     display: none; /* 모바일에서는 정신없다는 피드백으로 안 보이게만 처리 —
       JS 쪽 스크롤/채우기 로직은 그대로 둬서 다시 켤 때 안전하게 되돌릴 수 있음 */
     height: 18px; overflow: hidden; position: relative; margin-top: 3px;
   }
-  .pm-lyric-track {
+  .pm-lyrics-track {
     display: flex; flex-direction: column; align-items: flex-start;
     padding: 160px 0;
     will-change: transform;
   }
-  .pm-lyric-track p {
+  .pm-lyrics-track p {
     margin: 0; padding: 2px 0;
     font-size: 12px; font-weight: 700; line-height: 1.4;
     color: rgba(255,255,255,.32);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
   }
-  .pm-lyric-track p.active { color: #fff; }
+  .pm-lyrics-track p.active { color: #fff; }
   @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-    .pm-lyric-track p.active {
+    .pm-lyrics-track p.active {
       background-image: linear-gradient(to right, #fff 50%, rgba(255,255,255,.3) 50%);
       background-size: 200% 100%;
       background-position: 100% 0;
@@ -637,7 +637,7 @@
       <div class="pm-meta">
         <div class="pm-title" id="trackTitleM">개구장이</div>
         <div class="pm-artist" id="trackArtistM">산울림 — 개구장이</div>
-        <div class="pm-lyric-mask" id="lyricMaskM"><div class="pm-lyric-track" id="lyricTrackM"></div></div>
+        <div class="pm-lyrics-mask" id="lyricsMaskM"><div class="pm-lyrics-track" id="lyricsTrackM"></div></div>
       </div>
       <button class="icon-btn active" id="favBtnM" aria-label="즐겨찾기" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -952,8 +952,8 @@
       var nextBtnM = document.getElementById('nextBtnM');
       var repeatBtnM = document.getElementById('repeatBtnM');
       var muteBtnM = document.getElementById('muteBtnM');
-      var maskM = document.getElementById('lyricMaskM');
-      var trackM = document.getElementById('lyricTrackM');
+      var maskM = document.getElementById('lyricsMaskM');
+      var trackM = document.getElementById('lyricsTrackM');
 
       // 데스크탑/모바일 짝을 배열 하나로 묶는다 — 컨트롤을 추가하거나 고칠 때
       // players.forEach 한 번이면 양쪽에 동시에 적용된다. 예전엔 이 둘을 각자

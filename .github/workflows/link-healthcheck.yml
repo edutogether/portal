@@ -6,7 +6,7 @@ permissions:
 
 on:
   schedule:
-    # 매일 09:00 KST(UTC 00:00) — 4개 앱 링크가 살아있는지 확인
+    # 매일 09:00 KST(UTC 00:00) — 6개 앱 링크가 살아있는지 확인
     - cron: '0 0 * * *'
   workflow_dispatch:
 
@@ -14,7 +14,7 @@ jobs:
   check-links:
     runs-on: ubuntu-latest
     steps:
-      - name: 링크 4개 상태 + 내용 확인
+      - name: 링크 6개 상태 + 내용 확인
         run: |
           # HTTP 200만으로는 부족하다 — classcade가 실제로 겪었던 것처럼(2026-08-17,
           # 배포 환경변수 누락) 200을 받으면서도 기능이 죽어있는 경우가 있었음.
@@ -44,6 +44,8 @@ jobs:
           check "CLASSCADE" "https://edutogether.github.io/classcade/" "CLASSCADE" || failed=1
           check "AI Ways Incheon" "https://edutogether.github.io/aiways-incheon/" "AI Ways Incheon" || failed=1
           check "Be a Googler" "https://edutogether.github.io/googler/" "Be a Googler" || failed=1
+          check "Poster Studio" "https://edutogether.github.io/poster-studio/" "InKY AI 영화 포스터 제작소" || failed=1
+          check "Voice Cinema" "https://edutogether.github.io/voice-cinema/" "잉키 보이스 시네마" || failed=1
           exit $failed
 
       - name: 실패 시 GitHub 이슈 자동 생성

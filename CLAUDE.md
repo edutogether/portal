@@ -7,7 +7,7 @@
 - **라이브**: `https://edutogether.kr` (GitHub Pages, `CNAME` 파일로 도메인 연결)
 - **구성**: `index.html` 단일 정적 파일(약 1270줄, PC 데스크탑 뮤직 플레이어 + 모바일 하단 고정 플레이어 포함) + `assets/` + `.github/workflows/`(링크 헬스체크·동기화 확인·월간 하트비트·재생 스모크 테스트). **배포 자체엔 빌드 과정 없음** — `index.html`을 고치고 push하면 1~2분 뒤 그대로 라이브 반영(변환/번들링 없음). 다만 2026-08-25부터 `package.json`/Playwright가 테스트 전용으로 추가됨(아래 "테스트" 항목) — 배포되는 건 여전히 index.html 그 자체.
 - **상태**: **프리즈됨** — 최신 태그 `portal-freeze-20260826e`(그 이전 태그들은 옮기지 말고 보존: `20260813/14/14b/17/20/23/23b/24/24b/25/25b/824c/25c/25d/25e/25f/25g/25h/26/26b/26c/26d`). `edutogether.kr`는 2026-08-25에 GitHub 조직 도메인 인증(Verified) 완료됨.
-- **테스트**: `tests/player.spec.js`(Playwright, 회귀 스모크 테스트 4개)가
+- **테스트**: `tests/player.spec.js`(Playwright, 회귀 스모크 테스트 8개)가
   push/PR마다 CI에서 돈다 — index.html 자체는 여전히 빌드 없는 정적 파일이고
   package.json/playwright는 테스트 전용(배포 산출물과 무관).
 - **⚠️ 태그 이름의 날짜만 보고 "이게 최신이겠지"라고 판단하지 말 것.** 과거에
@@ -69,10 +69,10 @@
 | 5 | Poster Studio | `https://edutogether.github.io/poster-studio/` (2026-08-26 실배포 완료) |
 | 6 | Voice Cinema | `https://edutogether.github.io/voice-cinema/` (2026-08-26 실배포 완료 — 단, 클립 6종이 전부 테스트용 플레이스홀더라 콘텐츠 교체 전까지는 실사용 불가) |
 
-`.github/workflows/link-healthcheck.yml`이 매일 09:00 KST에 **1~4번(+포털 자기 자신)만**
-curl로 확인하고, 응답 본문에 그 앱을 나타내는 문자열이 실제로 들어있는지까지 검사한다
-(HTTP 200이어도 내용이 깨져있으면 실패로 잡음). **5·6번(Poster Studio/Voice Cinema)은
-둘 다 실배포되었으니 다음 정기 감사 때 이 헬스체크 대상에 추가할 것.** 실패하면 워크플로우가 빨간
+`.github/workflows/link-healthcheck.yml`이 매일 09:00 KST에 **6개 앱 전부(+포털 자기
+자신)**를 curl로 확인하고, 응답 본문에 그 앱을 나타내는 문자열이 실제로 들어있는지까지
+검사한다(HTTP 200이어도 내용이 깨져있으면 실패로 잡음, 2026-08-26 정밀감사에서 5·6번
+누락 발견해 추가). 실패하면 워크플로우가 빨간
 X로 표시되고, 기본적으로 GitHub이 그 워크플로우 파일을 마지막으로 고친 사람에게
 이메일을 보낸다(저장소 구독자 전체가 아니라 — 워치/알림 설정을 따로 켠 사람도
 포함될 수 있음). `keepalive.yml`이 매달 빈 커밋을 넣어 60일 뒤 이 예약 작업들이
@@ -104,7 +104,7 @@ X로 표시되고, 기본적으로 GitHub이 그 워크플로우 파일을 마�
 - `assets/bg-loading.webp`(83KB)는 **현재 미사용이나 재사용 대비 의도적으로 보존**(사용자 결정 2026-08-13). 지우지 말 것.
 - 로딩 애니메이션에 `prefers-reduced-motion` 정지 없음 — **사용자가 명시적으로 제거 요청**했다. 되살리지 말 것.
 - **Pretendard는 2026-08-25부터 자가호스팅**(`assets/fonts/pretendard/`, 실사용 5개 굵기만) — 더 이상 jsdelivr CDN에 의존하지 않는다. SIL OFL 1.1 라이선스 고지(`OFL.txt`)를 같은 폴더에 동봉해뒀으니 지우지 말 것. **SRI(integrity) 재시도 금지** — 2026-08-23에 jsdelivr가 이 URL에 요청마다 바이트가 다른 응답을 줘서 SRI 해시를 넣자마자 프로덕션 폰트 로드가 전면 차단되는 사고가 났음(즉시 되돌림). Google Fonts도 UA별 응답이 달라 SRI 적용 불가 — 이 사이트는 Google Fonts를 아예 안 쓴다(아래 참고).
-- **Pretendard는 pyftsubset으로 서브셋됨(2026-08-25)** — 사이트가 실제 화면에 그리는 글자만 남겨서 5개 굵기 합쳐 3.94MB → 약 65KB. **`index.html`에 새 한글 텍스트(특히 새 가사)를 추가하면 서브셋에 없는 글자가 안 보일 수 있다** — `.github/workflows/font-coverage-check.yml`이 push/PR마다 자동으로 잡아주고, 재서브셋 방법은 `assets/fonts/pretendard/pretendard.css` 상단 주석에 있음. (첫 서브셋 시도에서 HTML/JS 주석 텍스트까지 "사용 글자"로 잘못 잡는 버그가 있었는데, 실제 필요한 177자만 정확히 뽑도록 `scripts/check-font-coverage.py`에서 고침 — 그 과정에서 원래 존재하던 원문자 `ⓒ`가 Pretendard에 아예 없는 글자라는 것도 발견해 표준 `©`로 교체함.)
+- **Pretendard는 pyftsubset으로 서브셋됨(2026-08-25, 2026-08-26 재서브셋)** — 사이트가 실제 화면에 그리는 글자만 남겨서 5개 굵기 합쳐 3.94MB → 약 65~70KB. **`index.html`에 새 텍스트(새 가사·새 카드명 등)를 추가하면 서브셋에 없는 글자가 안 보일 수 있다** — `.github/workflows/font-coverage-check.yml`이 push/PR마다 자동으로 잡아주고(실패하면 이슈 자동 생성, 2026-08-26 추가), 재서브셋 방법은 `assets/fonts/pretendard/pretendard.css` 상단 주석에 있음. (첫 서브셋 시도에서 HTML/JS 주석 텍스트까지 "사용 글자"로 잘못 잡는 버그가 있었는데, 실제 필요한 글자만 정확히 뽑도록 `scripts/check-font-coverage.py`에서 고침 — 그 과정에서 원래 존재하던 원문자 `ⓒ`가 Pretendard에 아예 없는 글자라는 것도 발견해 표준 `©`로 교체함. **2026-08-26 정밀감사에서 Poster Studio/Voice Cinema 카드 추가 후 재서브셋을 빠뜨려 CI가 2연속 실패 중이던 것을 발견·재서브셋으로 해결** — 현재 188자 전부 커버.)
 - **"8.14 일본군 위안부 피해자 기림의 날" 추모 문구 + 나비 배경 이미지는 2026-08-24에 완전히 제거됨**(사용자 결정). 이때 자가호스팅했던 Nanum Myeongjo 폰트(`assets/fonts/`)도 같이 삭제 — 그 폰트를 쓰던 곳이 그 문구뿐이었음. 반딧불이(`.motes`) 배경 효과는 그대로 유지.
 - 데스크탑/모바일 플레이어 컨트롤은 `players` 배열(길이 2) 하나로 통합돼 있음(2026-08-24 리팩터) — 컨트롤을 새로 추가할 땐 `players.forEach`로 양쪽에 자동 적용되게 짤 것, 예전처럼 `xxxBtn`/`xxxBtnM`을 따로따로 만들지 말 것.
 - **반딧불이(`.motes`) 200개(원래 100개 대비 2배, 2026-08-26 중 100→150→200 두 단계로

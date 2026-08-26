@@ -5,6 +5,10 @@ name: Pretendard 서브셋 글자 커버리지 확인
 # 시스템 폰트로 폴백된다 — 이 워크플로우가 push/PR마다 미리 잡는다.
 # 재서브셋 방법은 assets/fonts/pretendard/pretendard.css 상단 주석 참고.
 
+permissions:
+  contents: read
+  issues: write
+
 on:
   push:
     branches: [main]
@@ -19,4 +23,30 @@ jobs:
       - name: fonttools 설치
         run: pip install fonttools brotli
       - name: 글자 커버리지 확인
-        run: python3 scripts/check-font-coverage.py
+        run: |
+          python3 scripts/check-font-coverage.py > /tmp/coverage-output.txt 2>&1
+          code=$?
+          cat /tmp/coverage-output.txt
+          exit $code
+
+      - name: 실패 시 GitHub 이슈 자동 생성
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # link-healthcheck.yml과 같은 패턴 — 이미 열린 실패 이슈가 있으면
+          # push/PR마다 새로 만들지 않는다.
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --label font-coverage-failure --state open --json number --jq 'length')
+          if [ "$existing" -gt 0 ]; then
+            echo "이미 열린 폰트 커버리지 실패 이슈가 있어 새로 만들지 않음"
+            exit 0
+          fi
+          {
+            echo "Pretendard 서브셋 글자 커버리지 확인이 실패했습니다. [실행 로그]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
+            echo ""
+            cat /tmp/coverage-output.txt
+          } > /tmp/issue-body.txt
+          gh issue create --repo "$GITHUB_REPOSITORY" \
+            --title "🔴 Pretendard 폰트 커버리지 실패 ($(date -u +%Y-%m-%d))" \
+            --label font-coverage-failure \
+            --body-file /tmp/issue-body.txt
