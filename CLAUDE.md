@@ -67,13 +67,12 @@
 | 3 | AI Ways Incheon | `https://edutogether.github.io/aiways-incheon/` |
 | 4 | Be a Googler | `https://edutogether.github.io/googler/` |
 | 5 | Poster Studio | `https://edutogether.github.io/poster-studio/` (2026-08-26 실배포 완료) |
-| 6 | Voice Cinema | `https://github.com/edutogether/voice-cinema` (아직 배포된 웹사이트 없음 — 저장소 페이지로 임시 연결, 배포되면 교체할 것) |
+| 6 | Voice Cinema | `https://edutogether.github.io/voice-cinema/` (2026-08-26 실배포 완료 — 단, 클립 6종이 전부 테스트용 플레이스홀더라 콘텐츠 교체 전까지는 실사용 불가) |
 
 `.github/workflows/link-healthcheck.yml`이 매일 09:00 KST에 **1~4번(+포털 자기 자신)만**
 curl로 확인하고, 응답 본문에 그 앱을 나타내는 문자열이 실제로 들어있는지까지 검사한다
-(HTTP 200이어도 내용이 깨져있으면 실패로 잡음). **5번(Poster Studio)은 실배포되었으니
-다음 정기 감사 때 이 헬스체크 대상에 추가할 것 — 6번(Voice Cinema)은 아직 배포 전이라
-여전히 제외.** 실패하면 워크플로우가 빨간
+(HTTP 200이어도 내용이 깨져있으면 실패로 잡음). **5·6번(Poster Studio/Voice Cinema)은
+둘 다 실배포되었으니 다음 정기 감사 때 이 헬스체크 대상에 추가할 것.** 실패하면 워크플로우가 빨간
 X로 표시되고, 기본적으로 GitHub이 그 워크플로우 파일을 마지막으로 고친 사람에게
 이메일을 보낸다(저장소 구독자 전체가 아니라 — 워치/알림 설정을 따로 켠 사람도
 포함될 수 있음). `keepalive.yml`이 매달 빈 커밋을 넣어 60일 뒤 이 예약 작업들이
