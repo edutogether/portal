@@ -1,0 +1,57 @@
+name: 배포 (테스트 통과 후 GitHub Pages)
+
+# 이전엔 GitHub Pages가 "legacy" 방식이라 main에 push하면 테스트 결과와
+# 무관하게 무조건 배포됐다(플레이라이트가 깨져도 배포는 그대로 나감).
+# 이 워크플로우로 전환한 뒤부터는 sync-check(index.html/404.html 동기화)와
+# 재생 스모크 테스트가 전부 통과해야만 실제 배포가 진행된다.
+# index.html 자체는 여전히 빌드 없는 정적 파일 — 여기서도 변환/번들링 없이
+# 저장소 내용을 그대로 업로드만 한다.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: index.html과 404.html이 동일한지 확인
+        run: |
+          if ! cmp -s index.html 404.html; then
+            echo "::error::index.html과 404.html이 서로 다릅니다. index.html을 고쳤다면 'cp index.html 404.html'을 잊은 것입니다."
+            exit 1
+          fi
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: 의존성 설치
+        run: npm ci
+      - name: Playwright 브라우저 설치
+        run: npx playwright install --with-deps chromium
+      - name: 재생 로직 스모크 테스트
+        run: npx playwright test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
