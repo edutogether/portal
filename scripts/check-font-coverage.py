@@ -64,11 +64,18 @@ def main() -> int:
     for woff2_path in sorted(FONT_DIR.glob("*.woff2")):
         covered |= font_covers(woff2_path)
 
-    # 이모지(예: 🕹️ 파비콘)는 애초에 시스템 이모지 폰트로 렌더링되고 Pretendard가
-    # 담당할 대상이 아니라서 제외한다.
+    # 이모지(예: 🕹️ 파비콘, ✨)는 애초에 시스템 이모지 폰트로 렌더링되고
+    # Pretendard가 담당할 대상이 아니라서 제외한다. U+1F000 이상뿐 아니라
+    # Misc Symbols/Dingbats 블록(U+2600~U+27BF, ✨ 등 다수의 이모지가 이
+    # 대역에 있음)도 같은 이유로 제외해야 한다 — 안 그러면 실제로는 시스템
+    # 이모지 폰트로 정상 렌더링되는 글자가 "서브셋 누락"으로 잘못 잡힌다
+    # (2026-08-31 ✨ 오탐 발견).
+    def is_emoji_range(cp):
+        return cp >= 0x1F000 or 0x2600 <= cp <= 0x27BF
+
     missing = sorted(
         c for c in used_chars
-        if ord(c) > 0x20 and ord(c) not in covered and ord(c) < 0x1F000
+        if ord(c) > 0x20 and ord(c) not in covered and not is_emoji_range(ord(c))
     )
 
     if missing:
