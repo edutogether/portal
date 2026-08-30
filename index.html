@@ -703,7 +703,7 @@
       </div>
       <div class="body">
         <span class="name">Poster Studio</span>
-        <span class="desc">InKY Poster Studio</span>
+        <span class="desc">사진 한 장이면 나도 영화 주인공!<br>AI가 뚝딱 만들어주는 나만의 영화 포스터</span>
       </div>
     </a>
 
@@ -900,6 +900,11 @@
       ];
 
       var audio = document.getElementById('audio');
+      // 브라우저의 자동재생 정책은 사이트 방문 이력(미디어 참여도)에 따라 달라져서,
+      // 방문을 반복하면 무음소거 자동재생이 허용되어 소리가 나가버릴 수 있다.
+      // 첫 재생은 항상 음소거로 시작해 이 편차와 무관하게 무음을 보장하고,
+      // 사용자가 음소거 버튼을 눌러야만 소리가 나가게 한다.
+      audio.muted = true;
       var playBtn = document.getElementById('playBtn');
       var prevBtn = document.getElementById('prevBtn');
       var nextBtn = document.getElementById('nextBtn');
