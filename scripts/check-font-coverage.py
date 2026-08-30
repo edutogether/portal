@@ -70,8 +70,11 @@ def main() -> int:
     # 대역에 있음)도 같은 이유로 제외해야 한다 — 안 그러면 실제로는 시스템
     # 이모지 폰트로 정상 렌더링되는 글자가 "서브셋 누락"으로 잘못 잡힌다
     # (2026-08-31 ✨ 오탐 발견).
+    # U+FE0F(VS16)는 앞 글자를 컬러 이모지로 그리라는 지시자일 뿐 그 자체로는
+    # 그려지는 글자가 아니라서 어떤 폰트에도 실제 글리프가 없다 — 이모지와
+    # 같은 이유로 제외한다.
     def is_emoji_range(cp):
-        return cp >= 0x1F000 or 0x2600 <= cp <= 0x27BF
+        return cp >= 0x1F000 or 0x2600 <= cp <= 0x27BF or cp == 0xFE0F
 
     missing = sorted(
         c for c in used_chars
