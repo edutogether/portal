@@ -4,10 +4,13 @@ name: index.html / 404.html 동기화 확인
 # CLAUDE.md에 "고칠 때마다 cp index.html 404.html 잊지 말 것"이라고만
 # 적혀있어 사람 기억에만 의존하고 있었는데, 그 대신 push할 때마다 자동으로
 # 확인해서 둘이 달라지면 바로 잡아낸다.
+#
+# main push에서는 안 돈다 — 2026-08-29 deploy.yml 전환 이후 그 워크플로우의
+# test job이 배포 전 게이트로 동일한 확인을 이미 돌리기 때문에, push 트리거를
+# 남겨두면 커밋 하나당 같은 검사가 중복 실행된다. PR 검토 시점의 사전 검증
+# 용도로만 pull_request에서 돈다(2026-09-01 정리).
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 

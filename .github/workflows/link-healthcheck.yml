@@ -68,4 +68,5 @@ jobs:
           gh issue create --repo "$GITHUB_REPOSITORY" \
             --title "🔴 앱 링크 헬스체크 실패 ($(date -u +%Y-%m-%d))" \
             --label healthcheck-failure \
+            --assignee 817beatles \
             --body-file /tmp/issue-body.txt

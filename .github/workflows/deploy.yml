@@ -55,3 +55,15 @@ jobs:
           path: .
       - id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+      - name: 라이브 반영 확인
+        run: |
+          for i in $(seq 1 10); do
+            if curl -fsS "${{ steps.deployment.outputs.page_url }}" | grep -q "같교오락실"; then
+              echo "라이브에서 정상 콘텐츠 확인됨 (커밋 ${GITHUB_SHA:0:7})"
+              exit 0
+            fi
+            echo "아직 반영 안 됨, 재시도 ($i/10)"
+            sleep 6
+          done
+          echo "::error::배포는 성공했지만 라이브 페이지에서 예상 콘텐츠를 확인하지 못했습니다."
+          exit 1

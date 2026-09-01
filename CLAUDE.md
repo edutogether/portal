@@ -5,8 +5,8 @@
 ## 정체성
 - **저장소**: `github.com/edutogether/portal` (2026-08-13 신규 생성)
 - **라이브**: `https://edutogether.kr` (GitHub Pages, `CNAME` 파일로 도메인 연결)
-- **구성**: `index.html` 단일 정적 파일(약 1270줄, PC 데스크탑 뮤직 플레이어 + 모바일 하단 고정 플레이어 포함) + `assets/` + `.github/workflows/`(배포·링크 헬스체크·동기화 확인·월간 하트비트·재생 스모크 테스트·폰트 커버리지). **index.html 자체엔 빌드 과정 없음**(변환/번들링 없이 그대로 배포) — 다만 **2026-08-29부터 배포 방식이 legacy Pages에서 GitHub Actions 기반으로 전환**됐다. `deploy.yml`이 push마다 sync-check(index.html/404.html 동기화) + Playwright 스모크테스트를 먼저 돌리고, **둘 다 통과해야만** `deploy` job이 실행돼 실제 라이브에 반영된다(이전엔 테스트 결과와 무관하게 무조건 배포됐음). 레포의 Pages `build_type`도 `workflow`로 바뀜.
-- **상태**: **프리즈됨** — 최신 태그 `portal-freeze-20260829`(그 이전 태그들은 옮기지 말고 보존: `20260813/14/14b/17/20/23/23b/24/24b/25/25b/824c/25c/25d/25e/25f/25g/25h/26/26b/26c/26d/26e/26f/26f2/26g`). `edutogether.kr`는 2026-08-25에 GitHub 조직 도메인 인증(Verified) 완료됨.
+- **구성**: `index.html` 단일 정적 파일(약 1270줄, PC 데스크탑 뮤직 플레이어 + 모바일 하단 고정 플레이어 포함) + `assets/` + `.github/workflows/`(배포·링크 헬스체크·동기화 확인·월간 하트비트·재생 스모크 테스트·폰트 커버리지). **index.html 자체엔 빌드 과정 없음**(변환/번들링 없이 그대로 배포) — 다만 **2026-08-29부터 배포 방식이 legacy Pages에서 GitHub Actions 기반으로 전환**됐다. `deploy.yml`이 push마다 sync-check(index.html/404.html 동기화) + Playwright 스모크테스트를 먼저 돌리고, **둘 다 통과해야만** `deploy` job이 실행돼 실제 라이브에 반영된다(이전엔 테스트 결과와 무관하게 무조건 배포됐음). 배포 직후엔 `deploy.yml`이 실제 라이브 URL을 curl로 재확인해 예상 콘텐츠가 실제로 나오는지까지 검증한다(2026-09-01 추가). 레포의 Pages `build_type`도 `workflow`로 바뀜. `sync-check.yml`/`player-smoke-test.yml`은 `deploy.yml`의 test job과 검사 내용이 겹쳐서 2026-09-01부터 `push`가 아니라 `pull_request`에서만 돈다(PR 사전검증 용도로만 남기고 main push 시 3중 실행되던 것 정리) — main에 직접 push할 땐 `deploy.yml`의 test job만 게이트로 작동한다.
+- **상태**: **프리즈됨** — 최신 태그 `portal-freeze-20260901`(그 이전 태그들은 옮기지 말고 보존: `20260813/14/14b/17/20/23/23b/24/24b/25/25b/824c/25c/25d/25e/25f/25g/25h/26/26b/26c/26d/26e/26f/26f2/26g/829`). `edutogether.kr`는 2026-08-25에 GitHub 조직 도메인 인증(Verified) 완료됨.
 - **테스트**: `tests/player.spec.js`(Playwright, 회귀 스모크 테스트 8개)가
   push/PR마다 CI에서 돈다 — index.html 자체는 여전히 빌드 없는 정적 파일이고
   package.json/playwright는 테스트 전용(배포 산출물과 무관).
@@ -77,13 +77,25 @@
 | 5 | AI Ways Incheon | `https://edutogether.github.io/aiways-incheon/` |
 | 6 | Be a Googler | `https://edutogether.github.io/googler/` |
 
+**2026-08-31~09-01 카드 문구/썸네일 최종화**: 6개 카드 전부 "훅 한 줄 +
+설명 + 이모지" 형식의 대표 확정 소개 문구로 교체 완료(그 전엔 Poster
+Studio/Voice Cinema가 `InKY Poster Studio` 같은 임시 placeholder 텍스트였음).
+Voice Cinema는 회색 placeholder 썸네일 대신 실제 이미지(WebP, 800px)가
+들어감. Poster Studio는 아직 회색 placeholder 썸네일 상태 — 대표가 이미지
+확정하는 대로 교체 예정. 느낌표/물음표 앞 띄어쓰기(예: `시간 !`)는 대표
+표준 규칙이니 새 문구 추가 시에도 지킬 것.
+
 `.github/workflows/link-healthcheck.yml`이 매일 09:00 KST에 **6개 앱 전부(+포털 자기
 자신)**를 curl로 확인하고, 응답 본문에 그 앱을 나타내는 문자열이 실제로 들어있는지까지
 검사한다(HTTP 200이어도 내용이 깨져있으면 실패로 잡음, 2026-08-26 정밀감사에서 5·6번
 누락 발견해 추가). 실패하면 워크플로우가 빨간
 X로 표시되고, 기본적으로 GitHub이 그 워크플로우 파일을 마지막으로 고친 사람에게
 이메일을 보낸다(저장소 구독자 전체가 아니라 — 워치/알림 설정을 따로 켠 사람도
-포함될 수 있음). `keepalive.yml`이 매달 빈 커밋을 넣어 60일 뒤 이 예약 작업들이
+포함될 수 있음). 실패 시 자동 생성되는 이슈(`healthcheck-failure`/
+`font-coverage-failure` 라벨)에는 2026-09-01부터 `--assignee 817beatles`가 붙어서
+담당자가 명시적으로 지정된다 — 그 전엔 이메일 알림에만 의존해서, 2026-08-31에 발생한
+AI Ways Incheon 일시 오류 이슈(#1, 재확인 결과 자연 해소돼 닫음)가 방치될 뻔했음.
+`keepalive.yml`이 매달 빈 커밋을 넣어 60일 뒤 이 예약 작업들이
 자동 비활성화되는 걸 막는다.
 
 ## 도메인 이전 이력 (2026-08-13) — 중요

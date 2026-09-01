@@ -49,4 +49,5 @@ jobs:
           gh issue create --repo "$GITHUB_REPOSITORY" \
             --title "🔴 Pretendard 폰트 커버리지 실패 ($(date -u +%Y-%m-%d))" \
             --label font-coverage-failure \
+            --assignee 817beatles \
             --body-file /tmp/issue-body.txt
