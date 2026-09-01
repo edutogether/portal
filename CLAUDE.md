@@ -138,6 +138,8 @@ AI Ways Incheon 일시 오류 이슈(#1, 재확인 결과 자연 해소돼 닫�
   뭉친다 — 이 방식으로 되돌리지 말 것.
 - **CSP script-src가 2026-09-01부터 `'unsafe-inline'` 대신 sha256 해시로 좁혀짐** — 2026-08-25에 처음 시도했다가 로컬에서 계산한 해시값이 실제 브라우저 CSP 엔진이 요구하는 값과 안 맞아서(원인 특정 못 함) unsafe-inline으로 되돌린 적이 있다. 2026-09-01 재조사로 원인을 찾음: CSP 해시는 `<script>` 태그 바로 뒤의 첫 줄바꿈(`\n`)까지 포함한 텍스트 전체를 대상으로 계산해야 하는데, 그때 쓴 추출 방식이 그 첫 `\n`을 빠뜨리고 있었다 — 바이트 하나만 빠져도 SHA256 값 전체가 완전히 달라지므로, Python/Node.js/브라우저 crypto.subtle.digest 세 방법이 서로는 일치하면서도 실제 필요한 값과는 다른 값을 낸 것과 정확히 들어맞는다. 로컬에서 실제 CSP 위반 콘솔 에러로 재현해 원인을 확인한 뒤 고치고, Playwright 8개 전부 통과 확인 후 재적용함(구체적 근거는 `index.html` 상단 주석 참고). **`<script>` 내용을 단 한 글자라도 고치면 이 해시가 깨져서 스크립트 전체가 조용히 실행되지 않게 되므로**, `scripts/check-csp-hash.py`가 이걸 push/PR마다 자동으로 검증한다(`deploy.yml`/`sync-check.yml`에 연결됨) — 수동으로 해시를 재계산할 필요는 없고, CI가 실패하면 그 스크립트가 알려주는 실제 해시값으로 갈아끼우면 된다.
 
+- **⚠️ `firebase.json`의 `ignore` 패턴 `**/.*`는 점(.)으로 시작하는 디렉터리 "안의, 점으로 시작하지 않는 파일"은 걸러내지 못한다** — 2026-09-01 Firebase Hosting 이전 직후 이 맹점 때문에 `.git/config`, `.git/HEAD`, `.github/workflows/deploy.yml`, `.claude/settings.json`, `.githooks/pre-push`가 그대로 라이브에 공개됐었다(Opus 독립 감사로 발견, `.git/config`엔 배포마다 갱신되는 GitHub Actions 토큰(~1시간 유효)까지 노출되고 있었음 — 워크플로우 권한이 `contents: read`뿐이고 저장소도 공개라 실질 피해는 없었지만 구조적으로 위험했음). `ignore`에 `.git/**`, `.github/**`, `.claude/**`, `.githooks/**`, `.agents/**`, `.firebase/**`를 명시적으로 추가해 해결(발견 즉시 로컬 테스트→배포→라이브 확인까지 완료). **앞으로 새 점디렉터리(`.env` 폴더 등)가 저장소에 생기면 `firebase.json`의 `ignore`에도 명시적으로 추가할 것** — `**/.*`만 믿지 말 것.
+
 ## 자산 파일
 | 파일 | 용도 |
 |---|---|
@@ -175,6 +177,9 @@ AI Ways Incheon 일시 오류 이슈(#1, 재확인 결과 자연 해소돼 닫�
 - 브라우저 캐시 때문에 변경이 안 보일 수 있다. 확인할 땐 `?v=숫자`를 붙이거나 Ctrl+F5.
 - 배포 확인은 HTTP 200만으로 판단하지 말고, 실제 HTML 내용·자산 로드까지 확인한다(상위 CLAUDE.md 공통 원칙).
 - Firebase 프로젝트(`edutogether-portal`)는 `edutogether2015@gmail.com` 계정 소속. 로컬에서 수동 배포하려면 `firebase deploy --only hosting --account=edutogether2015@gmail.com`(다른 계정으로 로그인돼있으면 `--account` 꼭 지정할 것 — `817beatles@gmail.com` 계정엔 이 프로젝트 접근 권한 없음).
+- **⚠️ Firebase 요금제는 Spark(무료) 플랜 — 절대 이유 없이 Blaze(종량제)로 올리지 말 것.** Spark는 결제 계정이 아예 연결 안 돼있어서 무한루프·악성 트래픽으로 인한 "과금 폭탄"이 구조적으로 불가능하다(한도 초과 시 청구가 아니라 서비스 일시중단으로 처리됨) — 이게 이 프로젝트의 유일한 비용 안전장치다. Blaze로 올리는 순간 이 안전장치가 사라지므로, 정말 필요해서(예: Cloud Functions 추가) 올려야 한다면 **반드시 먼저 예산 알림(budget alert)을 설정**하고 진행할 것.
+- **Hosting 무료 전송 한도는 월 10GB.** 첫 방문 시 전송량 실측(2026-09-01 기준) 약 2.88MB — 그중 73%(2.09MB)가 배경음악 파일(`assets/gaegujangi.m4a`, 자동재생이 항상 걸리므로 음악을 안 듣는 방문자에게도 전곡이 다운로드됨, 의도된 설계). `firebase.json`에 `Cache-Control` 헤더가 없어 HTML/자산 전부 Firebase 기본값(1시간)으로만 캐싱된다 — 같은 행사장 재방문자도 매번 재다운로드. 대략 하루 2,000기기 방문이면 월 한도의 절반 이상을 하루 만에 소진할 수 있으니, 행사 당일 트래픽이 몰릴 걸 대비해 `Cache-Control` 정책 추가나 요금제 검토를 미리 해둘 것.
+- **장애 시 롤백**: Firebase Hosting 콘솔(`https://console.firebase.google.com/project/edutogether-portal/hosting/sites`)의 "Previous releases"에서 이전 릴리스를 원클릭으로 되돌릴 수 있다(별도 재배포 불필요). git revert 후 재배포보다 빠르다.
 
 ## 대표와의 소통 경로 (2026-08-26 확정 — 반드시 지킬 것)
 이 세션은 대표와 직접 대화를 시작하지 않는다. 진행상황 공유·질문·의사결정 요청은 전부 **팀장(D:\Projects 최상위 세션, "Project Engineering")을 거쳐서만** 한다 — 대표가 이 세션 창을 직접 열어서 먼저 말을 걸어온 경우에만 그 건에 한해 답한다(최상위 CLAUDE.md "조직 구조" 섹션 참고). 팀장에게서 온 메시지("Project Engineering의 메시지")는 곧 대표의 지시가 전달된 것이므로 별도로 대표에게 재확인하지 말고 그대로 실행한다.
