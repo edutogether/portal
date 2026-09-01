@@ -71,7 +71,7 @@
 | # | 앱 | URL |
 |---|---|---|
 | 1 | Poster Studio | `https://poster-studio.web.app` (2026-09-01 Firebase Hosting으로 이전 — GitHub Pages 주소는 더 이상 안 씀) |
-| 2 | Voice Cinema | `https://edutogether.github.io/voice-cinema/` (2026-08-26 실배포 완료 — 단, 클립 6종이 전부 테스트용 플레이스홀더라 콘텐츠 교체 전까지는 실사용 불가) |
+| 2 | Voice Cinema | `https://voice-cinema.web.app` (2026-09-01 Firebase Hosting으로 이전 — GitHub Pages 주소는 더 이상 안 씀. 클립 6종 플레이스홀더 여부는 이번 이전에서 확인 안 됨, 기존 캐비어트 유지) |
 | 3 | QUIZ TOGETHER | `https://joo.is/같이교육퀴즈` (Google Apps Script로 리다이렉트) |
 | 4 | CLASSCADE | `https://edutogether.github.io/classcade/` |
 | 5 | AI Ways Incheon | `https://edutogether.github.io/aiways-incheon/` |
