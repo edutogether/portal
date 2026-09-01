@@ -1,5 +1,9 @@
 node_modules/
 .DS_Store
+.firebase/
+firebase-debug.log
+.agents/
+skills-lock.json
 .claude/*
 !.claude/settings.json
 .env

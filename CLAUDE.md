@@ -4,9 +4,10 @@
 
 ## 정체성
 - **저장소**: `github.com/edutogether/portal` (2026-08-13 신규 생성)
-- **라이브**: `https://edutogether.kr` (GitHub Pages, `CNAME` 파일로 도메인 연결)
-- **구성**: `index.html` 단일 정적 파일(약 1270줄, PC 데스크탑 뮤직 플레이어 + 모바일 하단 고정 플레이어 포함) + `assets/` + `.github/workflows/`(배포·링크 헬스체크·동기화 확인·월간 하트비트·재생 스모크 테스트·폰트 커버리지). **index.html 자체엔 빌드 과정 없음**(변환/번들링 없이 그대로 배포) — 다만 **2026-08-29부터 배포 방식이 legacy Pages에서 GitHub Actions 기반으로 전환**됐다. `deploy.yml`이 push마다 sync-check(index.html/404.html 동기화) + CSP 해시 검증(`scripts/check-csp-hash.py`) + Playwright 스모크테스트를 먼저 돌리고, **전부 통과해야만** `deploy` job이 실행돼 실제 라이브에 반영된다(이전엔 테스트 결과와 무관하게 무조건 배포됐음). 배포 직후엔 `deploy.yml`이 실제 라이브 URL을 curl로 재확인해 예상 콘텐츠가 실제로 나오는지까지 검증한다(2026-09-01 추가). 레포의 Pages `build_type`도 `workflow`로 바뀜. `sync-check.yml`/`player-smoke-test.yml`은 `deploy.yml`의 test job과 검사 내용이 겹쳐서 2026-09-01부터 `push`가 아니라 `pull_request`에서만 돈다(PR 사전검증 용도로만 남기고 main push 시 3중 실행되던 것 정리) — main에 직접 push할 땐 `deploy.yml`의 test job만 게이트로 작동한다.
-- **상태**: **프리즈됨** — 최신 태그 `portal-freeze-20260901-final`(그 이전 태그들은 옮기지 말고 보존: `20260813/14/14b/17/20/23/23b/24/24b/25/25b/824c/25c/25d/25e/25f/25g/25h/26/26b/26c/26d/26e/26f/26f2/26g/829/901`). `edutogether.kr`는 2026-08-25에 GitHub 조직 도메인 인증(Verified) 완료됨.
+- **라이브**: `https://edutogether.kr` — **2026-09-01부터 Firebase Hosting**(프로젝트 `edutogether-portal`, 계정 `edutogether2015@gmail.com`). 원래 GitHub Pages였다가 legacy→Actions 기반으로 한 번 바뀌었고(2026-08-29), 그다음 Firebase Hosting으로 완전히 이전했다(2026-09-01) — **GitHub Pages는 이제 이 저장소에서 완전히 꺼져있다**(`gh api -X DELETE repos/edutogether/portal/pages`로 비활성화, `edutogether.github.io/portal/`도 더 이상 안 뜸). `CNAME`/`_config.yml`(Jekyll 전용)도 삭제함 — 다시 만들지 말 것.
+- **구성**: `index.html` 단일 정적 파일(약 1270줄, PC 데스크탑 뮤직 플레이어 + 모바일 하단 고정 플레이어 포함) + `assets/` + `firebase.json`/`.firebaserc`(Firebase Hosting 설정) + `.github/workflows/`(배포·링크 헬스체크·동기화 확인·월간 하트비트·재생 스모크 테스트·폰트 커버리지·PR 미리보기 배포). **index.html 자체엔 빌드 과정 없음**(변환/번들링 없이 그대로 배포). `deploy.yml`이 push마다 sync-check(index.html/404.html 동기화) + CSP 해시 검증(`scripts/check-csp-hash.py`) + Playwright 스모크테스트를 먼저 돌리고, **전부 통과해야만** `deploy` job이 실행돼 `FirebaseExtended/action-hosting-deploy`로 Firebase Hosting에 실제 반영된다(이전 legacy Pages 시절엔 테스트 결과와 무관하게 무조건 배포됐음). 배포 직후엔 `deploy.yml`이 실제 라이브 URL을 curl로 재확인해 예상 콘텐츠가 실제로 나오는지까지 검증한다(2026-09-01 추가). 배포 크리덴셜은 GitHub 저장소 시크릿 `FIREBASE_SERVICE_ACCOUNT_EDUTOGETHER_PORTAL`(Firebase Hosting Admin 권한 서비스 계정)로 관리되며 `firebase init hosting:github`로 생성됨. `firebase-hosting-pull-request.yml`은 PR마다 별개의 임시 미리보기 URL에만 배포하고 프로덕션엔 영향 없음. `sync-check.yml`/`player-smoke-test.yml`은 `deploy.yml`의 test job과 검사 내용이 겹쳐서 2026-09-01부터 `push`가 아니라 `pull_request`에서만 돈다(PR 사전검증 용도로만 남기고 main push 시 3중 실행되던 것 정리) — main에 직접 push할 땐 `deploy.yml`의 test job만 게이트로 작동한다.
+- **보안 헤더(2026-09-01 추가)**: GitHub Pages는 커스텀 HTTP 헤더를 지원 안 해서 `X-Frame-Options` 등을 못 걸었는데, Firebase Hosting으로 옮기면서 `firebase.json`의 `hosting.headers`에 `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`를 추가함(Codyssey와 동일 패턴). CSP는 여전히 `index.html`의 `<meta>` 태그 방식을 그대로 유지 — Firebase 헤더로 중복 선언하면 정책이 겹쳐 예상 밖 충돌이 날 수 있어 일부러 안 건드림.
+- **상태**: **프리즈됨** — 최신 태그는 이번 Firebase 이전 완료 직후 새로 만들 것(아래 "프리즈/태그 보호" 참고). 그 이전 태그들은 옮기지 말고 보존: `20260813/14/14b/17/20/23/23b/24/24b/25/25b/824c/25c/25d/25e/25f/25g/25h/26/26b/26c/26d/26e/26f/26f2/26g/829/901`. `edutogether.kr`는 2026-08-25에 GitHub 조직 도메인 인증(Verified) 완료됨(이건 GitHub 조직 인증이라 Firebase 이전과 무관하게 유지됨).
 - **테스트**: `tests/player.spec.js`(Playwright, 회귀 스모크 테스트 8개)가
   push/PR마다 CI에서 돈다 — index.html 자체는 여전히 빌드 없는 정적 파일이고
   package.json/playwright는 테스트 전용(배포 산출물과 무관).
@@ -103,6 +104,7 @@ AI Ways Incheon 일시 오류 이슈(#1, 재확인 결과 자연 해소돼 닫�
 1. classcade repo에서 커스텀 도메인 제거 → portal repo에 부여 (`gh api`로 처리, apex DNS는 이미 GitHub를 가리키고 있어 DNS 변경 불필요했음)
 2. classcade는 자산을 절대경로(`/assets/`)로 참조해 서브경로에서 깨졌으므로, **classcade 세션에서 `vite base='/classcade/'`로 재빌드**해 `edutogether.github.io/classcade/`로 이동 → 정상 동작 확인
 3. **classcade가 다시 `edutogether.kr`을 claim하면 이 포털이 깨진다.** classcade 쪽에 CNAME/커스텀도메인을 다시 추가하지 않도록 주의.
+   - 2026-09-01 Firebase Hosting 이전 이후: DNS(가비아) A/TXT 레코드가 이제 GitHub Pages IP가 아니라 Firebase Hosting IP(`199.36.158.100`)를 가리키므로, classcade가 GitHub Pages 쪽에서 커스텀 도메인을 다시 설정해도 예전처럼 곧바로 포털을 가로채지는 못한다(DNS 자체가 이미 Firebase를 향해 있어서). 다만 여전히 혼란을 일으킬 수 있으니 classcade 쪽에서 이 도메인을 다시 건드리지 않는 게 원칙이다.
 
 ## 프리즈 / 태그 보호
 - 태그 `portal-freeze-20260813` — 스캔 결과 전문이 태그 메시지에 있음 (`git show portal-freeze-20260813`)
@@ -172,6 +174,7 @@ AI Ways Incheon 일시 오류 이슈(#1, 재확인 결과 자연 해소돼 닫�
 - 카카오톡은 썸네일을 강하게 캐싱한다. 공유 이미지를 바꾸면 [카카오 디버거](https://developers.kakao.com/tool/debugger/sharing)에서 `https://edutogether.kr` 초기화해야 갱신된다.
 - 브라우저 캐시 때문에 변경이 안 보일 수 있다. 확인할 땐 `?v=숫자`를 붙이거나 Ctrl+F5.
 - 배포 확인은 HTTP 200만으로 판단하지 말고, 실제 HTML 내용·자산 로드까지 확인한다(상위 CLAUDE.md 공통 원칙).
+- Firebase 프로젝트(`edutogether-portal`)는 `edutogether2015@gmail.com` 계정 소속. 로컬에서 수동 배포하려면 `firebase deploy --only hosting --account=edutogether2015@gmail.com`(다른 계정으로 로그인돼있으면 `--account` 꼭 지정할 것 — `817beatles@gmail.com` 계정엔 이 프로젝트 접근 권한 없음).
 
 ## 대표와의 소통 경로 (2026-08-26 확정 — 반드시 지킬 것)
 이 세션은 대표와 직접 대화를 시작하지 않는다. 진행상황 공유·질문·의사결정 요청은 전부 **팀장(D:\Projects 최상위 세션, "Project Engineering")을 거쳐서만** 한다 — 대표가 이 세션 창을 직접 열어서 먼저 말을 걸어온 경우에만 그 건에 한해 답한다(최상위 CLAUDE.md "조직 구조" 섹션 참고). 팀장에게서 온 메시지("Project Engineering의 메시지")는 곧 대표의 지시가 전달된 것이므로 별도로 대표에게 재확인하지 말고 그대로 실행한다.

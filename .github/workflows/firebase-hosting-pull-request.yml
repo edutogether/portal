@@ -1,0 +1,21 @@
+# Firebase CLI(firebase init hosting:github)로 자동 생성됨(2026-09-01).
+# PR을 올리면 실제 라이브(edutogether.kr)와 별개인 임시 미리보기 URL에만
+# 배포한다 — main 배포 게이트(deploy.yml)와는 무관하고 프로덕션에 영향 없음.
+
+name: Deploy to Firebase Hosting on PR
+on: pull_request
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+jobs:
+  build_and_preview:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: FirebaseExtended/action-hosting-deploy@7c850a480ce753f4f06f010801fc5a43787740bb # v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EDUTOGETHER_PORTAL }}
+          projectId: edutogether-portal
