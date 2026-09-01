@@ -18,7 +18,7 @@
      전체가 조용히 실행되지 않게 된다 — 스크립트를 수정할 때마다 반드시
      재계산할 것. 계산법: <script> 태그 바로 뒤부터 </script> 바로 앞까지의
      바이트를 그대로(앞뒤 아무것도 빼지 말고) sha256 해시 후 base64 인코딩. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-axmPYDBDIHAs8ATBwDSbxuBF3l8CIveTZh9FmjJiLq8='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-W6/egOXWdjwwoBP+RyC2yP/EUdGsyFaZRKhTklO2CUk='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';" />
 <title>같교오락실 | 같이교육 체험관</title>
 <meta name="description" content="같이교육에서 만든 앱을 함께 체험해보세요 !" />
 <meta property="og:type" content="website" />
@@ -1075,6 +1075,11 @@
           // (예전엔 document 전역 click/touchstart/keydown에 재생을 걸었는데,
           // 앱 카드를 탭하는 것도 "첫 상호작용"으로 잡혀 카드가 새 탭으로 열리는
           // 동시에 원래 탭에서 음악이 재생되는 부작용이 있었음)
+          // .catch(()=>{})가 비어있는 건 에러를 숨기는 게 아니다 — play() promise가
+          // reject되는 사유(자동재생 정책 거부, 다른 재생 요청에 의한 중단)는
+          // 전부 무해해서 사용자에게 알릴 게 없고, 진짜 재생 실패(코덱/네트워크
+          // 문제)는 아래 audio.addEventListener('error', ...)가 별도로 토스트를
+          // 띄운다 — 그쪽이 사용자 피드백 담당.
           audio.play().catch(function () {});
         }
       }
@@ -1188,6 +1193,8 @@
       }
       players.forEach(function (p) {
         p.playBtn.addEventListener('click', function () {
+          // .catch(()=>{}): 진짜 재생 실패는 audio의 'error' 리스너가 토스트로
+          // 알려준다(위 라인 1078 주석 참고) — 여기선 조용히 넘어가도 된다.
           if (audio.paused) audio.play().catch(function () {}); else audio.pause();
         });
       });
@@ -1208,7 +1215,7 @@
         p.prevBtn.addEventListener('click', function () {
           if (audio.currentTime > 3) {
             audio.currentTime = 0;
-            audio.play().catch(function () {});
+            audio.play().catch(function () {}); // 이유는 위 라인 1083 주석 참고
           } else {
             loadTrack(pickAdjacentIndex(-1), true);
           }

@@ -52,3 +52,16 @@ test('동작 줄이기 설정이 꺼져 있으면 반딧불이 애니메이션�
   const mote = page.locator('.motes i').first();
   await expect(mote).not.toHaveCSS('animation-name', 'none');
 });
+
+test('카드 6개 전부 소개 문구가 비어있지 않고, 느낌표/물음표 앞에 띄어쓰기 규칙을 지킨다', async ({ page }) => {
+  await page.goto('/');
+  const descs = await page.locator('.app .desc').allTextContents();
+  expect(descs).toHaveLength(EXPECTED_CARDS.length);
+  for (const text of descs) {
+    expect(text.trim().length).toBeGreaterThan(0);
+    // 대표 표준 규칙: !/? 앞에는 항상 띄어쓰기. 문장 끝(마지막 글자)이거나
+    // 뒤에 공백/줄바꿈이 있으면 통과, 붙어있으면 실패.
+    const badSpacing = text.match(/\S[!?]/g);
+    expect(badSpacing, `"${text}"에 띄어쓰기 없는 !/?가 있음`).toBeNull();
+  }
+});
