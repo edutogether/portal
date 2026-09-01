@@ -88,6 +88,12 @@
   }
   .motes i:nth-child(3n) { background: #ffd98a; box-shadow: 0 0 4px rgba(255,214,118,.6), 0 0 10px rgba(246,189,66,.45); }
   .motes i:nth-child(5n) { background: #fff9df; box-shadow: 0 0 6px #ffeaa6, 0 0 22px rgba(250,204,88,.95), 0 0 40px rgba(246,189,66,.4); }
+  /* OS/브라우저의 "동작 줄이기" 설정이 켜진 경우에만 정지 — 별도 토글 UI나
+     시간 기반 자동정지는 아님. 로딩 화면 애니메이션(flicker/fill)은 이 대상이
+     아니다: 그건 대표가 명시적으로 그대로 두라고 한 별개의 결정임(CLAUDE.md 참고). */
+  @media (prefers-reduced-motion: reduce) {
+    .motes i { animation: none; opacity: .5; }
+  }
   /* 경로 모양이 다른 애니메이션 3종을 입자마다 돌려써서(--anim) 다 같이 오르내리는
      느낌을 줄인다 — dur/delay 랜덤만으로는 곡선 모양 자체가 같아 여전히 무리지어
      보였음. */
