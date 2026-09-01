@@ -70,7 +70,7 @@
 ## 현재 링크 (2026-08-26 기준, 카드 DOM 순서와 동일 — 번호 뱃지는 화면에 없음)
 | # | 앱 | URL |
 |---|---|---|
-| 1 | Poster Studio | `https://edutogether.github.io/poster-studio/` (2026-08-26 실배포 완료) |
+| 1 | Poster Studio | `https://poster-studio.web.app` (2026-09-01 Firebase Hosting으로 이전 — GitHub Pages 주소는 더 이상 안 씀) |
 | 2 | Voice Cinema | `https://edutogether.github.io/voice-cinema/` (2026-08-26 실배포 완료 — 단, 클립 6종이 전부 테스트용 플레이스홀더라 콘텐츠 교체 전까지는 실사용 불가) |
 | 3 | QUIZ TOGETHER | `https://joo.is/같이교육퀴즈` (Google Apps Script로 리다이렉트) |
 | 4 | CLASSCADE | `https://edutogether.github.io/classcade/` |
