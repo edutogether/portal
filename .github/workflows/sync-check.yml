@@ -26,3 +26,5 @@ jobs:
             exit 1
           fi
           echo "index.html과 404.html 동일함 — OK"
+      - name: CSP script-src 해시가 실제 스크립트와 일치하는지 확인
+        run: python3 scripts/check-csp-hash.py

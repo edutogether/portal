@@ -31,6 +31,8 @@ jobs:
             echo "::error::index.html과 404.html이 서로 다릅니다. index.html을 고쳤다면 'cp index.html 404.html'을 잊은 것입니다."
             exit 1
           fi
+      - name: CSP script-src 해시가 실제 스크립트와 일치하는지 확인
+        run: python3 scripts/check-csp-hash.py
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22

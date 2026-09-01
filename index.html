@@ -4,16 +4,21 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
-<!-- script-src를 sha256 해시로 좁히는 걸 2026-08-25에 시도했다가 되돌림 —
-     Python/Node.js/브라우저 자체 crypto.subtle.digest 세 가지 독립된 방법이
-     전부 똑같은 해시값을 냈는데, 실제 CSP 집행 엔진이 요구하는 값은 그와
-     달랐다(원인 특정 못 함). 원인을 확실히 설명 못 하는 채로 이런 걸 프로덕션에
-     내보내면 SRI 사고(CLAUDE.md 참고)와 똑같이, 스크립트를 한 글자만 고쳐도
-     사이트 전체가 조용히 먹통이 될 위험이 있어서 unsafe-inline으로 되돌림.
-     script-src가 이미 'self'로 제한돼있어 실제 악용 경로는 없었음(외부 스크립트
-     주입 자체가 불가능) — 이 해시 시도는 순수 방어선 추가 목적이었고 이득
-     대비 위험이 너무 컸음. 다시 시도하지 말 것. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';" />
+<!-- script-src를 sha256 해시로 좁히는 걸 2026-08-25에 처음 시도했다가, 로컬에서
+     계산한 해시값이 실제 브라우저 CSP 엔진이 요구하는 값과 안 맞아서(원인
+     특정 못 함) unsafe-inline으로 되돌린 적이 있다. 2026-09-01 재조사로 원인을
+     찾음: CSP 해시는 <script> 태그 바로 뒤의 첫 줄바꿈(\n)까지 포함한 텍스트
+     전체를 대상으로 계산해야 하는데, 그때 쓴 추출 방식이 그 첫 \n을 빠뜨리고
+     있었다 — 바이트 하나만 빠져도 SHA256 값 전체가 완전히 달라지므로, 세 가지
+     방법(Python/Node.js/브라우저 crypto.subtle.digest)이 서로는 일치하면서도
+     실제 필요한 값과는 다른 값을 낸 것과 정확히 들어맞는다. 로컬에서 실제
+     CSP 위반 콘솔 에러로 재현 후 원인 확인·해결, Playwright 8개 전부 통과
+     확인 후 재적용함.
+     ⚠️ 아래 스크립트 내용을 단 한 글자라도 고치면 이 해시가 깨져서 스크립트
+     전체가 조용히 실행되지 않게 된다 — 스크립트를 수정할 때마다 반드시
+     재계산할 것. 계산법: <script> 태그 바로 뒤부터 </script> 바로 앞까지의
+     바이트를 그대로(앞뒤 아무것도 빼지 말고) sha256 해시 후 base64 인코딩. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-axmPYDBDIHAs8ATBwDSbxuBF3l8CIveTZh9FmjJiLq8='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';" />
 <title>같교오락실 | 같이교육 체험관</title>
 <meta name="description" content="같이교육에서 만든 앱을 함께 체험해보세요 !" />
 <meta property="og:type" content="website" />
