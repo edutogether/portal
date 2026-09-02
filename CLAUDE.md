@@ -112,6 +112,7 @@ AI Ways Incheon 일시 오류 이슈(#1, 재확인 결과 자연 해소돼 닫�
   ```
   git config core.hooksPath .githooks
   ```
+  단, 이건 클라이언트 훅이라 `--no-verify`로 우회 가능하다. **2026-09-02부터 GitHub 저장소 룰셋(`freeze 태그 보호`, `refs/tags/*-freeze-*` 대상, deletion+update 차단, bypass actor 없음 — `current_user_can_bypass: never`)이 서버 측에서 추가로 막는다** — 훅을 우회해도 GitHub이 삭제/강제이동 자체를 거부한다. 저장소 Settings → Rules → Rulesets에서 확인 가능.
 - 큰 변경 후 다시 고정할 땐 기존 태그를 옮기지 말고 **새 날짜 태그**를 만든다.
 
 ## 스캔 결과 (2026-08-13, 라이브 실측 A / 94점)
