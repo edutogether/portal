@@ -18,7 +18,7 @@
      전체가 조용히 실행되지 않게 된다 — 스크립트를 수정할 때마다 반드시
      재계산할 것. 계산법: <script> 태그 바로 뒤부터 </script> 바로 앞까지의
      바이트를 그대로(앞뒤 아무것도 빼지 말고) sha256 해시 후 base64 인코딩. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3bSbfrrb+DiDDItEAmhLwORiIX6GNqPz2kQ/LtHFGX8='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-XxG+1wjfypaP2ai3BH408c/WShfEK9vRu9TLrTnM2Zk='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';" />
 <title>같교오락실 | 같이교육 체험관</title>
 <meta name="description" content="같이교육에서 만든 앱을 함께 체험해보세요 !" />
 <meta property="og:type" content="website" />
@@ -463,8 +463,14 @@
   #loader {
     position: fixed; inset: 0; z-index: 60; /* .player-mobile(z-index:50)보다 위여야
       로딩 화면이 하단 플레이어 바를 완전히 가림 */
+    /* 배경 그라디언트(최대 알파 .62)와 bg-main.webp만 있으면, 이미지가 아직
+       로드/디코딩되지 않은 첫 프레임엔 반투명 그라디언트만 칠해져서 뒤에
+       있는 메인 화면이 살짝 비쳐 보인다(실사용 중 발견된 버그, 2026-09-03).
+       마지막 레이어에 불투명 단색을 깔아 이미지 로드 여부와 무관하게 첫
+       프레임부터 완전히 가리게 함 — body::before(위 66행)와 같은 패턴. */
     background: linear-gradient(rgba(11,14,31,.5), rgba(11,14,31,.62)),
-      url("./assets/bg-main.webp") center/cover no-repeat;
+      url("./assets/bg-main.webp") center/cover no-repeat,
+      #0b0e1f;
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px;
     transition: opacity .5s ease, visibility .5s ease;
   }
@@ -782,9 +788,26 @@
       var loader = document.getElementById('loader');
       var bar = loader.querySelector('.bar > i');
       var hide = function () { loader.classList.add('done'); };
-      // hide when the fill animation finishes, with a safety fallback
-      bar.addEventListener('animationend', hide, { once: true });
-      setTimeout(hide, 3200);
+      // 로딩 화면이 진행 바 애니메이션(2.1s)만 끝나면 실제 페이지 로딩 상태와
+      // 무관하게 사라졌었다(실사용 중 발견된 버그, 2026-09-03) — 느린 회선에서
+      // 카드 썸네일/폰트가 아직 안 끝난 상태로 loader가 페이드아웃되면서, 0.5s
+      // 크로스페이드 동안 아직 다 안 그려진 메인 화면이 그림자처럼 비쳐 보였다.
+      // 이제 "최소 연출 시간(바 애니메이션 끝)"과 "실제 페이지 로드 완료
+      // (window 'load')" 둘 다 끝나야만 사라지고, 혹시 load가 영영 안 뜨는
+      // 경우를 대비해 8초 안전장치는 그대로 둔다.
+      // 이 스크립트는 body 맨 끝에 있어서, 실행되는 시점에 이미 'load'
+      // 이벤트가 지나가버렸을 수 있다(특히 캐시가 있거나 로컬처럼 빠른
+      // 환경) — 그런 경우 뒤늦게 단 addEventListener('load', ...)는 영영
+      // 안 불려서 8초 안전장치에만 의존하게 되는 버그가 있었다(수정 중
+      // Playwright로 발견). readyState를 먼저 동기적으로 확인해서 이미
+      // 끝났으면 즉시 true로 잡는다.
+      var minDone = false, pageLoaded = document.readyState === 'complete';
+      var maybeHide = function () { if (minDone && pageLoaded) hide(); };
+      bar.addEventListener('animationend', function () { minDone = true; maybeHide(); }, { once: true });
+      if (!pageLoaded) {
+        window.addEventListener('load', function () { pageLoaded = true; maybeHide(); }, { once: true });
+      }
+      setTimeout(hide, 8000);
     })();
 
     (function () {
