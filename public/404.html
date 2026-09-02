@@ -151,12 +151,9 @@
   header p { margin: 14px 0 0; color: var(--muted); font-size: clamp(14px, 1.6vw, 18px); }
 
   main {
-    width: 100%; max-width: 1560px;
+    width: 100%;
     display: grid; gap: 30px;
-    grid-template-columns: repeat(4, 1fr);
   }
-  @media (max-width: 1180px) { main { grid-template-columns: repeat(2, 1fr); max-width: 820px; } }
-  @media (max-width: 560px)  { main { grid-template-columns: 1fr; max-width: 420px; } }
 
   /* desktop-only: left music player + right 3열x2행 app grid, split around center.
      2026-08-26 세 번째 정정 — 3열/2행(행우선 1,2,3/4,5,6)으로 돌아가되, 채우는

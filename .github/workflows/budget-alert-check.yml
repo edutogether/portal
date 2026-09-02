@@ -1,0 +1,47 @@
+name: 예산 알림(Budget Alert) 생존 확인 리마인더
+
+# Firebase Hosting은 Blaze(종량제) 요금제 전환 이후 하드 스펜딩 캡을 제공하지
+# 않는다 — 유일한 안전장치는 Google Cloud 콘솔에 설정된 월 25,000원 예산
+# 알림(budget alert)뿐이다(CLAUDE.md 참고). 이건 콘솔 설정이라 이 저장소의
+# 코드로 직접 조회/검증할 수 없으므로, keepalive.yml/link-healthcheck.yml과
+# 같은 패턴으로 매달 사람이 직접 재확인하도록 리마인더 이슈를 자동으로 만든다.
+
+permissions:
+  contents: read
+  issues: write
+
+on:
+  schedule:
+    # 매달 1일 09:00 KST(UTC 00:00) — keepalive.yml과 같은 타이밍
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 예산 알림 재확인 리마인더 이슈 생성
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # 이미 열린 리마인더가 있으면 매달 새로 만들지 않는다
+          # (link-healthcheck.yml의 실패-이슈 중복 방지와 같은 패턴).
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --label budget-alert-reminder --state open --json number --jq 'length')
+          if [ "$existing" -gt 0 ]; then
+            echo "이미 열린 예산 알림 재확인 이슈가 있어 새로 만들지 않음"
+            exit 0
+          fi
+          {
+            echo "Firebase(edutogether-portal) 프로젝트의 월 예산 알림이 아직"
+            echo "살아있고 임계값이 25,000원이 맞는지 Google Cloud 콘솔에서"
+            echo "직접 확인해주세요 — 이 저장소 코드로는 자동 확인이 불가능합니다."
+            echo ""
+            echo "확인 링크: https://console.cloud.google.com/billing/budgets?project=edutogether-portal"
+            echo ""
+            echo "확인 후 이 이슈를 닫아주세요."
+          } > /tmp/issue-body.txt
+          gh issue create --repo "$GITHUB_REPOSITORY" \
+            --title "🔵 예산 알림 재확인 필요 ($(date -u +%Y-%m-%d))" \
+            --label budget-alert-reminder \
+            --assignee 817beatles \
+            --body-file /tmp/issue-body.txt

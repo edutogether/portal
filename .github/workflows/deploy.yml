@@ -4,8 +4,11 @@ name: 배포 (테스트 통과 후 Firebase Hosting)
 # 순으로 전환. 이전엔 push하면 테스트 결과와 무관하게 무조건 배포됐다가,
 # Actions 기반 GitHub Pages로 바꾸면서 테스트 게이트가 생겼고, 이제는 배포
 # 대상만 Firebase Hosting으로 바뀌었을 뿐 게이트는 그대로 유지한다: sync-check
-# (index.html/404.html 동기화) + CSP 해시 검증 + 재생 스모크 테스트가 전부
-# 통과해야만 실제 배포가 진행된다.
+# (index.html/404.html 동기화) + CSP 해시 검증 + 폰트 서브셋 커버리지 검증 +
+# 재생 스모크 테스트가 전부 통과해야만 실제 배포가 진행된다(2026-09-02부터
+# 폰트 커버리지 검사도 이 게이트 안으로 편입 — 이전엔 font-coverage-check.yml이
+# 배포와 병렬로만 돌아서, 서브셋에 없는 글자를 추가한 커밋이 이슈가 열리기도
+# 전에 먼저 라이브에 나갈 수 있었음).
 # index.html 자체는 여전히 빌드 없는 정적 파일 — 여기서도 변환/번들링 없이
 # 저장소 내용을 그대로 업로드만 한다.
 
@@ -33,6 +36,10 @@ jobs:
           fi
       - name: CSP script-src 해시가 실제 스크립트와 일치하는지 확인
         run: python3 scripts/check-csp-hash.py
+      - name: Pretendard 서브셋 글자 커버리지 확인
+        run: |
+          pip install fonttools brotli
+          python3 scripts/check-font-coverage.py
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22

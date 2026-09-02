@@ -82,9 +82,9 @@
 설명 + 이모지" 형식의 대표 확정 소개 문구로 교체 완료(그 전엔 Poster
 Studio/Voice Cinema가 `InKY Poster Studio` 같은 임시 placeholder 텍스트였음).
 Voice Cinema는 회색 placeholder 썸네일 대신 실제 이미지(WebP, 800px)가
-들어감. Poster Studio는 아직 회색 placeholder 썸네일 상태 — 대표가 이미지
-확정하는 대로 교체 예정. 느낌표/물음표 앞 띄어쓰기(예: `시간 !`)는 대표
-표준 규칙이니 새 문구 추가 시에도 지킬 것.
+들어감. Poster Studio도 2026-09-02부터 실제 썸네일(`assets/poster-studio.webp`)로
+교체 완료 — 더 이상 placeholder 아님. 느낌표/물음표 앞 띄어쓰기(예: `시간 !`)는
+대표 표준 규칙이니 새 문구 추가 시에도 지킬 것.
 
 `.github/workflows/link-healthcheck.yml`이 매일 09:00 KST에 **6개 앱 전부(+포털 자기
 자신)**를 curl로 확인하고, 응답 본문에 그 앱을 나타내는 문자열이 실제로 들어있는지까지
@@ -146,10 +146,11 @@ AI Ways Incheon 일시 오류 이슈(#1, 재확인 결과 자연 해소돼 닫�
 | `bg-main.webp` | 메인/로딩 배경 (네온 오락기 아트) |
 | `bg-loading.webp` | 미사용, 보존 |
 | `og-thumb.jpg` | 카카오톡 공유 배너 (1200×630) |
-| `quiz.webp` / `classcade.webp` / `incheon.webp` / `googler.webp` | 카드 썸네일 4종 |
+| `quiz.webp` / `classcade.webp` / `incheon.webp` / `googler.webp` / `poster-studio.webp` / `voice-cinema.webp` | 카드 썸네일 6종 |
+| `gaegujangi.m4a` / `gaegujangi-cover.webp` | 배경음악(산울림 〈개구장이〉) + 앨범 커버 |
 
 ## 음원 저작권/출처 (2026-08-25 기록, 2026-08-26 사용 목적 보강)
-- 곡: 산울림(Sanullim) 〈개구장이〉 (`assets/gaegujangi.m4a`, 앨범 커버 `assets/gaegujangi-cover.jpg`)
+- 곡: 산울림(Sanullim) 〈개구장이〉 (`assets/gaegujangi.m4a`, 앨범 커버 `assets/gaegujangi-cover.webp`)
 - 산울림 〈개구장이〉 음원은 지니뮤직(GENIE)에서 유료 구매한 MP3를 공식 다운로드
   경로로 취득했다. 구매내역 및 다운로드 기록을 보관한다. 해당 음원은 교사연구회
   비영리 아동 교육용 앱의 학교 수업·수업지원 목적 범위에서만 사용하며, 광고·판매·
