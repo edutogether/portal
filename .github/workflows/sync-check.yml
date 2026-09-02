@@ -21,8 +21,8 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: index.html과 404.html이 동일한지 확인
         run: |
-          if ! cmp -s index.html 404.html; then
-            echo "::error::index.html과 404.html이 서로 다릅니다. index.html을 고쳤다면 'cp index.html 404.html'을 잊은 것입니다."
+          if ! cmp -s public/index.html public/404.html; then
+            echo "::error::index.html과 404.html이 서로 다릅니다. index.html을 고쳤다면 'cp public/index.html public/404.html'을 잊은 것입니다."
             exit 1
           fi
           echo "index.html과 404.html 동일함 — OK"

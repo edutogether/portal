@@ -17,8 +17,8 @@ sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 from fontTools.ttLib import TTFont
 
 ROOT = Path(__file__).resolve().parent.parent
-INDEX_HTML = ROOT / "index.html"
-FONT_DIR = ROOT / "assets" / "fonts" / "pretendard"
+INDEX_HTML = ROOT / "public" / "index.html"
+FONT_DIR = ROOT / "public" / "assets" / "fonts" / "pretendard"
 
 
 def extract_used_chars(html: str) -> set[str]:

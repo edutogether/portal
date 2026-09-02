@@ -1,27 +1,8 @@
 {
   "hosting": {
-    "public": ".",
+    "public": "public",
     "ignore": [
-      "firebase.json",
-      "**/.*",
-      ".git/**",
-      ".github/**",
-      ".claude/**",
-      ".githooks/**",
-      ".agents/**",
-      ".firebase/**",
-      "**/node_modules/**",
-      "tests/**",
-      "scripts/**",
-      "package.json",
-      "package-lock.json",
-      "playwright.config.js",
-      "playwright-report/**",
-      "test-results/**",
-      "CLAUDE.md",
-      "HANDOFF.md",
-      "skills-lock.json",
-      "firebase-debug.log"
+      "**/.*"
     ],
     "headers": [
       {

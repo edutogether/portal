@@ -20,7 +20,7 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 
 ROOT = Path(__file__).resolve().parent.parent
-INDEX_HTML = ROOT / "index.html"
+INDEX_HTML = ROOT / "public" / "index.html"
 
 
 def main() -> int:
