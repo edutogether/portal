@@ -69,16 +69,19 @@ test('카드 6개 전부 소개 문구가 비어있지 않고, 느낌표/물음�
 test('로딩 화면은 진행 바 애니메이션이 끝나도 실제 페이지 로드가 끝나기 전엔 사라지지 않는다 (2026-09-03 회귀버그)', async ({ page }) => {
   // 예전엔 진행 바 애니메이션(2.1s)만 끝나면 실제 로딩 상태와 무관하게
   // 로딩 화면이 사라져서, 느린 회선에서 아직 다 안 그려진 메인 화면이
-  // 그림자처럼 비쳐 보였다. bg-main.webp를 인위적으로 지연시켜, 바
-  // 애니메이션이 끝났을 시점(2.3s 후)엔 아직 떠 있고 로드가 끝난 뒤에야
-  // 사라지는지 확인한다.
+  // 그림자처럼 비쳐 보였다. bg-main.webp를 인위적으로 오래 지연시켜, 바
+  // 애니메이션이 끝난 지 한참 지난 시점에도 아직 떠 있고, 이미지가 도착해
+  // 로드가 끝난 뒤에야 사라지는지 확인한다. CI 러너는 로컬보다 느리고
+  // 스케줄링 지터가 커서, 애니메이션(2.1s) 직후 여유를 짧게 두면 그 지터만
+  // 으로 이 테스트가 흔들릴 수 있어 여유를 넉넉히 잡는다(2026-09-02 최초
+  // 버전은 2.3s/3s로 CI에서 실제로 흔들렸음).
   await page.route('**/assets/bg-main.webp', async (route) => {
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 6000));
     await route.continue();
   });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-  await page.waitForTimeout(2300); // 바 애니메이션(2.1s)은 끝났지만 이미지는 아직 로딩 중
+  await page.waitForTimeout(4000); // 바 애니메이션(2.1s)은 진작 끝났지만 이미지는 아직 로딩 중(6s 지연)
   const stillShowing = await page.evaluate(
     () => !document.getElementById('loader').classList.contains('done')
   );
@@ -86,7 +89,7 @@ test('로딩 화면은 진행 바 애니메이션이 끝나도 실제 페이지 
 
   await expect
     .poll(() => page.evaluate(() => document.getElementById('loader').classList.contains('done')), {
-      timeout: 6000,
+      timeout: 10000,
     })
     .toBe(true);
 });
