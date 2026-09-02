@@ -9,6 +9,11 @@ CSP 해시는 <script> 태그 바로 뒤부터 </script> 바로 앞까지의 바
 sha256 후 base64 인코딩한 값이어야 한다(앞의 줄바꿈도 포함, 2026-09-01에
 이 경계를 잘못 잡아서 실제 브라우저가 요구하는 값과 다른 해시를 냈던 사고가
 있었음).
+
+인라인 <script> 태그가 여러 개일 수 있으므로 전부 찾아서 각각 검증한다
+(처음엔 첫 번째 태그만 검사하는 버그가 있었음 — 지금은 1개뿐이라 증상은
+없었지만, 나중에 두 번째 인라인 스크립트가 추가되면 이 가드 자체가 그걸
+놓쳐서 막으려던 사고가 그대로 재발할 뻔했음, 2026-09-02 Opus 감사에서 발견).
 """
 import hashlib
 import base64
@@ -31,34 +36,41 @@ def main() -> int:
     # 찾는다 — 안 그러면 주석 속 문자열을 진짜 태그로 잘못 잡을 수 있다.
     stripped = re.sub(rb"<!--.*?-->", b"", data, flags=re.S)
 
-    start_tag = b"<script>"
-    end_tag = b"</script>"
-    start = stripped.index(start_tag) + len(start_tag)
-    end = stripped.index(end_tag, start)
-    content = stripped[start:end]
+    # src= 속성이 있는 <script src="...">는 인라인이 아니라 해시 대상이 아님 —
+    # 여는 태그가 정확히 "<script>"(속성 없음)인 것만 인라인 스크립트로 본다.
+    inline_scripts = re.findall(rb"<script>(.*?)</script>", stripped, flags=re.S)
 
-    actual_hash = "sha256-" + base64.b64encode(
-        hashlib.sha256(content).digest()
-    ).decode()
+    if not inline_scripts:
+        print("::error::인라인 <script> 태그를 찾지 못했습니다.")
+        return 1
 
-    m = re.search(
-        r"script-src [^;]*'(sha256-[A-Za-z0-9+/=]+)'", data.decode("utf-8")
+    actual_hashes = {
+        "sha256-" + base64.b64encode(hashlib.sha256(content).digest()).decode()
+        for content in inline_scripts
+    }
+
+    declared_hashes = set(
+        re.findall(r"script-src [^;]*'(sha256-[A-Za-z0-9+/=]+)'", data.decode("utf-8"))
     )
-    if not m:
+    if not declared_hashes:
         print("::error::CSP script-src에서 sha256 해시를 찾지 못했습니다.")
         return 1
-    declared_hash = m.group(1)
 
-    if declared_hash != actual_hash:
+    missing = actual_hashes - declared_hashes
+    stale = declared_hashes - actual_hashes
+
+    if missing or stale:
         print(
             "::error::CSP script-src 해시가 실제 <script> 내용과 다릅니다 — "
             "스크립트를 수정하고 해시 재계산을 잊은 것으로 보입니다."
         )
-        print(f"::error::  선언된 해시: {declared_hash}")
-        print(f"::error::  실제 해시:   {actual_hash}")
+        for h in sorted(missing):
+            print(f"::error::  선언 안 된 실제 해시(추가 필요): {h}")
+        for h in sorted(stale):
+            print(f"::error::  더는 안 쓰는 선언된 해시(제거 검토): {h}")
         return 1
 
-    print(f"OK — CSP script-src 해시가 실제 <script> 내용과 일치함 ({actual_hash})")
+    print(f"OK — CSP script-src 해시가 실제 <script> {len(inline_scripts)}개와 전부 일치함")
     return 0
 
 

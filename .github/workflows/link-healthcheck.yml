@@ -43,7 +43,7 @@ jobs:
           check "QUIZ TOGETHER" "https://joo.is/%EA%B0%99%EC%9D%B4%EA%B5%90%EC%9C%A1%ED%80%B4%EC%A6%88" "같이교육 퀴즈" || failed=1
           check "CLASSCADE" "https://edutogether.github.io/classcade/" "CLASSCADE" || failed=1
           check "AI Ways Incheon" "https://edutogether.github.io/aiways-incheon/" "AI Ways Incheon" || failed=1
-          check "Be a Googler" "https://edutogether.github.io/googler/" "Be a Googler" || failed=1
+          check "Be a Googler" "https://g00gler.web.app/" "Be a Googler" || failed=1
           check "Poster Studio" "https://poster-studio.web.app" "InKY AI 영화 포스터 제작소" || failed=1
           check "Voice Cinema" "https://voice-cinema.web.app" "잉키 보이스 시네마" || failed=1
           exit $failed
