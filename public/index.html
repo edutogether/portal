@@ -504,6 +504,16 @@
   }
   .app:hover .play { transform: scale(1.1); background: var(--neon-a); }
 
+  /* 모바일엔 마우스 호버가 없어서 위 :hover 효과가 아예 발동을 안 했다
+     (2026-09-05 대표 지시) — 터치 기기에서 실제로 신호가 오는 :active를
+     같은 스타일로 매핑해서 탭할 때 PC 호버와 동일한 효과가 나오게 한다.
+     PC의 :hover 기본 규칙보다 파일에서 뒤에 둬야 소스 순서상 밀리지
+     않는다(이 파일의 다른 모바일 전용 블록들과 동일한 이유). */
+  @media (max-width: 1180px) {
+    .app:active { transform: translateY(-6px); box-shadow: 0 22px 54px rgba(0,0,0,.55); }
+    .app:active .play { transform: scale(1.1); background: var(--neon-a); }
+  }
+
   .body { padding: 16px 18px 20px; display: flex; flex-direction: column; gap: 6px; }
   .name { font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; letter-spacing: -.01em; }
   .desc { font-size: clamp(12px, 1.1vw, 14px); color: var(--muted); line-height: 1.55; }
