@@ -507,9 +507,13 @@
   /* 모바일엔 마우스 호버가 없어서 위 :hover 효과가 아예 발동을 안 했다
      (2026-09-05 대표 지시) — 터치 기기에서 실제로 신호가 오는 :active를
      같은 스타일로 매핑해서 탭할 때 PC 호버와 동일한 효과가 나오게 한다.
-     PC의 :hover 기본 규칙보다 파일에서 뒤에 둬야 소스 순서상 밀리지
-     않는다(이 파일의 다른 모바일 전용 블록들과 동일한 이유). */
-  @media (max-width: 1180px) {
+     너비 기준(max-width)이 아니라 (hover: none)으로 판단해야 하는 이유:
+     PC 창을 좁혀서 모바일 레이아웃이 뜨더라도 마우스가 있으면 :hover가
+     정상 작동해야 하는데, 너비 기준이면 그 경우까지 터치 전용 규칙이
+     끼어들어 :hover를 밀어낸다. (hover: none)은 실제로 호버를 지원 안
+     하는 기기(터치 전용)에서만 참이라 이 문제가 없다. PC의 :hover 기본
+     규칙보다 파일에서 뒤에 둬야 소스 순서상 밀리지 않는다. */
+  @media (hover: none) {
     .app:active { transform: translateY(-6px); box-shadow: 0 22px 54px rgba(0,0,0,.55); }
     .app:active .play { transform: scale(1.1); background: var(--neon-a); }
   }
