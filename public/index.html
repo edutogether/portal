@@ -18,7 +18,7 @@
      전체가 조용히 실행되지 않게 된다 — 스크립트를 수정할 때마다 반드시
      재계산할 것. 계산법: <script> 태그 바로 뒤부터 </script> 바로 앞까지의
      바이트를 그대로(앞뒤 아무것도 빼지 말고) sha256 해시 후 base64 인코딩. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-XxG+1wjfypaP2ai3BH408c/WShfEK9vRu9TLrTnM2Zk='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-+l18rkwyKF68Mt7w9D1iFNDExSnciLUduuJFkKAPW2w='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';" />
 <title>같교오락실 | 같이교육 체험관</title>
 <meta name="description" content="같이교육에서 만든 앱을 함께 체험해보세요 !" />
 <meta property="og:type" content="website" />
@@ -149,6 +149,7 @@
     text-shadow: 0 0 18px rgba(123,92,255,.65), 0 0 42px rgba(53,184,255,.45);
   }
   header p { margin: 14px 0 0; color: var(--muted); font-size: clamp(14px, 1.6vw, 18px); }
+  .edu-particle { display: none; }
 
   main {
     width: 100%;
@@ -355,28 +356,38 @@
   @media (max-width: 560px) {
     .stage main { grid-template-columns: 1fr; max-width: 420px; }
 
-    /* 모바일 전용 조정(2026-09-03, 대표 지시 — PC는 절대 건드리지 않음) */
+    /* 모바일 전용 조정(2026-09-04, 대표 지시 — PC는 건드리지 않음) */
 
-    /* 1) 헤더 설명 문구가 두 줄로 넘어가서 "선생님들이"를 뺀 한 줄로 축약 */
+    /* 1) 헤더 설명 문구 — "선생님들이"는 숨기되(기존 결정 유지), 그 자리에
+       필요해진 주격조사 "이"만 추가. 문장을 새로 짓거나 강제 줄바꿈을
+       넣지 않음 — 결과 줄 수는 텍스트 길이에 맡긴다. */
     .teacher-word { display: none; }
+    .edu-particle { display: inline; }
 
-    /* 2) 카드 설명이 "훅 한 줄 + 설명 문장"을 <br>로 강제 분리해두는 바람에
-       설명 문장이 길면 모바일 폭에서 3줄까지 넘어갔다. 모바일에서만 <br>을
-       없애 훅과 설명이 자연스럽게 이어지며 재배치되게 하면 6개 카드 전부
-       2줄 안에 들어온다(폰트 크기를 낮추는 방식은 최대한 줄여도 일부는
-       여전히 3줄이라 포기 — 실측 확인). .hook::after로 <br> 자리에 있던
-       공백을 대신 넣어 줄바꿈만 사라지고 단어 사이 공백은 유지되게 함. */
-    .desc br { display: none; }
-    .desc .hook::after { content: " "; }
+    /* 2), 3) 카드 설명 — 기존 "훅 한 줄 + <br> + 설명 문장" 구조는 그대로
+       유지(문장을 새로 짓지 않음). 설명 문장이 길어서 모바일 폭에서 그
+       자체가 다시 줄바꿈되며 3줄이 되던 카드 5개만, 원문 의미를 유지한
+       채 최소한으로 길이를 다듬은 모바일 전용 대체 문구로 교체(단어 하나
+       또는 짧은 구 하나만 빼는 수준 — 실측으로 6개 카드 전부 정확히 2줄에
+       들어오는 지점 확인). desc-full(PC/기본)과 desc-mobile-short(모바일)
+       두 버전을 두고 @media로만 토글 — PC는 원문 그대로 나간다. 토글
+       규칙 자체는 .desc .short 기본 규칙(display:none)보다 파일에서
+       뒤에 있어야 해서 아래 .app 정의 뒤쪽 블록에 같이 둠. */
 
-    /* 3) 카드 하단 설명 영역이 불투명해서 뒤로 지나가는 반딧불이가 거의 안
-       보였다. .app 전체가 아니라 .body(텍스트 영역)만 더 옅게 낮춰서
-       썸네일 이미지 쪽은 그대로 두고, 텍스트는 대비를 유지하면서 반딧불이가
-       희미하게 비쳐 보이게 함(실측: 반딧불이 200개 중 카드 영역에 가려
-       안 보이던 게, 모바일은 카드가 화면 폭 대부분을 차지해서 양쪽 여백
-       에만 몰려 보이는 것처럼 느껴졌음 — 이 항목을 고치면 카드 영역 안에서도
-       보이게 되어 같이 해결됨). */
-    .body { background: rgba(23,26,46,.2); }
+    /* 4) 카드 하단 설명 영역이 불투명해서 반딧불이가 안 보였다 — 실제
+       배경은 .body가 아니라 부모 .app(rgba(23,26,46,.42))에서 나오는데,
+       .body만 낮춰도 그 밑에 .42가 그대로 깔려 있어 실효 밝기가 거의 안
+       바뀌었다(두 레이어 합성 시 실효 불투명도 약 47%, 실측 확인). 썸네일
+       이미지(.thumb) 영역은 이미지 자체가 불투명해서 그대로 유지되고,
+       .app의 배경 알파를 낮춰야 텍스트 영역에서만 실제로 반딧불이가
+       비쳐 보인다 — backdrop-filter 블러(26px)도 반딧불이 빛을 뭉개서
+       10px로 줄임. (이 규칙은 .app 기본 규칙보다 파일에서 뒤에 있는
+       위치로 옮겨서 CSS 소스 순서 문제로 무시되지 않게 해야 함 — 아래
+       .app 정의 뒤쪽 블록 참고.) */
+
+    /* 5) 하단 고정 뮤직 플레이어 배경도 4)의 카드 텍스트 영역과 동일한
+       스타일로 맞춤 — 이 규칙도 .player-mobile 기본 정의보다 파일에서
+       뒤에 있는 위치로 옮겨야 해서, 아래 .app 정의 뒤쪽 블록에 같이 둠. */
   }
 
   /* 모바일 압축 플레이어 — 화면 맨 아래 고정, 본문은 그 뒤에서 따로 스크롤됨 */
@@ -460,6 +471,22 @@
     box-shadow: 0 22px 54px rgba(0,0,0,.55); }
   .app:active { transform: translateY(-2px); }
 
+  /* 모바일 전용 조정 4), 5) — .app/.player-mobile 등의 기본(비-모바일)
+     규칙보다 파일 앞쪽에 두면 CSS 소스 순서상 뒤에 나오는 기본 규칙에
+     밀려 실제로 적용되지 않는 버그가 있었다(2026-09-03에 실기기 확인
+     중 발견) — 그래서 그 기본 규칙들 뒤인 여기에 둔다. */
+  @media (max-width: 560px) {
+    /* 4) 카드 하단 설명 영역이 불투명해서 반딧불이가 안 보였다 — .body가
+       아니라 부모 .app의 배경(rgba(23,26,46,.42))이 실제 원인이라 .app
+       배경 자체를 낮추고, backdrop-filter 블러(26px)도 줄임. .thumb
+       (썸네일 이미지)는 이미지 자체가 불투명해서 영향 없음. */
+    .app { background: rgba(23,26,46,.14); backdrop-filter: blur(10px) saturate(1.3); -webkit-backdrop-filter: blur(10px) saturate(1.3); }
+
+    /* 5) 하단 고정 뮤직 플레이어 배경을 4)의 카드 텍스트 영역과 동일한
+       스타일로 맞춤. */
+    .player-mobile { background: rgba(23,26,46,.14); backdrop-filter: blur(10px) saturate(1.3); -webkit-backdrop-filter: blur(10px) saturate(1.3); }
+  }
+
   .thumb { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #10132a center/cover no-repeat; }
   .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .play {
@@ -479,6 +506,14 @@
   .body { padding: 16px 18px 20px; display: flex; flex-direction: column; gap: 6px; }
   .name { font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; letter-spacing: -.01em; }
   .desc { font-size: clamp(12px, 1.1vw, 14px); color: var(--muted); line-height: 1.55; }
+  .desc .short { display: none; }
+  @media (max-width: 560px) {
+    /* 2), 3) 카드 설명 모바일 전용 축약 토글 — 위쪽 @media 블록에 같이
+       두면 이 바로 위 .desc .short 기본 규칙(파일에서 더 뒤)에 밀려서
+       적용이 안 되므로 여기(그 기본 규칙 바로 뒤)에 둔다. */
+    .desc .full { display: none; }
+    .desc .short { display: inline; }
+  }
 
   footer { margin: 40px 0 auto; color: var(--muted); font-size: 13.5px; text-align: center; }
 
@@ -581,7 +616,7 @@
   <header>
     <span class="brand-line">같이교육 제작 앱 체험관</span>
     <h1>같교오락실</h1>
-    <p>같이교육 <span class="teacher-word">선생님들이 </span>직접 개발한 다양한 앱들을 직접 체험해보세요 !</p>
+    <p>같이교육<span class="edu-particle">이</span> <span class="teacher-word">선생님들이 </span>직접 개발한 다양한 앱들을 직접 체험해보세요 !</p>
   </header>
 
   <div class="stage">
@@ -747,7 +782,7 @@
       </div>
       <div class="body">
         <span class="name">Poster Studio</span>
-        <span class="desc"><span class="hook">사진 한 장이면 나도 영화 주인공 !</span><br>AI가 뚝딱 만들어주는 나만의 특별한 영화 포스터를 지금 만나보세요 🎬✨</span>
+        <span class="desc"><span class="hook">사진 한 장이면 나도 영화 주인공 !</span><br><span class="full">AI가 뚝딱 만들어주는 나만의 특별한 영화 포스터를 지금 만나보세요 🎬✨</span><span class="short">AI가 만들어주는 나만의 영화 포스터를 만나보세요 🎬✨</span></span>
       </div>
     </a>
 
@@ -758,7 +793,7 @@
       </div>
       <div class="body">
         <span class="name">Voice Cinema</span>
-        <span class="desc"><span class="hook">내가 배우가 되는 시간 !</span><br>무성영화에 내 목소리를 더빙해서 나만의 영화를 완성해봐요 🎬🎤</span>
+        <span class="desc"><span class="hook">내가 배우가 되는 시간 !</span><br><span class="full">무성영화에 내 목소리를 더빙해서 나만의 영화를 완성해봐요 🎬🎤</span><span class="short">무성영화에 내 목소리를 더빙해서 영화를 완성해봐요 🎬🎤</span></span>
       </div>
     </a>
 
@@ -769,7 +804,7 @@
       </div>
       <div class="body">
         <span class="name">QUIZ TOGETHER</span>
-        <span class="desc"><span class="hook">두뇌 풀가동, 같이교육 OX 퀴즈 !</span><br>정답을 맞혀가며 같이교육이 어떤 모임인지 자연스럽게 알아가요 🧠❓</span>
+        <span class="desc"><span class="hook">두뇌 풀가동, 같이교육 OX 퀴즈 !</span><br><span class="full">정답을 맞혀가며 같이교육이 어떤 모임인지 자연스럽게 알아가요 🧠❓</span><span class="short">정답을 맞혀가며 같이교육이 어떤 모임인지 알아가요 🧠❓</span></span>
       </div>
     </a>
 
@@ -780,7 +815,7 @@
       </div>
       <div class="body">
         <span class="name">CLASSCADE</span>
-        <span class="desc"><span class="hook">나는 어떤 교사일까 ?</span><br>교실 속 나만의 교사 MBTI를 찾고, 나에게 어울리는 놀이를 추천받아요 🍎🎯</span>
+        <span class="desc"><span class="hook">나는 어떤 교사일까 ?</span><br><span class="full">교실 속 나만의 교사 MBTI를 찾고, 나에게 어울리는 놀이를 추천받아요 🍎🎯</span><span class="short">교사 MBTI를 찾고, 어울리는 놀이를 추천받아요 🍎🎯</span></span>
       </div>
     </a>
 
@@ -791,7 +826,7 @@
       </div>
       <div class="body">
         <span class="name">AI Ways Incheon</span>
-        <span class="desc"><span class="hook">3초 안에 분리배출 척척 !</span><br>AI와 데이터로 우리 학교의 자원순환 현황을 확인하고 실천까지 이어가요 ♻️🤖</span>
+        <span class="desc"><span class="hook">3초 안에 분리배출 척척 !</span><br><span class="full">AI와 데이터로 우리 학교의 자원순환 현황을 확인하고 실천까지 이어가요 ♻️🤖</span><span class="short">AI와 데이터로 자원순환 현황을 확인하고 실천해요 ♻️🤖</span></span>
       </div>
     </a>
 
@@ -855,7 +890,12 @@
         var el = document.createElement('i');
         var dur = 5 + moteHash(i * 7 + 4) * 9;
         el.style.setProperty('--x', (moteHash(i * 7 + 1) * 96 + 1).toFixed(1) + '%');
-        el.style.setProperty('--y', (moteHash(i * 7 + 2) * 92 + 3).toFixed(1) + '%');
+        // y의 시드(i*7+2)가 x/dur/s/delay와 같은 배수(7) 계열이라, 실측해보니
+        // 화면 위쪽 절반에 실제로 더 많이 몰리는 편향이 있었다(2026-09-04
+        // 실기기 확인 후 버킷 분포 직접 측정해서 발견 — 위쪽 절반에 약
+        // 65%). 다른 배수(11, +17)로 시드를 바꾸니 위/아래 분포가 훨씬
+        // 고르게 나옴(같은 moteHash 함수로 여러 배수를 실측 비교해서 선택).
+        el.style.setProperty('--y', (moteHash(i * 11 + 17) * 92 + 3).toFixed(1) + '%');
         el.style.setProperty('--s', 3 + Math.floor(moteHash(i * 7 + 3) * 8));
         el.style.setProperty('--dur', dur.toFixed(2) + 's');
         // delay를 각자의 dur에 비례해서 뽑아야 애니메이션 곡선상 위상이 완전히
