@@ -354,6 +354,29 @@
   }
   @media (max-width: 560px) {
     .stage main { grid-template-columns: 1fr; max-width: 420px; }
+
+    /* 모바일 전용 조정(2026-09-03, 대표 지시 — PC는 절대 건드리지 않음) */
+
+    /* 1) 헤더 설명 문구가 두 줄로 넘어가서 "선생님들이"를 뺀 한 줄로 축약 */
+    .teacher-word { display: none; }
+
+    /* 2) 카드 설명이 "훅 한 줄 + 설명 문장"을 <br>로 강제 분리해두는 바람에
+       설명 문장이 길면 모바일 폭에서 3줄까지 넘어갔다. 모바일에서만 <br>을
+       없애 훅과 설명이 자연스럽게 이어지며 재배치되게 하면 6개 카드 전부
+       2줄 안에 들어온다(폰트 크기를 낮추는 방식은 최대한 줄여도 일부는
+       여전히 3줄이라 포기 — 실측 확인). .hook::after로 <br> 자리에 있던
+       공백을 대신 넣어 줄바꿈만 사라지고 단어 사이 공백은 유지되게 함. */
+    .desc br { display: none; }
+    .desc .hook::after { content: " "; }
+
+    /* 3) 카드 하단 설명 영역이 불투명해서 뒤로 지나가는 반딧불이가 거의 안
+       보였다. .app 전체가 아니라 .body(텍스트 영역)만 더 옅게 낮춰서
+       썸네일 이미지 쪽은 그대로 두고, 텍스트는 대비를 유지하면서 반딧불이가
+       희미하게 비쳐 보이게 함(실측: 반딧불이 200개 중 카드 영역에 가려
+       안 보이던 게, 모바일은 카드가 화면 폭 대부분을 차지해서 양쪽 여백
+       에만 몰려 보이는 것처럼 느껴졌음 — 이 항목을 고치면 카드 영역 안에서도
+       보이게 되어 같이 해결됨). */
+    .body { background: rgba(23,26,46,.2); }
   }
 
   /* 모바일 압축 플레이어 — 화면 맨 아래 고정, 본문은 그 뒤에서 따로 스크롤됨 */
@@ -558,7 +581,7 @@
   <header>
     <span class="brand-line">같이교육 제작 앱 체험관</span>
     <h1>같교오락실</h1>
-    <p>같이교육 선생님들이 직접 개발한 다양한 앱들을 직접 체험해보세요 !</p>
+    <p>같이교육 <span class="teacher-word">선생님들이 </span>직접 개발한 다양한 앱들을 직접 체험해보세요 !</p>
   </header>
 
   <div class="stage">
@@ -724,7 +747,7 @@
       </div>
       <div class="body">
         <span class="name">Poster Studio</span>
-        <span class="desc">사진 한 장이면 나도 영화 주인공 !<br>AI가 뚝딱 만들어주는 나만의 특별한 영화 포스터를 지금 만나보세요 🎬✨</span>
+        <span class="desc"><span class="hook">사진 한 장이면 나도 영화 주인공 !</span><br>AI가 뚝딱 만들어주는 나만의 특별한 영화 포스터를 지금 만나보세요 🎬✨</span>
       </div>
     </a>
 
@@ -735,7 +758,7 @@
       </div>
       <div class="body">
         <span class="name">Voice Cinema</span>
-        <span class="desc">내가 배우가 되는 시간 !<br>무성영화에 내 목소리를 더빙해서 나만의 영화를 완성해봐요 🎬🎤</span>
+        <span class="desc"><span class="hook">내가 배우가 되는 시간 !</span><br>무성영화에 내 목소리를 더빙해서 나만의 영화를 완성해봐요 🎬🎤</span>
       </div>
     </a>
 
@@ -746,7 +769,7 @@
       </div>
       <div class="body">
         <span class="name">QUIZ TOGETHER</span>
-        <span class="desc">두뇌 풀가동, 같이교육 OX 퀴즈 !<br>정답을 맞혀가며 같이교육이 어떤 모임인지 자연스럽게 알아가요 🧠❓</span>
+        <span class="desc"><span class="hook">두뇌 풀가동, 같이교육 OX 퀴즈 !</span><br>정답을 맞혀가며 같이교육이 어떤 모임인지 자연스럽게 알아가요 🧠❓</span>
       </div>
     </a>
 
@@ -757,7 +780,7 @@
       </div>
       <div class="body">
         <span class="name">CLASSCADE</span>
-        <span class="desc">나는 어떤 교사일까 ?<br>교실 속 나만의 교사 MBTI를 찾고, 나에게 어울리는 놀이를 추천받아요 🍎🎯</span>
+        <span class="desc"><span class="hook">나는 어떤 교사일까 ?</span><br>교실 속 나만의 교사 MBTI를 찾고, 나에게 어울리는 놀이를 추천받아요 🍎🎯</span>
       </div>
     </a>
 
@@ -768,7 +791,7 @@
       </div>
       <div class="body">
         <span class="name">AI Ways Incheon</span>
-        <span class="desc">3초 안에 분리배출 척척 !<br>AI와 데이터로 우리 학교의 자원순환 현황을 확인하고 실천까지 이어가요 ♻️🤖</span>
+        <span class="desc"><span class="hook">3초 안에 분리배출 척척 !</span><br>AI와 데이터로 우리 학교의 자원순환 현황을 확인하고 실천까지 이어가요 ♻️🤖</span>
       </div>
     </a>
 
@@ -779,7 +802,7 @@
       </div>
       <div class="body">
         <span class="name">Be a Googler</span>
-        <span class="desc">호기심이 이끄는 대로 !<br>배우고 만들며 성장하는 구글러의 학습 모험을 떠나요 🔍🚀</span>
+        <span class="desc"><span class="hook">호기심이 이끄는 대로 !</span><br>배우고 만들며 성장하는 구글러의 학습 모험을 떠나요 🔍🚀</span>
       </div>
     </a>
   </main>
