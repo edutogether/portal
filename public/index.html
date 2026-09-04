@@ -149,6 +149,7 @@
     text-shadow: 0 0 18px rgba(123,92,255,.65), 0 0 42px rgba(53,184,255,.45);
   }
   header p { margin: 14px 0 0; color: var(--muted); font-size: clamp(14px, 1.6vw, 18px); }
+  .tagline-mobile { display: none; }
 
   main {
     width: 100%;
@@ -357,8 +358,16 @@
 
     /* 모바일 전용 조정(2026-09-03, 대표 지시 — PC는 절대 건드리지 않음) */
 
-    /* 1) 헤더 설명 문구가 두 줄로 넘어가서 "선생님들이"를 뺀 한 줄로 축약 */
-    .teacher-word { display: none; }
+    /* 1) 헤더 설명 문구. 처음엔 "선생님들이"만 지우고 한 줄로 욱여넣었는데,
+       대표가 그 방식이 별로라고 함 — 원래(수정 전) 이 문구가 자연스럽게
+       두 줄로 보이던 느낌을 살리되, "선생님들이"를 뺀 자리에 맞춰 문장
+       자체를 다시 짜고 <br>로 정확히 두 줄로 나눔(두 번째 줄은 "다양한
+       앱들을 직접 체험해보세요"에서 "직접"을 빼 조금 줄임). "선생님들이"가
+       빠지면서 주어 "같이교육"에 주격조사 "이"가 필요해짐(대표 지적) —
+       PC용 문구는 그대로 두고 모바일 전용 <p>를 따로 둬서 처리(desktop/
+       mobile 두 <p>를 header p 스타일 그대로 공유, @media로 토글만 함). */
+    .tagline-desktop { display: none; }
+    .tagline-mobile { display: block; }
 
     /* 2) 카드 설명이 "훅 한 줄 + 설명 문장"을 <br>로 강제 분리해두는 바람에
        설명 문장이 길면 모바일 폭에서 3줄까지 넘어갔다. 모바일에서만 <br>을
@@ -368,15 +377,6 @@
        공백을 대신 넣어 줄바꿈만 사라지고 단어 사이 공백은 유지되게 함. */
     .desc br { display: none; }
     .desc .hook::after { content: " "; }
-
-    /* 3) 카드 하단 설명 영역이 불투명해서 뒤로 지나가는 반딧불이가 거의 안
-       보였다. .app 전체가 아니라 .body(텍스트 영역)만 더 옅게 낮춰서
-       썸네일 이미지 쪽은 그대로 두고, 텍스트는 대비를 유지하면서 반딧불이가
-       희미하게 비쳐 보이게 함(실측: 반딧불이 200개 중 카드 영역에 가려
-       안 보이던 게, 모바일은 카드가 화면 폭 대부분을 차지해서 양쪽 여백
-       에만 몰려 보이는 것처럼 느껴졌음 — 이 항목을 고치면 카드 영역 안에서도
-       보이게 되어 같이 해결됨). */
-    .body { background: rgba(23,26,46,.2); }
   }
 
   /* 모바일 압축 플레이어 — 화면 맨 아래 고정, 본문은 그 뒤에서 따로 스크롤됨 */
@@ -459,6 +459,40 @@
   .app:hover { transform: translateY(-6px);
     box-shadow: 0 22px 54px rgba(0,0,0,.55); }
   .app:active { transform: translateY(-2px); }
+
+  /* 모바일 전용 조정 3), 4) — 위쪽 @media(max-width:560px) 블록(약 356행)에
+     처음 같이 넣었다가, 그 블록이 .app/.player-mobile 등의 기본(비-모바일)
+     규칙보다 파일 앞쪽에 있어서 CSS 소스 순서상 뒤에 나오는 기본 규칙에
+     밀려 실제로는 하나도 적용되지 않는 버그가 있었다(동일 우선순위일 땐
+     "나중에 나온 규칙"이 이기는데, 매체 쿼리 안에 있어도 이 규칙 자체가
+     소스에서 더 앞이면 그냥 짐 — 실기기 확인 중 반딧불이/플레이어 크기가
+     전혀 안 바뀌어서 발견). 그래서 이 두 항목만 해당 기본 규칙들 뒤(지금
+     이 위치)로 옮겨서 확실히 이기게 함. */
+  @media (max-width: 560px) {
+    /* 3) 카드 하단 설명 영역이 불투명해서 반딧불이가 거의 안 보였다.
+       처음엔 .body(텍스트 영역)만 낮췄는데도 실사용에서 "여전히 안 보인다"는
+       피드백 — 원인을 다시 보니 .body는 배경이 있는 게 아니라 부모 .app의
+       배경(rgba(23,26,46,.42))이 그대로 비쳐 보이는 구조라, .body만 낮춰도
+       .app의 .42가 밑에 그대로 깔려 있어 실질 밝기가 거의 안 바뀌었던 것
+       (실측: 두 레이어가 합쳐진 실효 불투명도가 약 47%로, .body만 손댔을 때
+       와 거의 차이가 없었음). .thumb(썸네일 이미지 영역)은 이미지 자체가
+       불투명하게 덮고 있어서 .app의 배경 알파를 낮춰도 그쪽엔 영향이 없다
+       — 그래서 .app 배경 자체를 낮추고, backdrop-filter의 블러(26px)도
+       반딧불이 빛을 뭉개버려서 함께 줄임. */
+    .app { background: rgba(23,26,46,.14); backdrop-filter: blur(10px) saturate(1.3); -webkit-backdrop-filter: blur(10px) saturate(1.3); }
+
+    /* 4) 하단 고정 뮤직 플레이어가 카드 텍스트 영역(~98px)보다 훨씬 커서
+       (158px) 화면을 과하게 차지한다는 지적 — 앨범커버를 줄이고, 시간
+       표시(0:00/-2:05, 탐색바 위치로 이미 알 수 있어 정보가 겹침)를 숨기고,
+       패딩/간격을 좁혀서 재생/이전/다음/셔플/반복/음소거/볼륨 등 실제
+       기능은 하나도 안 줄이면서 높이만 약 103px로 줄임(카드 텍스트 영역과
+       비슷한 수준, 실측 확인). */
+    .player-mobile { padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px)); }
+    .pm-cover { width: 36px; height: 36px; }
+    .pm-time-row { display: none; }
+    .pm-seek { margin-top: 4px; }
+    .pm-controls { margin-top: 4px; }
+  }
 
   .thumb { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #10132a center/cover no-repeat; }
   .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -581,7 +615,8 @@
   <header>
     <span class="brand-line">같이교육 제작 앱 체험관</span>
     <h1>같교오락실</h1>
-    <p>같이교육 <span class="teacher-word">선생님들이 </span>직접 개발한 다양한 앱들을 직접 체험해보세요 !</p>
+    <p class="tagline-desktop">같이교육 선생님들이 직접 개발한 다양한 앱들을 직접 체험해보세요 !</p>
+    <p class="tagline-mobile">같이교육이 직접 개발한<br>다양한 앱들을 체험해보세요 !</p>
   </header>
 
   <div class="stage">
