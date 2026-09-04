@@ -569,7 +569,12 @@
   @keyframes fill { to { width: 100%; } }
 </style>
 </head>
-<body>
+<!-- ontouchstart="" 는 장식이 아니라 필수: iOS Safari는 document/body에
+     touchstart 리스너가 하나도 없으면 :active 의사클래스를 아예 계산하지
+     않는다(2026-09-05 대표 확인 — 카드 호버 효과가 모바일에서 전혀 안
+     먹던 원인). 지우면 .app:active / (hover:none) 규칙이 iOS에서 다시
+     조용히 죽는다. -->
+<body ontouchstart="">
   <div class="orbs" aria-hidden="true">
     <span class="orb float" style="width:300px;height:300px;top:5%;left:7%;background:radial-gradient(circle,#7b5cff,transparent 70%);animation-duration:24s"></span>
     <span class="orb float" style="width:240px;height:240px;top:11%;right:9%;background:radial-gradient(circle,#35b8ff,transparent 70%);animation-duration:20s;animation-delay:-4s"></span>
