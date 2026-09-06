@@ -44,7 +44,7 @@ jobs:
           check "CLASSCADE" "https://edutogether.github.io/classcade/" "CLASSCADE" || failed=1
           check "AI Ways Incheon" "https://edutogether.github.io/aiways-incheon/" "AI Ways Incheon" || failed=1
           check "Be a Googler" "https://g00gler.web.app/" "Be a Googler" || failed=1
-          check "Poster Studio" "https://poster-studio.web.app" "InKY AI 영화 포스터 제작소" || failed=1
+          check "Poster Studio" "https://poster-studio.web.app" "InKY Poster Studio" || failed=1
           check "Voice Cinema" "https://voice-cinema.web.app" "InKY Voice Cinema" || failed=1
           exit $failed
 
