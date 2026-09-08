@@ -1,0 +1,45 @@
+/* 데스크탑/모바일 플레이어가 함께 쓰는 컨트롤 버튼 기본형.
+   각 플레이어가 자기 컨테이너 안에서 크기를 조정한다(PlayerDesktop.css /
+   PlayerMobile.css) — 여기서는 컨테이너에 대해 아무것도 가정하지 않는다. */
+
+.icon-btn {
+  background: none; border: none; cursor: pointer; padding: 2px;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255, 255, 255, 0.5); transition: color 0.15s ease;
+}
+.icon-btn svg { width: 16px; height: 16px; }
+.icon-btn.active { color: #fff; }
+.icon-btn.active svg { fill: currentColor; }
+.icon-btn.more-btn:hover { color: #fff; }
+
+.play-btn {
+  background: none; border: none; cursor: pointer; color: #fff;
+  padding: 4px; display: flex; align-items: center; justify-content: center;
+}
+.play-btn svg { width: 22px; height: 22px; }
+
+.skip-btn {
+  background: none; border: none; cursor: pointer; color: #fff; opacity: 0.82;
+  padding: 4px; display: flex; align-items: center; justify-content: center;
+}
+.skip-btn:hover { opacity: 1; }
+.skip-btn svg { width: 19px; height: 19px; }
+
+.toggle-btn svg { width: 17px; height: 17px; }
+.toggle-btn.active { color: var(--neon-b); opacity: 1; }
+
+/* 음량 아이콘 — 막대 3개가 음량 구간(낮음/중간/높음)에 따라 흰색으로 켜진다. */
+.vol-icon-btn {
+  background: none; border: none; cursor: pointer; padding: 0; flex: none;
+  display: flex; align-items: center; justify-content: center;
+}
+.vol-icon-btn svg { width: 19px; height: 19px; }
+.vol-icon-btn .spk-body { fill: #fff; }
+.vol-icon-btn .wave1, .vol-icon-btn .wave2, .vol-icon-btn .wave3 { stroke: rgba(255, 255, 255, 0.28); }
+.vol-icon-btn.vol-lo .wave1 { stroke: #fff; }
+.vol-icon-btn.vol-mid .wave1, .vol-icon-btn.vol-mid .wave2 { stroke: #fff; }
+.vol-icon-btn.vol-hi .wave1, .vol-icon-btn.vol-hi .wave2, .vol-icon-btn.vol-hi .wave3 { stroke: #fff; }
+.vol-icon-btn .mute-x { display: none; }
+.vol-icon-btn.muted .spk-body { fill: var(--muted); }
+.vol-icon-btn.muted .wave1, .vol-icon-btn.muted .wave2, .vol-icon-btn.muted .wave3 { display: none; }
+.vol-icon-btn.muted .mute-x { display: block; stroke: var(--muted); }

@@ -1,0 +1,50 @@
+/* 반딧불이 효과 — CLASSCADE(entry-shared.css)에서 그대로 가져옴. 개별 입자가
+   저마다 다른 위치·속도·밝기로 떠다니게 해서 "살아있는" 느낌을 냄(전체를 통째로
+   흔드는 것과 달리 다 같이 출렁이지 않음). box-shadow만 쓰고 filter/backdrop-filter는
+   안 써서 가볍다. 입자 개수(200개)는 대표가 직접 100->150->200으로 올린 값이다. */
+
+.motes { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+
+.motes i {
+  animation: var(--anim, mote-drift) var(--dur, 7s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  background: #fff3bb;
+  border-radius: 50%;
+  box-shadow: 0 0 4px #ffdc77, 0 0 15px rgba(246, 189, 66, 0.84);
+  height: calc(var(--s, 3) * 1px);
+  left: var(--x, 50%);
+  position: absolute;
+  top: var(--y, 40%);
+  width: calc(var(--s, 3) * 1px);
+}
+
+.motes i:nth-child(3n) { background: #ffd98a; box-shadow: 0 0 4px rgba(255, 214, 118, 0.6), 0 0 10px rgba(246, 189, 66, 0.45); }
+.motes i:nth-child(5n) { background: #fff9df; box-shadow: 0 0 6px #ffeaa6, 0 0 22px rgba(250, 204, 88, 0.95), 0 0 40px rgba(246, 189, 66, 0.4); }
+
+/* OS/브라우저의 "동작 줄이기" 설정이 켜진 경우에만 정지 — 별도 토글 UI나 시간 기반
+   자동정지는 아니다. 로딩 화면 애니메이션(flicker/fill)은 이 대상이 아니다: 그건
+   대표가 명시적으로 그대로 두라고 한 별개의 결정이다(CLAUDE.md 참고). */
+@media (prefers-reduced-motion: reduce) {
+  .motes i { animation: none; opacity: 0.5; }
+}
+
+/* 경로 모양이 다른 애니메이션 3종을 입자마다 돌려써서(--anim) 다 같이 오르내리는
+   느낌을 줄인다 — dur/delay 랜덤만으로는 곡선 모양 자체가 같아 여전히 무리지어
+   보였다. */
+@keyframes mote-drift {
+  0%, 100% { opacity: 0.12; transform: translate3d(calc(var(--dx, -4) * -1px), calc(var(--amp, 16) * 0.75px), 0) scale(0.72); }
+  44% { opacity: 0.86; transform: translate3d(calc(var(--dx, -4) * 1px), calc(var(--amp, 16) * -1px), 0) scale(1.08); }
+  72% { opacity: 0.35; transform: translate3d(calc(var(--dx, -4) * 0.4px), calc(var(--amp, 16) * -1.8px), 0) scale(0.88); }
+}
+
+@keyframes mote-drift-b {
+  0%, 100% { opacity: 0.1; transform: translate3d(calc(var(--dx, -4) * 0.6px), calc(var(--amp, 16) * -0.9px), 0) scale(0.8); }
+  38% { opacity: 0.8; transform: translate3d(calc(var(--dx, -4) * -1px), calc(var(--amp, 16) * 0.9px), 0) scale(1.05); }
+  68% { opacity: 0.3; transform: translate3d(calc(var(--dx, -4) * -0.3px), calc(var(--amp, 16) * 1.6px), 0) scale(0.9); }
+}
+
+@keyframes mote-drift-c {
+  0%, 100% { opacity: 0.15; transform: translate3d(0, calc(var(--amp, 16) * 0.5px), 0) scale(0.75); }
+  55% { opacity: 0.9; transform: translate3d(calc(var(--dx, -4) * 1.3px), calc(var(--amp, 16) * -1.3px), 0) scale(1.1); }
+  80% { opacity: 0.4; transform: translate3d(calc(var(--dx, -4) * 0.5px), calc(var(--amp, 16) * -0.6px), 0) scale(0.85); }
+}

@@ -1,0 +1,115 @@
+/* 데스크탑 뮤직 플레이어. 높이는 JS(useSyncPlayerHeight)가 카드 그리드 위쪽
+   2행에 맞춰 정확히 재설정한다 — 아래 height는 그 전까지 쓰는 폴백값이다. */
+
+.player {
+  width: min(640px, 44vw); justify-self: end; margin-right: 1.25vw;
+  position: relative; overflow: hidden;
+  display: flex; align-items: stretch; gap: 34px;
+  border-radius: 28px;
+  padding: 36px 34px 36px 22px;
+  height: 560px;
+  box-shadow: 0 20px 54px rgba(0, 0, 0, 0.5);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.player:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 28px 64px rgba(0, 0, 0, 0.6);
+}
+
+/* 좁은 폭에서는 하단 고정 플레이어(PlayerMobile)로 교체된다. */
+@media (max-width: 1180px) {
+  .player { display: none; }
+}
+
+/* margin-left는 gap과 같은 34px이다 — 임의의 값이 아니라 사라진 요소 자리다.
+
+   원본에는 앨범아트를 크게 블러 처리해 깔려던 .player-bg 요소가 있었는데, 파일에서
+   그 뒤에 오던 `.player > * { position: relative }`가 같은 특정도로 .player-bg의
+   position:absolute를 덮어써서 실제로는 폭 0인 flex 항목이 되어 있었다. 즉 **그
+   배경은 라이브에서 한 번도 그려진 적이 없고**(실측: 계산된 position이 relative,
+   폭 0), 대신 flex 항목 자리를 하나 차지해 그 뒤로 gap 34px을 만들어내며 왼쪽 열을
+   그만큼 밀어내고 있었다.
+
+   그려지지 않던 그 요소는 지우고, 그것이 만들어내던 간격만 여기 명시한다. 컨테이너
+   padding으로 옮기지 않은 이유: 아래 width:47%가 컨테이너 content box 기준이라
+   padding을 키우면 왼쪽 열 자체가 좁아진다(실측으로 274.5px -> 258.5px 확인).
+   지금 값으로는 프리즈된 화면과 픽셀 단위로 같다.
+
+   블러 배경을 진짜로 살릴지는 화면 인상이 바뀌는 결정이라 임의로 켜지 않았다. */
+.player-left { width: 47%; flex: none; margin-left: 34px; display: flex; flex-direction: column; }
+
+.cover {
+  width: 100%; aspect-ratio: 1 / 1; border-radius: 12px; object-fit: cover;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+}
+
+.track-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-top: 18px; }
+.track-title { font-size: 18px; font-weight: 800; color: #fff; }
+.track-artist { margin-top: 4px; font-size: 14px; color: rgba(255, 255, 255, 0.62); }
+.track-actions { display: flex; align-items: center; gap: 8px; flex: none; padding-top: 2px; }
+
+.transport { margin-top: auto; padding-top: 20px; }
+
+.seek {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 3px; margin: 0;
+  background: rgba(255, 255, 255, 0.28); border-radius: 999px; outline: none; cursor: pointer;
+}
+.seek::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%;
+  background: #fff; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
+}
+.seek::-moz-range-thumb { width: 11px; height: 11px; border: none; border-radius: 50%; background: #fff; }
+
+.time-row {
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: rgba(255, 255, 255, 0.55); margin-top: 7px;
+}
+
+.controls-row { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 16px; }
+
+.volume {
+  position: relative;
+  display: flex; align-items: center; gap: 9px;
+  margin-top: 22px;
+  margin-left: -28px; width: calc(100% + 28px);
+}
+.volume input {
+  -webkit-appearance: none; appearance: none; flex: 1; height: 3px; margin: 0;
+  background: rgba(255, 255, 255, 0.28); border-radius: 999px; outline: none; cursor: pointer;
+}
+.volume input::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: #fff;
+}
+.volume input::-moz-range-thumb { width: 10px; height: 10px; border: none; border-radius: 50%; background: #fff; }
+
+.lyrics {
+  flex: 1; min-width: 0; height: 100%; overflow: hidden; position: relative;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+          mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+}
+.lyrics-track {
+  display: flex; flex-direction: column;
+  padding: 260px 0;
+  will-change: transform;
+}
+.lyrics-track p {
+  margin: 0; padding: 14px 0;
+  font-size: 21px; font-weight: 700; line-height: 1.4;
+  color: rgba(255, 255, 255, 0.32);
+}
+.lyrics-track p.active { color: #fff; }
+
+/* 활성 줄을 왼쪽에서 오른쪽으로 채우는 카라오케 효과. background-clip:text를
+   지원하는 브라우저에서만 적용하고, 아니면 위의 흰색 글자로 폴백된다. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .lyrics-track p.active {
+    background-image: linear-gradient(to right, #fff 50%, rgba(255, 255, 255, 0.3) 50%);
+    background-size: 200% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+}
+
+@media (max-width: 1400px) {
+  .lyrics-track p { font-size: 18px; }
+}

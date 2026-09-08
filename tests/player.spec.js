@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 // 완벽한 커버리지가 목표가 아니라, 이미 3번 반복됐던 같은 유형 재생 버그가
 // 4번째로 재발하는 걸 자동으로 잡는 게 목표다. 절대 실제 소리를 스피커로
@@ -49,14 +49,19 @@ test('반복이 꺼져 있고 곡이 1개뿐이면 재생이 끝나도 같은 �
 });
 
 test('모바일 남은시간 표시가 loadedmetadata 시점에 데스크탑과 함께 초기화된다 (2026-08-23 회귀버그)', async ({ page }) => {
-  await page.evaluate(() => {
-    document.getElementById('durTime').textContent = '-0:00';
-    document.getElementById('durTimeM').textContent = '-0:00';
-    Object.defineProperty(document.getElementById('audio'), 'duration', { value: 125, configurable: true });
-    document.getElementById('audio').dispatchEvent(new Event('loadedmetadata'));
-  });
-  const durTimeM = await page.textContent('#durTimeM');
+  // 원래 이 테스트는 두 요소의 textContent를 '-0:00'으로 지워놓고 loadedmetadata를
+  // 다시 쏴서 "모바일 쪽도 다시 쓰이는가"를 봤다. 그건 두 벌의 DOM을 손으로 갱신하던
+  // 구현에 맞춘 검사였는데, 지금은 두 표시가 같은 상태 하나에서 렌더돼서 DOM을
+  // 임의로 지워도 상태가 그대로면 다시 그리지 않는다(리액트의 정상 동작).
+  // 그래서 지키려던 것 자체 — "메타데이터가 오면 모바일도 데스크탑과 같은 값으로
+  // 초기화된다" — 를 결과로 확인한다. 둘이 서로 어긋나는 것까지 잡으므로 더 강하다.
+  await expect.poll(() => page.textContent('#durTime')).not.toBe('-0:00');
+  const [durTime, durTimeM] = await Promise.all([
+    page.textContent('#durTime'),
+    page.textContent('#durTimeM'),
+  ]);
   expect(durTimeM).not.toBe('-0:00');
+  expect(durTimeM).toBe(durTime);
 });
 
 test('셔플 버튼을 누르면 데스크탑/모바일 버튼이 함께 active 상태로 바뀐다', async ({ page }) => {
@@ -87,11 +92,11 @@ test('즐겨찾기는 기본 켜짐이고, 모바일 버튼을 눌러도 데스�
 });
 
 test('탐색바를 드래그하면 현재 시간 표시가 그 값으로 갱신된다', async ({ page }) => {
-  await page.evaluate(() => {
-    const seek = document.getElementById('seek');
-    seek.value = '65'; // 1:05
-    seek.dispatchEvent(new Event('input'));
-  });
+  // 예전엔 value를 직접 넣고 Event('input')을 쏘는 방식이었는데, 그렇게 하면 리액트가
+  // 값이 바뀐 걸 못 알아채서(내부 value tracker가 이미 새 값을 본 상태가 됨) 핸들러가
+  // 안 불린다. 실제 사용자 조작과 같은 경로인 fill()로 바꾼다 — 진짜 입력 이벤트가
+  // 발생하므로 구현 방식과 무관하게 통하고, 검사 내용은 그대로다.
+  await page.locator('#seek').fill('65'); // 1:05
   const curTime = await page.textContent('#curTime');
   expect(curTime).toBe('1:05');
 });

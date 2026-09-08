@@ -1,0 +1,88 @@
+/* 모바일 압축 플레이어 — 화면 맨 아래 고정, 본문은 그 뒤에서 따로 스크롤된다. */
+
+.player-mobile {
+  display: none;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+  width: 100%;
+  background: rgba(15, 18, 34, 0.9);
+  -webkit-backdrop-filter: blur(24px) saturate(1.3);
+  backdrop-filter: blur(24px) saturate(1.3);
+  border-radius: 20px 20px 0 0;
+  padding: 14px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.45);
+}
+
+@media (max-width: 1180px) {
+  .player-mobile { display: block; }
+}
+
+/* 좁은 화면에서는 배경을 옅게 해 뒤의 반딧불이가 비쳐 보이게 한다(2026-09-05 대표
+   지시). 카드(.app)보다는 진하게 둔다 — 플레이어는 조작 대상이라 대비가 필요하다. */
+@media (max-width: 560px) {
+  .player-mobile {
+    background: rgba(23, 26, 46, 0.48);
+    -webkit-backdrop-filter: blur(10px) saturate(1.3);
+    backdrop-filter: blur(10px) saturate(1.3);
+  }
+}
+
+.pm-top { display: flex; align-items: flex-start; gap: 10px; }
+.pm-cover { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; flex: none; }
+.pm-meta { flex: 1; min-width: 0; align-self: flex-start; } /* 앨범커버 위쪽에 맞춤 */
+.pm-title { font-size: 15px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pm-artist { margin-top: 2px; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pm-top .icon-btn { flex: none; padding-top: 3px; }
+
+.pm-seek {
+  width: 100%; margin-top: 10px;
+  -webkit-appearance: none; appearance: none; height: 3px;
+  background: rgba(255, 255, 255, 0.28); border-radius: 999px; outline: none; cursor: pointer;
+}
+.pm-seek::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%; background: #fff; }
+.pm-seek::-moz-range-thumb { width: 11px; height: 11px; border: none; border-radius: 50%; background: #fff; }
+
+.pm-time-row { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--muted); margin-top: 4px; }
+
+/* 모바일에서는 가사가 정신없다는 피드백으로 보이지 않게만 처리한다 — 스크롤/채우기
+   로직은 그대로 둬서 다시 켤 때 안전하게 되돌릴 수 있다. */
+.pm-lyrics-mask {
+  display: none;
+  height: 18px; overflow: hidden; position: relative; margin-top: 3px;
+}
+.pm-lyrics-track {
+  display: flex; flex-direction: column; align-items: flex-start;
+  padding: 160px 0;
+  will-change: transform;
+}
+.pm-lyrics-track p {
+  margin: 0; padding: 2px 0;
+  font-size: 12px; font-weight: 700; line-height: 1.4;
+  color: rgba(255, 255, 255, 0.32);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+.pm-lyrics-track p.active { color: #fff; }
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .pm-lyrics-track p.active {
+    background-image: linear-gradient(to right, #fff 50%, rgba(255, 255, 255, 0.3) 50%);
+    background-size: 200% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+}
+
+.pm-controls { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.pm-controls .play-btn { padding: 2px; flex: none; }
+.pm-controls .play-btn svg { width: 24px; height: 24px; }
+.pm-controls .skip-btn svg { width: 16px; height: 16px; }
+.pm-controls .toggle-btn svg { width: 14px; height: 14px; }
+
+.pm-volume { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; }
+.pm-volume .vol-icon-btn { flex: none; }
+.pm-volume .vol-icon-btn svg { width: 15px; height: 15px; }
+.pm-volume input {
+  flex: 1; min-width: 0; -webkit-appearance: none; appearance: none; height: 3px;
+  background: rgba(255, 255, 255, 0.28); border-radius: 999px; outline: none; cursor: pointer;
+}
+.pm-volume input::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: #fff; }
+.pm-volume input::-moz-range-thumb { width: 10px; height: 10px; border: none; border-radius: 50%; background: #fff; }

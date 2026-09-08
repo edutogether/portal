@@ -4,9 +4,16 @@
 교사연구회 활동 지원 목적으로 운영한다.
 
 - **라이브**: <https://edutogether.kr> (Firebase Hosting)
-- **구성**: 빌드 과정 없는 단일 정적 사이트. 실제 배포 대상은 `public/`
-  (`public/index.html` + `public/assets/`)이고, 그 밖의 `scripts/`·`tests/`·`.github/`·
-  `_docs/`는 저장소에만 있고 배포되지 않는다.
+- **구성**: React + TypeScript + Vite. 소스는 `src/`, 이미지·폰트·음원은
+  `public/assets/`, 배포 대상은 빌드 산출물 `dist/`다(커밋하지 않음).
+  `scripts/`·`tests/`·`.github/`·`_docs/`는 저장소에만 있고 배포되지 않는다.
+
+```bash
+npm ci && npm run dev     # 개발 서버
+npm run build             # 빌드 (dist/)
+npm test                  # Playwright
+npm run lint              # eslint
+```
 
 수록 앱: Poster Studio · Voice Cinema · QUIZ TOGETHER · CLASSCADE · AI Ways Incheon ·
 Be a Googler. 카드를 누르면 각 앱이 새 탭으로 열린다(포털은 원래 탭에 그대로 남는다).

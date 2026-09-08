@@ -30,18 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - name: index.html과 404.html이 동일한지 확인
-        run: |
-          if ! cmp -s public/index.html public/404.html; then
-            echo "::error::index.html과 404.html이 서로 다릅니다. index.html을 고쳤다면 'cp public/index.html public/404.html'을 잊은 것입니다."
-            exit 1
-          fi
-      - name: CSP script-src 해시가 실제 스크립트와 일치하는지 확인
-        run: python3 scripts/check-csp-hash.py
-      - name: Pretendard 서브셋 글자 커버리지 확인
-        run: |
-          pip install fonttools brotli
-          python3 scripts/check-font-coverage.py
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
@@ -49,16 +37,38 @@ jobs:
         run: npm ci
       - name: 린트
         run: npm run lint
+      - name: 빌드
+        run: npm run build
+      - name: 산출물에 인라인 script가 없는지 확인
+        run: python3 scripts/check-inline-script.py
+      - name: index.html과 404.html이 동일한지 확인
+        run: |
+          if ! cmp -s dist/index.html dist/404.html; then
+            echo "::error::dist/index.html과 dist/404.html이 다릅니다. 빌드가 복사를 못 한 것이니 vite.config.ts의 copy-index-to-404 플러그인을 확인하세요."
+            exit 1
+          fi
       - name: Playwright 브라우저 설치
         run: npx playwright install --with-deps chromium
-      - name: 재생 로직 스모크 테스트
-        run: npx playwright test
+      - name: 테스트 (재생 스모크 + LOCKED 기하 + 렌더 텍스트 덤프)
+        run: npm test
+      - name: Pretendard 서브셋 글자 커버리지 확인
+        run: |
+          pip install fonttools brotli
+          python3 scripts/check-font-coverage.py
 
   deploy:
     needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      # 배포 대상(dist/)은 저장소에 커밋되지 않으므로 여기서 다시 빌드한다.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: 의존성 설치
+        run: npm ci
+      - name: 빌드
+        run: npm run build
       - id: deployment
         uses: FirebaseExtended/action-hosting-deploy@7c850a480ce753f4f06f010801fc5a43787740bb # v0
         with:

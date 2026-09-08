@@ -1,0 +1,40 @@
+/* 오락실 느낌의 로딩 화면. */
+
+#loader {
+  position: fixed; inset: 0; z-index: 60; /* .player-mobile(z-index:50)보다 위여야
+    로딩 화면이 하단 플레이어 바를 완전히 가린다 */
+  /* 마지막 레이어의 불투명 단색이 핵심이다: 그라디언트(최대 알파 .62)와 배경
+     이미지만 있으면 이미지가 아직 로드/디코딩되지 않은 첫 프레임에 뒤의 메인
+     화면이 비쳐 보인다(2026-09-03 실사용 중 발견). */
+  /* --loader-bg는 Loader.tsx가 넘긴다 — 준비 판정도 같은 값을 기다리므로
+     경로가 두 곳으로 갈라지지 않는다. */
+  background: linear-gradient(rgba(11, 14, 31, 0.5), rgba(11, 14, 31, 0.62)),
+    var(--loader-bg) center/cover no-repeat,
+    #0b0e1f;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+#loader.done { opacity: 0; visibility: hidden; }
+
+#loader .logo {
+  font-size: clamp(40px, 7vw, 78px); font-weight: 900; letter-spacing: 0.04em; color: #fff;
+  text-shadow: 0 0 20px rgba(123, 92, 255, 0.8), 0 0 48px rgba(53, 184, 255, 0.55);
+  animation: flicker 1.6s ease-in-out infinite;
+}
+#loader .mark {
+  width: clamp(112px, 18vw, 192px); height: auto;
+  filter: drop-shadow(0 0 20px rgba(123, 92, 255, 0.8)) drop-shadow(0 0 48px rgba(53, 184, 255, 0.55));
+  animation: flicker 1.6s ease-in-out infinite;
+}
+#loader .coin { font-size: 16px; letter-spacing: 0.02em; color: var(--muted); }
+
+@keyframes flicker { 0%, 100% { opacity: 1; } 48% { opacity: 1; } 50% { opacity: 0.72; } 52% { opacity: 1; } }
+
+.bar { width: min(340px, 70vw); height: 16px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 0;
+  background: linear-gradient(90deg, var(--neon-a), var(--neon-b));
+  box-shadow: 0 0 14px rgba(53, 184, 255, 0.7);
+  animation: fill 2.1s cubic-bezier(0.5, 0.05, 0.2, 1) forwards; }
+
+@keyframes fill { to { width: 100%; } }

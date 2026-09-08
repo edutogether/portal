@@ -3,15 +3,15 @@
 헌법(D:\Projects\CLAUDE.md → _shared/CONVENTIONS.md)에 없는 것만.
 
 ## 앱
-- 무엇: 같이교육 앱 6종으로 링크를 거는 전시용 정적 포털. 빌드 과정 없음.
+- 무엇: 같이교육 앱 6종으로 링크를 거는 전시용 포털. React + TypeScript + Vite.
 - 사용자: 학생·교사. 상시 공개돼 있으나 실제 사용은 교육청 행사 중심.
 - 배포: Firebase Hosting (프로젝트 `edutogether-portal`, 계정
   `edutogether2015@gmail.com` — `817beatles@gmail.com`엔 접근 권한 없음).
   Functions 없음(순수 정적이라 §4.1대로 두지 않음).
 
 ## 배포 폴더
-- `firebase.json` public = `public`. `_docs/`, `.claude/`, `scripts/`, `tests/`,
-  `.github/`가 여기 포함되지 않음을 확인함 (확인일 9/8)
+- `firebase.json` public = `dist`(빌드 산출물). `src/`, `_docs/`, `.claude/`,
+  `scripts/`, `tests/`, `.github/`가 여기 포함되지 않음을 확인함 (확인일 9/8)
 
 ## 데이터
 - 개인정보·미성년자 데이터: **없음**. 폼·로그인·쿠키·분석 스크립트·백엔드가 전부 없고,
@@ -34,33 +34,35 @@
   작업은 아니지만, 그렇게 되면 포털이 깨진다 — 다른 세션에 넘길 때 주의).
 
 ## 명령
-- 테스트: `npm test` (Playwright 스모크 14개)
-- 린트: `npm run lint` (eslint — 대상은 저장소의 `.js` 파일. `index.html` 인라인
-  스크립트는 HTML 파서 플러그인이 필요해 의도적으로 범위 밖)
-- 로컬 실행: `node .claude/static-server.js` → <http://localhost:4319>
-  (HTTP Range 지원 — 이게 없으면 실제 크롬에서 오디오 재생 테스트가 안 된다)
-- 배포 전 게이트 수동 확인: `python3 scripts/check-csp-hash.py`,
-  `python3 scripts/check-font-coverage.py`
+- 로컬 실행: `npm run dev`
+- 빌드: `npm run build` (타입 검사 + Vite 빌드 + 404.html 자동 복사)
+- 테스트: `npm test` (Playwright 18개, 빌드된 `dist/`를 대상으로 돔 — 먼저 빌드할 것)
+- 시각 비교: `npm run test:visual` (로컬 전용, 기준 이미지는 gitignore)
+- 린트: `npm run lint`
+- 배포 전 게이트 수동 확인: `python3 scripts/check-inline-script.py`,
+  `python3 scripts/check-font-coverage.py`(`npm test` 뒤에 실행)
 - 에뮬레이터: 해당 없음(Firestore·Functions 미사용)
 
 ## 자주 틀리는 것
 (헌법의 "이력"이 아니라, 실제로 두 번 이상 반복된 함정 목록)
 
-- **`public/404.html` 동기화를 빠뜨림.** `public/index.html`을 고칠 때마다
-  `cp public/index.html public/404.html`. 빌드가 없어 자동 동기화가 안 된다.
-- **CSP 해시 갱신을 빠뜨림.** 인라인 `<script>`를 한 글자만 고쳐도 해시가 깨지고
-  스크립트가 **조용히** 실행되지 않는다(콘솔 에러 외엔 티가 안 남).
-- **Windows CRLF 함정.** 로컬 편집·`git revert` 후 파일이 CRLF로 바뀌면
-  `check-csp-hash.py`는 통과하는데 실제 브라우저에선 깨진다(브라우저는 CRLF를 LF로
-  정규화한 뒤 해시). 해시를 믿기 전에 줄바꿈을 먼저 확인하고, 필요하면
-  `sed -i 's/\r$//' public/index.html public/404.html` 후 해시를 다시 계산할 것.
-- **CSS 소스 순서 함정.** 같은 선택자·같은 속성이면 **파일에서 나중에 나오는 규칙이
-  이긴다 — 앞엣것이 매칭되는 `@media` 안에 있어도 마찬가지다.** 모바일 전용 override를
-  베이스 규칙보다 위쪽 `@media` 블록에 넣으면 조용히 무시된다. 이 저장소에서 이미 두 번
-  발생했다(`.app`/`.player-mobile`, `.desc .short`). 고치기 전에 `grep -n`으로 베이스
-  규칙과 override의 줄 번호를 대조하고, 필요하면 해당 베이스 규칙 **바로 뒤에** 별도
-  `@media` 블록을 만들어 넣을 것.
-- **폰트 서브셋 재생성을 빠뜨림.** 새 문구를 추가하면 서브셋에 없는 글자가 안 보인다.
+- **`backdrop-filter`를 표준 속성 먼저, `-webkit-` 접두사판을 나중에 쓰는 것.**
+  순서가 그러면 빌드 미니파이어가 표준 속성을 지우고 접두사판만 남기는데, 현대 크롬은
+  접두사판을 적용하지 않아 **블러가 조용히 사라진다.** 반드시 `-webkit-`을 먼저,
+  표준을 나중에. (2026-09-08 리액트 전환 중 실제로 겪었고, 스크린샷 비교가 잡았다.)
+- **CSS 소스 순서에 기대는 것.** 같은 선택자·같은 속성이면 파일에서 나중에 나오는
+  규칙이 이긴다 — 앞엣것이 매칭되는 `@media` 안에 있어도 마찬가지다. 전환 전에는 이
+  성질에 기대어 모바일 override를 특정 위치에 끼워넣는 구조였고, 그 때문에 규칙이
+  조용히 무시되는 사고가 두 번 났다(`.app`/`.player-mobile`, `.desc .short`).
+  지금은 **한 CSS 파일이 한 컴포넌트의 클래스를 전부 소유하고, 반응형 규칙도 그 파일
+  안에 둔다**는 규칙으로 순서 의존을 없앴다 — 같은 클래스를 두 파일에서 손대지 말 것.
+- **폰트 서브셋 재생성을 빠뜨림.** 새 문구를 추가하면 서브셋에 없는 글자가 시스템
+  폰트로 조용히 폴백된다. 검사 대상 글자는 **렌더된 DOM**에서 뽑는다 — 소스를 훑으면
+  코드 식별자까지 사용 글자로 잡히기 때문이다. (전환 전 검사는 정적 HTML만 봐서
+  곡 길이 표시 `2:05`의 숫자가 빠진 걸 못 잡고 있었다.)
+- **화면이 바뀌지 않았는지 확인하지 않고 리팩터링하는 것.** 큰 변경 전에
+  `npm run test:visual -- --update-snapshots`로 기준선을 만들어두고, 변경 후 비교한다.
+  `tests/locked-geometry.spec.js`는 수치로도 같이 지킨다.
 - **지시를 넘겨짚어 문장을 새로 짓는 것.** 문구 수정 지시는 받은 그대로만 반영한다.
   "자연스럽게 줄여달라"는 말을 임의로 문장을 다시 쓰거나 `<br>`을 새로 넣어도 된다는
   뜻으로 해석했다가 전체를 되돌린 사고가 있었다(2026-09-06). 구조를 유지하라는 말이

@@ -10,8 +10,8 @@
 // 기준 이미지는 .gitignore 대상이다(약 4.7MB, Windows 전용이라 저장소에 넣을
 // 값어치가 없음). 플랫폼 무관하게 항상 지켜야 하는 것은 locked-geometry.spec.js가
 // 수치로 단언하며 그쪽이 CI에서 돈다.
-const { test, expect } = require('@playwright/test');
-const { settle } = require('./helpers');
+import { test, expect } from '@playwright/test';
+import { settle } from './helpers.js';
 
 // LOCKED 분기점 기준 — 데스크탑 3열x2행 / 모바일 플레이어 전환 경계 /
 // 1열 경계 / 실제 모바일 기기.

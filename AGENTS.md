@@ -5,71 +5,102 @@
 
 ## 이 저장소가 뭔지
 
-같이교육 앱 6종으로 링크를 거는 전시용 정적 포털(라이브: <https://edutogether.kr>).
-**빌드 과정이 없다** — 번들러도 트랜스파일러도 없고, `public/index.html` 한 파일이
-HTML·CSS·인라인 `<script>`를 전부 담고 있으며 그대로 배포된다.
+같이교육 앱 6종으로 링크를 거는 전시용 포털(라이브: <https://edutogether.kr>).
+**React + TypeScript + Vite**로 빌드한다(2026-09-08 전환 — 그 전에는 빌드 없이
+단일 `public/index.html`을 그대로 배포했다).
+
+```
+index.html          Vite 진입 HTML (메타 태그·CSP·폰트 링크)
+src/                앱 소스
+  components/       화면 조각. 각 컴포넌트가 자기 CSS 파일을 함께 갖는다
+  player/           재생 상태(PlayerContext)와 가사 스크롤(LyricsView)
+  hooks/            플레이어 높이 동기화, 파비콘
+  data/             카드·플레이리스트·배경 원 데이터
+  styles/base.css   전역 토큰과 문서 기본값
+public/assets/      이미지·폰트·음원 (빌드가 dist/assets로 그대로 복사)
+dist/               빌드 산출물 = 배포 대상 (커밋하지 않음)
+```
 
 ## 배포 경로
 
-- Firebase Hosting. 배포 대상은 `firebase.json`의 `"public": "public"` 이므로
-  **`public/` 안에 있는 것만 라이브에 나간다.** `_docs/`, `scripts/`, `tests/`,
+- Firebase Hosting. 배포 대상은 `firebase.json`의 `"public": "dist"`이므로
+  **빌드 산출물만 라이브에 나간다.** `src/`, `_docs/`, `scripts/`, `tests/`,
   `.github/`, `.claude/`는 저장소에만 있고 배포되지 않는다.
-  (예전엔 저장소 루트 전체를 배포 대상으로 두고 위험한 것만 빼는 방식이었다가
-  빠뜨린 파일이 그대로 공개된 사고가 있었다. 이 구조를 되돌리지 말 것.)
-- `main`에 push하면 GitHub Actions(`.github/workflows/deploy.yml`)가 아래 게이트를
-  전부 통과시킨 뒤에만 배포한다. 로컬에서 수동 배포할 일은 없다.
+- `main`에 push하면 GitHub Actions(`.github/workflows/deploy.yml`)가 린트 → 빌드 →
+  게이트 → 테스트를 전부 통과시킨 뒤에만 배포한다. 로컬에서 수동 배포할 일은 없다.
+- `dist/`는 커밋하지 않는다 — CI가 배포 직전에 다시 빌드한다.
 
 ## 명령
 
 ```bash
 npm ci                              # 의존성 설치
-npm run lint                        # eslint (저장소의 .js 파일 = 테스트/설정 파일)
-npm test                            # Playwright 스모크 테스트 14개
-python3 scripts/check-csp-hash.py   # CSP script-src 해시 검증
-python3 scripts/check-font-coverage.py  # Pretendard 서브셋 글자 커버리지 검증
+npm run dev                         # 개발 서버
+npm run build                       # 타입 검사 + 빌드 (dist/index.html -> 404.html 복사 포함)
+npm run lint                        # eslint (TypeScript + 훅 의존성 배열)
+npm test                            # Playwright 18개 (스크린샷 비교 제외)
+npm run test:visual                 # 스크린샷 비교 (로컬 전용, 아래 참고)
+
+python3 scripts/check-inline-script.py    # 산출물에 인라인 <script>가 없는지
+python3 scripts/check-font-coverage.py    # 폰트 서브셋 글자 커버리지
 ```
 
-CI가 이 4가지를 배포 전 게이트로 돌린다. 로컬에서 미리 다 돌려보고 push하는 게 안전하다.
-
-로컬 미리보기는 `node .claude/static-server.js` 후 <http://localhost:4319>
-(오디오 재생 테스트에 필요한 HTTP Range 요청을 지원하는 로컬 전용 도구다.
-`.claude/` 안의 이 도구들은 gitignore 대상이라 새로 클론하면 없을 수 있다).
+`npm test`와 두 파이썬 검사는 **빌드된 `dist/`를 대상으로** 돈다 — 먼저
+`npm run build`를 실행해야 한다. 폰트 검사는 `npm test`가 만들어주는
+`test-results/rendered-text.txt`를 읽으므로 테스트 뒤에 실행한다.
 
 ## ⚠️ 자주 틀리는 것 — 여기가 이 저장소의 핵심
 
-1. **`public/index.html`을 고쳤으면 반드시 `cp public/index.html public/404.html`**.
-   빌드가 없어서 자동 동기화가 안 된다. 안 하면 없는 경로로 들어온 방문자가 옛날
-   버전을 본다. CI가 두 파일이 다르면 실패시킨다.
-2. **인라인 `<script>`를 한 글자라도 고치면 CSP 해시가 깨진다.** `index.html` 상단
-   `<meta http-equiv="Content-Security-Policy">`의 `script-src 'sha256-...'` 값을
-   갱신해야 하며, 안 하면 스크립트 전체가 **조용히** 실행되지 않는다(에러도 안 뜸).
-   `python3 scripts/check-csp-hash.py`를 돌리면 올바른 해시를 알려주니 그 값으로
-   갈아끼우면 된다.
-   - Windows에서 작업한다면: 파일이 CRLF로 저장되면 로컬 해시와 브라우저가 계산하는
-     해시가 달라진다(브라우저는 CRLF를 LF로 정규화한 뒤 해시한다). 해시를 믿기 전에
-     줄바꿈이 LF인지 먼저 확인할 것.
-3. **`index.html`에 새 텍스트(카드 문구·가사 등)를 추가하면 폰트 서브셋에 없는
-   글자가 안 보일 수 있다.** Pretendard를 실제 쓰는 글자만 남겨 서브셋해뒀기
-   때문이다. `scripts/check-font-coverage.py`가 잡아주고, 재서브셋 방법은
-   `public/assets/fonts/pretendard/pretendard.css` 상단 주석에 있다.
-4. **외부 CDN 리소스에 SRI(`integrity`)를 넣지 말 것.** 과거에 적용했다가 라이브
-   폰트 로드가 전면 차단되는 장애가 났다(그 CDN이 요청마다 다른 바이트를 준다).
-   지금은 폰트를 자가호스팅하므로 해당 사항이 아예 없어야 정상이다.
-5. **6개 앱의 코드는 이 저장소에서 절대 고치지 않는다.** 포털은 링크만 건다. 앱 수정이
-   필요하면 그 앱 저장소로 넘긴다.
-6. **`*-freeze-*` 태그를 삭제하거나 옮기지 말 것.** `.githooks/pre-push`와 GitHub
-   저장소 룰셋이 둘 다 막는다. 새로 고정할 땐 새 날짜 태그를 만든다.
+1. **CSS는 "한 파일이 한 컴포넌트의 클래스를 전부 소유한다"는 규칙으로 나눠져 있다.**
+   같은 클래스를 두 파일에서 손대지 말 것. 이 규칙이 있어야 파일이 로드되는 순서가
+   결과를 바꾸지 못한다. 반응형 규칙(`@media`)도 그 클래스를 소유한 파일 안에,
+   기본 규칙 바로 뒤에 둔다. (전환 전에는 "베이스 뒤에 놓여야 이긴다"에 의존하는
+   구조여서 모바일 전용 규칙이 조용히 무시되는 사고가 두 번 났다.)
+2. **`backdrop-filter`를 쓸 때는 `-webkit-` 접두사판을 먼저, 표준 속성을 나중에 쓴다.**
+   순서를 반대로 하면 빌드 미니파이어가 표준 속성을 지우고 접두사판만 남기는데,
+   현대 크롬은 접두사판을 적용하지 않아서 **블러가 조용히 사라진다**(2026-09-08에
+   실제로 겪음 — 스크린샷 비교로 발견).
+3. **CSP는 `script-src 'self'`다.** 인라인 `<script>`를 넣으면 브라우저가 조용히
+   차단한다(콘솔 CSP 에러 외엔 증상 없음). `scripts/check-inline-script.py`가
+   산출물에 인라인 스크립트가 생기면 CI를 실패시킨다. 정말 필요하면 이 검사를 지우지
+   말고 CSP에 해시를 함께 추가할 것.
+   `style-src`의 `'unsafe-inline'`은 유지해야 한다 — 반딧불이가 입자마다 인라인 CSS
+   변수를 설정한다.
+4. **화면에 새 문구를 추가하면 폰트 서브셋 재생성이 필요할 수 있다.** Pretendard는
+   실제 쓰는 글자만 남겨 서브셋해뒀다. `check-font-coverage.py`가 잡아주며, 검사
+   대상 글자는 **렌더된 DOM**에서 뽑는다(소스를 훑으면 코드 식별자까지 사용 글자로
+   잡힌다). 재서브셋 방법은 `public/assets/fonts/pretendard/pretendard.css` 상단 주석.
+5. **404.html은 빌드가 자동으로 만든다**(`vite.config.ts`의 `copy-index-to-404`).
+   손으로 복사하지 말 것.
+6. **외부 CDN 리소스에 SRI(`integrity`)를 넣지 말 것.** 과거에 적용했다가 라이브 폰트
+   로드가 전면 차단되는 장애가 났다(그 CDN이 요청마다 다른 바이트를 준다).
+7. **6개 앱의 코드는 이 저장소에서 절대 고치지 않는다.** 포털은 링크만 건다.
+8. **`*-freeze-*` 태그를 삭제하거나 옮기지 말 것.** 훅과 저장소 룰셋이 둘 다 막는다.
    새 클론에서는 `git config core.hooksPath .githooks`를 한 번 실행해야 훅이 걸린다.
-7. **배포 확인을 HTTP 200만으로 하지 말 것.** 실제 HTML 내용과 자산 로드까지 확인한다.
-8. 브라우저 캐시 때문에 변경이 안 보일 수 있다 — `?v=숫자`를 붙이거나 Ctrl+F5.
+9. **배포 확인을 HTTP 200만으로 하지 말 것.** 실제 HTML 내용과 자산 로드까지 확인한다.
+
+## 화면이 바뀌지 않았는지 확인하는 법
+
+이 앱은 화면 구성이 여러 차례 조정을 거쳐 확정된 상태라, 리팩터링으로 **보이는 결과가
+바뀌면 안 된다.** 두 가지로 지킨다:
+
+- `tests/locked-geometry.spec.js` — 카드 순서, 3열x2행 열 우선, 플레이어-그리드
+  이음매가 페이지 중심선과 일치, 반딧불이 200개 등을 **수치로** 단언한다. CI에서 돈다.
+- `tests/visual-snapshot.spec.js` — 4개 뷰포트(1600/1180/560/390) 픽셀 비교.
+  **로컬 전용**이다: Playwright 스냅샷은 파일명에 플랫폼이 들어가고 폰트 렌더링도
+  OS마다 달라 리눅스 러너에선 비교가 성립하지 않는다. 기준 이미지는 gitignore 대상이라,
+  큰 변경 전에 직접 만들어두고 쓴다:
+  ```bash
+  git stash && npm run build && npm run test:visual -- --update-snapshots  # 변경 전 기준선
+  git stash pop && npm run build && npm run test:visual                    # 변경 후 비교
+  ```
 
 ## 건드리면 안 되는 것
 
 - `public/assets/bg-loading.webp` — 현재 미사용이지만 재사용 대비 의도적 보존.
 - 로딩 애니메이션의 `prefers-reduced-motion` 미적용 — 명시적으로 제거한 것이라
   되살리지 않는다.
-- 반딧불이(`.motes`) 파티클 개수·애니메이션 구성, 카드 그리드 열 구성, 플레이어 높이
-  동기화 로직 — 전부 여러 차례 조정을 거쳐 확정된 값이다. 임의로 "개선"하지 말 것.
+- 반딧불이 파티클 개수·애니메이션 구성, 카드 그리드 열 구성, 플레이어 높이 동기화
+  로직 — 전부 여러 차례 조정을 거쳐 확정된 값이다. 임의로 "개선"하지 말 것.
 - 방문 시 배경음악 자동재생은 의도된 설계다. 테스트하느라 소리를 끄고 싶으면 제품
   코드가 아니라 테스트하는 쪽에서 처리한다.
 

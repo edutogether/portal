@@ -20,3 +20,6 @@ __pycache__/
 # Playwright 시각 비교 기준 이미지 — 플랫폼별(-win32 등)이라 저장소에 넣지 않는다.
 # 만드는 법은 tests/visual-snapshot.spec.js 상단 주석 참고.
 tests/**/*-snapshots/
+
+# TypeScript 증분 빌드 캐시
+tsconfig.tsbuildinfo

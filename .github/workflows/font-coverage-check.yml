@@ -20,6 +20,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: 의존성 설치
+        run: npm ci
+      - name: 빌드
+        run: npm run build
+      - name: Playwright 브라우저 설치
+        run: npx playwright install --with-deps chromium
+      # 검사 대상 글자는 실제로 그려진 DOM에서 뽑는다(소스를 훑으면 코드 식별자까지
+      # 사용 글자로 잡힌다) — 이 테스트가 test-results/rendered-text.txt를 만든다.
+      - name: 렌더된 텍스트 덤프
+        run: npx playwright test --grep @fonttext
       - name: fonttools 설치
         run: pip install fonttools brotli
       - name: 글자 커버리지 확인

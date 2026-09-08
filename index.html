@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+<!-- script-src는 'self'다. 빌드가 생기면서 스크립트가 전부 외부 파일(/assets/*.js)로
+     빠져 인라인 <script>가 하나도 남지 않으므로, 예전처럼 인라인 스크립트의 sha256
+     해시를 유지할 이유가 없어졌다. 대신 "산출물에 인라인 <script>가 다시 생기면
+     실패"시키는 검사를 CI에 둔다(scripts/check-inline-script.py) — 누가 인라인
+     스크립트를 넣으면 'self'만으로는 조용히 차단되기 때문이다.
+     style-src의 'unsafe-inline'은 그대로 유지해야 한다: 반딧불이가 입자마다
+     인라인 CSS 변수를 설정한다. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';" />
+<title>같교오락실 | 같이교육 체험관</title>
+<meta name="description" content="같이교육에서 만든 앱을 함께 체험해보세요 !" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://edutogether.kr/" />
+<meta property="og:title" content="같교오락실 | 같이교육 체험관" />
+<meta property="og:description" content="같이교육에서 만든 앱을 함께 체험해보세요 !" />
+<meta property="og:image" content="https://edutogether.kr/assets/og-thumb.jpg" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="같교오락실 | 같이교육 체험관" />
+<meta name="twitter:description" content="같이교육에서 만든 앱을 함께 체험해보세요 !" />
+<link id="favicon" rel="icon" type="image/svg+xml" />
+<!-- Pretendard 자가호스팅(2026-08-25) — jsdelivr 요청을 완전히 없앰. SRI는
+     이 폰트에도 절대 다시 시도하지 않는다(2026-08-23 jsdelivr SRI 사고 참고,
+     CLAUDE.md에 기록됨). 사이트가 실제 쓰는 5개 굵기(400/600/700/800/900)만
+     받아뒀다(전체 변수폰트가 아님). -->
+<link rel="stylesheet" href="/assets/fonts/pretendard/pretendard.css" />
+</head>
+<!-- ontouchstart="" 는 장식이 아니라 필수: iOS Safari는 document/body에
+     touchstart 리스너가 하나도 없으면 :active 의사클래스를 아예 계산하지
+     않는다(2026-09-05 대표 확인 — 카드 호버 효과가 모바일에서 전혀 안
+     먹던 원인). 지우면 .app:active / (hover:none) 규칙이 iOS에서 다시
+     조용히 죽는다. -->
+<body ontouchstart="">
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

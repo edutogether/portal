@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
 """
-index.html이 실제로 쓰는 글자가 자가호스팅된 Pretendard 서브셋(assets/fonts/pretendard/)
-에 전부 들어있는지 확인한다. 새 한글 텍스트(특히 새 가사)를 추가하고 재서브셋을
-잊으면, 그 글자만 시스템 폰트로 조용히 폴백된다 — 이 스크립트는 그걸 배포 전에
-CI에서 잡기 위한 것.
+사이트가 실제로 그리는 글자가 자가호스팅된 Pretendard 서브셋에 전부 들어있는지
+확인한다. 새 한글 텍스트(새 카드 문구·새 가사 등)를 추가하고 재서브셋을 잊으면
+그 글자만 시스템 폰트로 조용히 폴백된다 — 배포 전에 CI에서 잡기 위한 검사다.
 
-재서브셋 방법은 assets/fonts/pretendard/pretendard.css 상단 주석 참고.
+**검사 대상 글자는 렌더된 DOM에서 나온다.** tests/font-text.spec.js가 빌드된
+사이트를 실제로 띄워 body의 textContent를 test-results/rendered-text.txt로 덤프하고,
+이 스크립트는 그 파일만 읽는다. 예전에는 index.html 소스를 정규식으로 훑었는데,
+빌드가 생긴 뒤로는 문구가 번들 JS 안 문자열 리터럴로 흩어져서 소스를 훑으면 코드
+식별자와 주석 글자까지 "사용 글자"로 잡힌다(그 오탐은 실제로 한 번 겪었다).
+
+실행 순서:
+  npm run build
+  npx playwright test --grep @fonttext
+  python3 scripts/check-font-coverage.py
+
+재서브셋 방법은 public/assets/fonts/pretendard/pretendard.css 상단 주석 참고.
 """
-import re
 import sys
 from pathlib import Path
 
@@ -17,64 +26,45 @@ sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 from fontTools.ttLib import TTFont
 
 ROOT = Path(__file__).resolve().parent.parent
-INDEX_HTML = ROOT / "public" / "index.html"
+RENDERED_TEXT = ROOT / "test-results" / "rendered-text.txt"
 FONT_DIR = ROOT / "public" / "assets" / "fonts" / "pretendard"
-
-
-def extract_used_chars(html: str) -> set[str]:
-    # HTML 주석(<!-- -->)과 JS/CSS 블록은 화면에 안 그려지므로 먼저 전부 들어낸다.
-    # 예전엔 이걸 안 해서 CSP 관련 head 주석, JS // 주석 안의 단어(예: "옮김",
-    # "깨짐")까지 "사용 글자"로 잘못 잡혔었다(2026-08-25 발견).
-    no_comments = re.sub(r"<!--.*?-->", " ", html, flags=re.S)
-    no_script = re.sub(r"<script[^>]*>.*?</script>", " ", no_comments, flags=re.S)
-    no_style = re.sub(r"<style[^>]*>.*?</style>", " ", no_script, flags=re.S)
-    text_only = re.sub(r"<[^>]+>", " ", no_style)
-    text_only = (
-        text_only.replace("&amp;", "&")
-        .replace("&lt;", "<")
-        .replace("&gt;", ">")
-        .replace("&#39;", "'")
-        .replace("&quot;", '"')
-    )
-    html_chars = set(text_only)
-
-    # JS가 동적으로 그리는 텍스트는 딱 두 종류뿐이라 정확히 짚어서 뽑는다
-    # (모든 작은따옴표 문자열을 다 잡으면 주석 안 단어까지 오염됨).
-    script_match = re.search(r"<script>\n(.*)</script>", no_comments, re.S)
-    script_content = script_match.group(1) if script_match else ""
-    lyric_texts = re.findall(r"text:\s*'((?:[^'\\]|\\.)*)'", script_content)
-    toast_texts = re.findall(r"showToast\('((?:[^'\\]|\\.)*)'\)", script_content)
-    js_chars = set("".join(lyric_texts) + "".join(toast_texts))
-
-    all_chars = html_chars | js_chars
-    return {c for c in all_chars if c.isprintable() or c == " "}
 
 
 def font_covers(path: Path) -> set[int]:
     font = TTFont(str(path))
-    cmap = font.getBestCmap()
-    return set(cmap.keys())
+    return set(font.getBestCmap().keys())
+
+
+def is_emoji_range(cp: int) -> bool:
+    """이모지는 시스템 이모지 폰트가 그리므로 Pretendard가 담당할 대상이 아니다.
+
+    U+1F000 이상뿐 아니라 Misc Symbols/Dingbats 블록(U+2600~U+27BF — ✨ 등 다수의
+    이모지가 여기 있다)도 제외해야 한다. 안 그러면 실제로는 정상 렌더링되는 글자가
+    "서브셋 누락"으로 잘못 잡힌다(2026-08-31 ✨ 오탐). U+FE0F(VS16)는 앞 글자를
+    컬러 이모지로 그리라는 지시자일 뿐 그려지는 글자가 아니라 어떤 폰트에도 글리프가
+    없으므로 같은 이유로 제외한다.
+    """
+    return cp >= 0x1F000 or 0x2600 <= cp <= 0x27BF or cp == 0xFE0F
 
 
 def main() -> int:
-    html = INDEX_HTML.read_text(encoding="utf-8")
-    used_chars = extract_used_chars(html)
+    if not RENDERED_TEXT.exists():
+        print(
+            "::error::렌더된 텍스트 덤프가 없습니다: "
+            f"{RENDERED_TEXT.relative_to(ROOT)}\n"
+            "  먼저 `npm run build` 후 `npx playwright test --grep @fonttext`를 실행하세요."
+        )
+        return 1
+
+    used_chars = set(RENDERED_TEXT.read_text(encoding="utf-8"))
 
     covered: set[int] = set()
     for woff2_path in sorted(FONT_DIR.glob("*.woff2")):
         covered |= font_covers(woff2_path)
 
-    # 이모지(예: 🕹️ 파비콘, ✨)는 애초에 시스템 이모지 폰트로 렌더링되고
-    # Pretendard가 담당할 대상이 아니라서 제외한다. U+1F000 이상뿐 아니라
-    # Misc Symbols/Dingbats 블록(U+2600~U+27BF, ✨ 등 다수의 이모지가 이
-    # 대역에 있음)도 같은 이유로 제외해야 한다 — 안 그러면 실제로는 시스템
-    # 이모지 폰트로 정상 렌더링되는 글자가 "서브셋 누락"으로 잘못 잡힌다
-    # (2026-08-31 ✨ 오탐 발견).
-    # U+FE0F(VS16)는 앞 글자를 컬러 이모지로 그리라는 지시자일 뿐 그 자체로는
-    # 그려지는 글자가 아니라서 어떤 폰트에도 실제 글리프가 없다 — 이모지와
-    # 같은 이유로 제외한다.
-    def is_emoji_range(cp):
-        return cp >= 0x1F000 or 0x2600 <= cp <= 0x27BF or cp == 0xFE0F
+    if not covered:
+        print(f"::error::폰트 파일을 찾지 못했습니다: {FONT_DIR.relative_to(ROOT)}")
+        return 1
 
     missing = sorted(
         c for c in used_chars
@@ -82,15 +72,13 @@ def main() -> int:
     )
 
     if missing:
-        print("::error::Pretendard 서브셋에 없는 글자가 index.html에서 쓰이고 있습니다:")
+        print("::error::Pretendard 서브셋에 없는 글자가 화면에 쓰이고 있습니다:")
         for c in missing:
             print(f"::error::  U+{ord(c):04X} ({c!r})")
-        print(
-            "재서브셋 방법: assets/fonts/pretendard/pretendard.css 상단 주석 참고"
-        )
+        print("재서브셋 방법: public/assets/fonts/pretendard/pretendard.css 상단 주석 참고")
         return 1
 
-    print(f"OK — 사용 글자 {len(used_chars)}자 전부 서브셋에 포함됨")
+    print(f"OK — 화면에 그려지는 글자 {len(used_chars)}자 전부 서브셋에 포함됨")
     return 0
 
 

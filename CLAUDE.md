@@ -5,13 +5,18 @@
 ## 정체성
 - **저장소**: `github.com/edutogether/portal` (2026-08-13 신규 생성)
 - **라이브**: `https://edutogether.kr` — **2026-09-01부터 Firebase Hosting**(프로젝트 `edutogether-portal`, 계정 `edutogether2015@gmail.com`). 원래 GitHub Pages였다가 legacy→Actions 기반으로 한 번 바뀌었고(2026-08-29), 그다음 Firebase Hosting으로 완전히 이전했다(2026-09-01) — **GitHub Pages는 이제 이 저장소에서 완전히 꺼져있다**(`gh api -X DELETE repos/edutogether/portal/pages`로 비활성화, `edutogether.github.io/portal/`도 더 이상 안 뜸). `CNAME`/`_config.yml`(Jekyll 전용)도 삭제함 — 다시 만들지 말 것.
-- **구성**: **2026-09-02부터 실제 배포 대상은 `public/` 서브디렉터리로 좁혀짐**(`firebase.json`의 `"public": "public"`) — `public/index.html`(약 1340줄, PC 데스크탑 뮤직 플레이어 + 모바일 하단 고정 플레이어 포함) + `public/assets/`가 실제 라이브에 나가고, `CLAUDE.md`/`scripts/`/`tests/`/`.github/` 등 나머지는 저장소엔 있지만 `public/` 밖이라 애초에 배포 스캔 대상에 안 들어간다(이전엔 저장소 루트 전체를 배포 대상으로 두고 `ignore` 목록으로 위험한 것만 빼는 부정목록 방식이었는데, 그 목록에서 빠뜨린 게 그대로 공개되는 사고가 났었음 — 아래 참고. 지금은 애초에 `public/` 밖은 존재 자체를 안 봄). `.github/workflows/`(배포·링크 헬스체크·동기화 확인·월간 하트비트·재생 스모크 테스트·폰트 커버리지·PR 미리보기 배포). **index.html 자체엔 빌드 과정 없음**(변환/번들링 없이 그대로 배포). `deploy.yml`이 push마다 sync-check(`public/index.html`/`public/404.html` 동기화) + CSP 해시 검증(`scripts/check-csp-hash.py`) + Playwright 스모크테스트를 먼저 돌리고, **전부 통과해야만** `deploy` job이 실행돼 `FirebaseExtended/action-hosting-deploy`로 Firebase Hosting에 실제 반영된다(이전 legacy Pages 시절엔 테스트 결과와 무관하게 무조건 배포됐음). 배포 직후엔 `deploy.yml`이 실제 라이브 URL을 curl로 재확인해 예상 콘텐츠가 실제로 나오는지까지 검증한다(2026-09-01 추가). 배포 크리덴셜은 GitHub 저장소 시크릿 `FIREBASE_SERVICE_ACCOUNT_EDUTOGETHER_PORTAL`(Firebase Hosting Admin 권한 서비스 계정)로 관리되며 `firebase init hosting:github`로 생성됨. `firebase-hosting-pull-request.yml`은 PR마다 별개의 임시 미리보기 URL에만 배포하고 프로덕션엔 영향 없음. `sync-check.yml`/`player-smoke-test.yml`은 `deploy.yml`의 test job과 검사 내용이 겹쳐서 2026-09-01부터 `push`가 아니라 `pull_request`에서만 돈다(PR 사전검증 용도로만 남기고 main push 시 3중 실행되던 것 정리) — main에 직접 push할 땐 `deploy.yml`의 test job만 게이트로 작동한다.
+- **구성**: **2026-09-08부터 React + TypeScript + Vite로 빌드한다**(그 전에는 빌드 없이 `public/index.html` 한 파일을 그대로 배포했음 — 그 시점 고정점은 태그 `portal-freeze-20260908-pre-react`). 소스는 `src/`(components/player/hooks/data/styles), 이미지·폰트·음원은 `public/assets/`, **배포 대상은 빌드 산출물 `dist/`**(`firebase.json`의 `"public": "dist"`, 커밋하지 않음 — CI가 배포 직전에 다시 빌드). `404.html`은 빌드가 `index.html`을 복사해 만든다(`vite.config.ts`의 `copy-index-to-404`) — 손으로 복사하던 예전 방식은 사라졌다. `deploy.yml`이 push마다 린트 → 빌드 → 인라인 script 검사 → 404 동일성 → Playwright 18개 → 폰트 커버리지를 돌리고, **전부 통과해야만** `deploy` job이 실행돼 Firebase Hosting에 반영된다. 배포 직후엔 실제 라이브 URL을 curl로 재확인한다. 배포 크리덴셜은 GitHub 시크릿 `FIREBASE_SERVICE_ACCOUNT_EDUTOGETHER_PORTAL`. `firebase-hosting-pull-request.yml`은 PR마다 임시 미리보기 URL에만 배포한다. `sync-check.yml`/`player-smoke-test.yml`은 `deploy.yml`과 검사가 겹쳐서 `pull_request`에서만 돈다.
 - **보안 헤더(2026-09-01 추가)**: GitHub Pages는 커스텀 HTTP 헤더를 지원 안 해서 `X-Frame-Options` 등을 못 걸었는데, Firebase Hosting으로 옮기면서 `firebase.json`의 `hosting.headers`에 `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`를 추가함(Codyssey와 동일 패턴). CSP는 여전히 `index.html`의 `<meta>` 태그 방식을 그대로 유지 — Firebase 헤더로 중복 선언하면 정책이 겹쳐 예상 밖 충돌이 날 수 있어 일부러 안 건드림.
 - **상태**: **프리즈됨, 실운영 모드** — 최신 태그 `portal-freeze-20260908-audited-100`(2026-09-08 대표 지시로 종합감사 진행 — eslint 도입 + QUIZ TOGETHER 썸네일 재교체 + link-healthcheck.yml Poster Studio 기대 문자열 갱신까지 반영 후 Sonnet+Opus 독립 감사 10/10 전부 100점 확인 시점, 태그 메시지에 감사 상세 전문 있음). **이 태그 이후 문서 정비 커밋 있음**(README/AGENTS/`.claude/rules/app.md` 신설 + `HANDOFF.md`를 `_docs/ops/`로 이동 — 문서만 바뀌고 라이브 콘텐츠는 그대로라 새 태그는 찍지 않았다. 태그 정리는 9/30 감사 때). 다음 정기감사는 **2026-09-30** 예정 — 그 전까지는 이 세션이 먼저 나서서 재감사·재작업을 제안하지 않는다(대표 지시). 그 이전 태그들은 옮기지 말고 보존: `20260813/14/14b/17/20/23/23b/24/24b/25/25b/824c/25c/25d/25e/25f/25g/25h/26/26b/26c/26d/26e/26f/26f2/26g/829/901/901-final/901-firebase/901-audited/902/902-audited-100/903-audited-100/905-audited-100`. `edutogether.kr`는 2026-08-25에 GitHub 조직 도메인 인증(Verified) 완료됨(이건 GitHub 조직 인증이라 Firebase 이전과 무관하게 유지됨).
-- **2026-09-03 실사용 버그 수정**: 로딩 화면이 사라지는 순간 뒤로 메인 화면이 그림자처럼 잠깐 비쳐 보이는 문제가 실사용 중 보고됨. 원인 둘: ①`#loader` 배경이 반투명 그라디언트(최대 알파 .62)+이미지뿐이라 로더 자신이 완전히 불투명하지 않았음 → 마지막 레이어에 불투명 단색(`#0b0e1f`, `body::before`와 같은 패턴) 추가로 해결. ②로더를 숨기는 로직이 진행 바 애니메이션(2.1s)만 끝나면 실제 페이지 로딩 상태와 무관하게 실행됐음 → "최소 연출시간"과 "실제 페이지 로드완료(`window` `load`)" 둘 다 만족해야 숨기게 변경(8초 안전장치 유지, 스크립트가 body 맨 끝이라 실행 시점에 이미 `load`가 지나갔을 수 있는 것도 `readyState` 동기 선체크로 처리). 커밋 `6a194a8`, 회귀 테스트는 `tests/portal.spec.js`에 추가(`971ee95`).
-- **테스트**: `tests/player.spec.js`(Playwright, 회귀 스모크 테스트 8개)가
-  push/PR마다 CI에서 돈다 — index.html 자체는 여전히 빌드 없는 정적 파일이고
-  package.json/playwright는 테스트 전용(배포 산출물과 무관).
+- **2026-09-03 실사용 버그 수정**: 로딩 화면이 사라지는 순간 뒤로 메인 화면이 그림자처럼 잠깐 비쳐 보이는 문제가 실사용 중 보고됨. 원인 둘: ①`#loader` 배경이 반투명 그라디언트(최대 알파 .62)+이미지뿐이라 로더 자신이 완전히 불투명하지 않았음 → 마지막 레이어에 불투명 단색(`#0b0e1f`, `body::before`와 같은 패턴) 추가로 해결. ②로더를 숨기는 로직이 진행 바 애니메이션(2.1s)만 끝나면 실제 페이지 로딩 상태와 무관하게 실행됐음 → "최소 연출시간"과 "실제 페이지 로드완료(`window` `load`)" 둘 다 만족해야 숨기게 변경(8초 안전장치 유지, 스크립트가 body 맨 끝이라 실행 시점에 이미 `load`가 지나갔을 수 있는 것도 `readyState` 동기 선체크로 처리). 커밋 `6a194a8`, 회귀 테스트는 `tests/portal.spec.js`에 추가(`971ee95`). **2026-09-08 리액트 전환에서 판정 방식이 바뀌었다**: `window`의 `load`는 HTML 파싱 시점에 발견된 자산만 기다려서, 화면을 자바스크립트로 그리면 그 뒤에 시작되는 이미지 요청을 기다려주지 않는다(그대로 옮겼더니 회귀 테스트가 바로 잡아냄). 지금은 프록시 이벤트 대신 실제로 필요한 것을 직접 기다린다 — 웹폰트 로드, 화면의 모든 `<img>`, 로더 자신의 배경 이미지(`src/components/Loader.tsx`). 8초 안전장치는 유지.
+- **테스트**: Playwright 18개가 push/PR마다 CI에서 돈다 — 재생 스모크(`player.spec.js`),
+  실사용 회귀(`portal.spec.js`), **LOCKED 설계 결정을 수치로 단언하는
+  `locked-geometry.spec.js`**(카드 순서·3열x2행 열우선·플레이어 이음매가 페이지 중심선과
+  일치·반딧불이 200개 등), 폰트 검사용 렌더 텍스트 덤프(`font-text.spec.js`).
+  테스트는 빌드된 `dist/`를 대상으로 돈다.
+  `visual-snapshot.spec.js`(4개 뷰포트 픽셀 비교)는 **로컬 전용**이다 — Playwright
+  스냅샷은 파일명에 플랫폼이 들어가고 폰트 렌더링도 OS마다 달라 리눅스 러너에선 비교가
+  성립하지 않는다. 기준 이미지는 gitignore 대상이고, 큰 변경 전에 직접 만들어 쓴다.
 - **⚠️ 태그 이름의 날짜만 보고 "이게 최신이겠지"라고 판단하지 말 것.** 과거에
   UTC/KST 타임스탬프 혼선으로 `portal-freeze-20260825`가 실제로는
   `portal-freeze-20260824c`보다 더 과거 커밋을 가리키는 일이 있었다.
@@ -138,7 +143,7 @@ AI Ways Incheon 일시 오류 이슈(#1, 재확인 결과 자연 해소돼 닫�
   지적해서 위상을 흩어지게 바꿈. 델레이를 dur에 비례시키지 않고 고정 범위로
   뽑으면 주기가 짧은 입자들이 한 바퀴를 여러 번 돌아 결국 다시 비슷한 위상끼리
   뭉친다 — 이 방식으로 되돌리지 말 것.
-- **CSP script-src가 2026-09-01부터 `'unsafe-inline'` 대신 sha256 해시로 좁혀짐** — 2026-08-25에 처음 시도했다가 로컬에서 계산한 해시값이 실제 브라우저 CSP 엔진이 요구하는 값과 안 맞아서(원인 특정 못 함) unsafe-inline으로 되돌린 적이 있다. 2026-09-01 재조사로 원인을 찾음: CSP 해시는 `<script>` 태그 바로 뒤의 첫 줄바꿈(`\n`)까지 포함한 텍스트 전체를 대상으로 계산해야 하는데, 그때 쓴 추출 방식이 그 첫 `\n`을 빠뜨리고 있었다 — 바이트 하나만 빠져도 SHA256 값 전체가 완전히 달라지므로, Python/Node.js/브라우저 crypto.subtle.digest 세 방법이 서로는 일치하면서도 실제 필요한 값과는 다른 값을 낸 것과 정확히 들어맞는다. 로컬에서 실제 CSP 위반 콘솔 에러로 재현해 원인을 확인한 뒤 고치고, Playwright 8개 전부 통과 확인 후 재적용함(구체적 근거는 `index.html` 상단 주석 참고). **`<script>` 내용을 단 한 글자라도 고치면 이 해시가 깨져서 스크립트 전체가 조용히 실행되지 않게 되므로**, `scripts/check-csp-hash.py`가 이걸 push/PR마다 자동으로 검증한다(`deploy.yml`/`sync-check.yml`에 연결됨) — 수동으로 해시를 재계산할 필요는 없고, CI가 실패하면 그 스크립트가 알려주는 실제 해시값으로 갈아끼우면 된다.
+- **CSP script-src는 2026-09-08부터 `'self'`다.** 리액트 전환으로 스크립트가 전부 외부 파일(`/assets/*.js`)로 빠져서 인라인 스크립트가 하나도 남지 않았고, 예전처럼 인라인 스크립트의 sha256 해시를 유지할 대상 자체가 없어졌다(그 전 이력: 2026-08-25 첫 시도 실패 → 2026-09-01에 원인을 찾아 재적용 — `<script>` 태그 바로 뒤 첫 줄바꿈까지 포함해 해시해야 한다는 것). **검사는 없애지 않고 지키는 대상을 바꿨다**: `scripts/check-inline-script.py`가 산출물에 인라인 `<script>`가 생기면 CI를 실패시킨다 — `'self'`만으로는 인라인 스크립트가 **조용히** 차단되기 때문이다(예전 해시 불일치와 똑같은 증상). `style-src`의 `'unsafe-inline'`은 그대로 유지해야 한다: 반딧불이가 입자마다 인라인 CSS 변수를 설정한다.
 
 - **⚠️ (해결됨, 2026-09-02) `firebase.json`의 `ignore` 패턴 `**/.*`는 점(.)으로 시작하는 디렉터리 "안의, 점으로 시작하지 않는 파일"은 걸러내지 못한다** — 2026-09-01 Firebase Hosting 이전 직후 이 맹점 때문에 `.git/config`, `.git/HEAD`, `.github/workflows/deploy.yml`, `.claude/settings.json`, `.githooks/pre-push`가 그대로 라이브에 공개됐었다(Opus 독립 감사로 발견, `.git/config`엔 배포마다 갱신되는 GitHub Actions 토큰(~1시간 유효)까지 노출되고 있었음 — 워크플로우 권한이 `contents: read`뿐이고 저장소도 공개라 실질 피해는 없었지만 구조적으로 위험했음). 처음엔 `ignore`에 `.git/**` 등을 명시적으로 추가하는 임시 패치로 막았다가, 근본 원인(저장소 루트 전체를 배포 대상으로 두는 부정목록 구조 자체)을 없애기 위해 **2026-09-02에 배포 대상을 `public/` 서브디렉터리로 완전히 좁힘**(`"public": "public"`) — 이제 `public/` 밖에 있는 건 무엇이든(새 점디렉터리 포함) 애초에 배포 스캔 대상이 아니라 이 부류의 사고가 구조적으로 재발 불가능하다. `ignore`엔 안전망으로 `**/.*`만 남겨둠.
 
@@ -185,11 +190,9 @@ AI Ways Incheon 일시 오류 이슈(#1, 재확인 결과 자연 해소돼 닫�
 교육청 행사 + 학생 및 교사 대상 + 교육청에서 저작권 등 공문 및 계약 관리함.**
 
 ## 작업 시 주의
-- `public/404.html`은 `public/index.html`을 그대로 복사한 파일이다(빌드 과정이 없어서
-  자동 동기화가 안 됨). **`public/index.html`을 고칠 때마다
-  `cp public/index.html public/404.html`을 잊지 말 것** — 안 하면 존재하지 않는
-  경로로 들어온 방문자가 옛날 버전을 보게 된다. (2026-09-02부터 두 파일 다
-  저장소 루트가 아니라 `public/` 서브디렉터리 안에 있음 — 아래 "구성" 참고.)
+- **`404.html`은 빌드가 자동으로 만든다**(`vite.config.ts`의 `copy-index-to-404`가
+  `dist/index.html`을 `dist/404.html`로 복사). 손으로 복사하던 예전 방식은 없어졌다 —
+  `cp` 하려고 하지 말 것. 안전망으로 CI가 두 산출물이 동일한지 계속 확인한다.
 - `.claude/settings.json`(2026-08-26부터 다른 5개 앱과 동일하게 git 추적 대상 — 이전엔
   `.claude/` 전체가 `.gitignore` 처리돼 안 올라가고 있었음)은 커밋 대상이지만,
   `.claude/` 안의 나머지(로컬 정적 서버 `static-server.js` + `launch.json`)는 여전히

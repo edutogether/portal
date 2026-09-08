@@ -1,0 +1,21 @@
+/* 배경에 떠 있는 흐릿한 네온 원들. 위치·색은 데이터(orbs.ts)에 있다. */
+
+.orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+
+.orb { position: absolute; border-radius: 50%; filter: blur(44px); opacity: 0.2;
+  animation: float 22s ease-in-out infinite; animation-play-state: paused; }
+.orb2 { position: absolute; border-radius: 50%; filter: blur(24px); opacity: 0.22;
+  animation: float 22s ease-in-out infinite; animation-play-state: paused; }
+.orb-xl { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.16;
+  animation: float 34s ease-in-out infinite; animation-play-state: paused; }
+.orb-md { position: absolute; border-radius: 50%; filter: blur(30px); opacity: 0.36;
+  animation: float 24s ease-in-out infinite; animation-play-state: paused; }
+.orb-sm2 { position: absolute; border-radius: 50%; filter: blur(16px); opacity: 0.46;
+  animation: float 20s ease-in-out infinite; animation-play-state: paused; }
+
+/* 성능 때문에 원 대부분은 정적으로 고정하고, 이 클래스가 붙은 소수만 움직인다
+   (backdrop-filter 5곳이 매 프레임 다시 블러 계산하는 걸 피하려는 목적 — 카드 뒤에
+   깐 원들은 특히 절대 움직이면 안 된다). */
+.orbs .float { animation-play-state: running; }
+
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-22px); } }

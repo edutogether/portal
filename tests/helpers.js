@@ -16,4 +16,4 @@ async function settle(page) {
   await page.waitForTimeout(250);
 }
 
-module.exports = { settle };
+export { settle };

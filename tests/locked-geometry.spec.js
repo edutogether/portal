@@ -4,8 +4,8 @@
 // "뭔가 달라졌다"까지만 알려주고 왜 달라졌는지는 못 짚어주는데, 이쪽은 어떤
 // 설계 결정이 깨졌는지 이름으로 알려준다. 그리고 이 단언들은 픽셀이 아니라
 // 계산된 값이라 OS/렌더러가 달라도 그대로 통하므로 CI에서도 돈다.
-const { test, expect } = require('@playwright/test');
-const { settle } = require('./helpers');
+import { test, expect } from '@playwright/test';
+import { settle } from './helpers.js';
 
 test('LOCKED — 데스크탑 카드 순서·그리드·이음매·반딧불이', async ({ page }) => {
   await page.setViewportSize({ width: 1600, height: 900 });

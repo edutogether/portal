@@ -1,15 +1,30 @@
 {
-  "name": "edutogether-portal-tests",
+  "name": "edutogether-portal",
   "private": true,
-  "description": "이 저장소는 빌드 과정 없음 — 이 package.json은 오직 재생 관련 회귀를 잡는 Playwright 스모크 테스트 전용이다. index.html은 지금처럼 그대로 정적 배포된다.",
+  "description": "같교오락실 — 같이교육 앱 6종 전시용 포털. React + TypeScript + Vite.",
   "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
     "test": "playwright test --grep-invert @snapshot",
-    "lint": "eslint .",
-    "test:visual": "playwright test --grep @snapshot"
+    "test:visual": "playwright test --grep @snapshot",
+    "lint": "eslint ."
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.48.0",
-    "eslint": "^10.10.0"
-  }
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "eslint": "^10.10.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.70.0",
+    "vite": "^8.2.2"
+  },
+  "dependencies": {
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "type": "module"
 }
