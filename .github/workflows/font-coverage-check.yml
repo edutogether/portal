@@ -30,7 +30,7 @@ jobs:
       - name: Playwright 브라우저 설치
         run: npx playwright install --with-deps chromium
       # 검사 대상 글자는 실제로 그려진 DOM에서 뽑는다(소스를 훑으면 코드 식별자까지
-      # 사용 글자로 잡힌다) — 이 테스트가 test-results/rendered-text.txt를 만든다.
+      # 사용 글자로 잡힌다) — 이 테스트가 .cache/rendered-text.txt를 만든다.
       - name: 렌더된 텍스트 덤프
         run: npx playwright test --grep @fonttext
       - name: fonttools 설치

@@ -3,10 +3,8 @@ import { usePlayer } from "../player/PlayerContext";
 import { useSeekDrag } from "../player/useSeekDrag";
 import { fmt, volumeClass } from "../player/format";
 import { LyricsView } from "../player/LyricsView";
-import {
-  MoreIcon, NextIcon, PauseIcon, PlayIcon, PrevIcon, RepeatIcon, ShuffleIcon,
-  StarIcon, VolumeIcon,
-} from "./Icons";
+import { MoreIcon, StarIcon, VolumeIcon } from "./Icons";
+import { Transport } from "./Transport";
 import "./PlayerMobile.css";
 
 // 화면 아래 고정되는 압축 플레이어. 데스크탑 플레이어와 같은 상태를 구독하므로
@@ -48,28 +46,7 @@ export function PlayerMobile({ onMore }: { onMore: () => void }) {
         <span id="durTimeM">-{fmt(seek.remaining)}</span>
       </div>
       <div className="pm-controls">
-        <button
-          className={`skip-btn toggle-btn${p.shuffleOn ? " active" : ""}`} id="shuffleBtnM"
-          aria-label="셔플" type="button" onClick={p.toggleShuffle}
-        >
-          <ShuffleIcon />
-        </button>
-        <button className="skip-btn" id="prevBtnM" aria-label="이전 곡" type="button" onClick={p.prev}>
-          <PrevIcon />
-        </button>
-        <button className="play-btn" id="playBtnM" aria-label="재생/일시정지" type="button" onClick={p.togglePlay}>
-          <PlayIcon id="iconPlayM" hidden={p.isPlaying} />
-          <PauseIcon id="iconPauseM" hidden={!p.isPlaying} />
-        </button>
-        <button className="skip-btn" id="nextBtnM" aria-label="다음 곡" type="button" onClick={p.next}>
-          <NextIcon />
-        </button>
-        <button
-          className={`skip-btn toggle-btn${p.repeatOn ? " active" : ""}`} id="repeatBtnM"
-          aria-label="반복" type="button" onClick={p.toggleRepeat}
-        >
-          <RepeatIcon />
-        </button>
+        <Transport idSuffix="M" />
         <div className="pm-volume">
           <button
             className={`vol-icon-btn ${volumeClass(p.volume, p.muted)}`} id="muteBtnM"

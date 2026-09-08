@@ -11,7 +11,7 @@ function AppCard({ app }: { app: AppLink }) {
     <a className="app" href={app.href} target="_blank" rel="noopener noreferrer">
       <div className="thumb">
         <img
-          className="thumb-img" src={app.thumb} alt={`${app.name} 미리보기`} loading="lazy"
+          className="thumb-img" src={app.thumb} alt={app.alt} loading="lazy"
           style={thumbBroken ? { display: "none" } : undefined}
           onError={() => setThumbBroken(true)}
         />

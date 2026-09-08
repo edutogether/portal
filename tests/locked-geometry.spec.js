@@ -91,6 +91,27 @@ test('LOCKED — 데스크탑 카드 순서·그리드·이음매·반딧불이'
   }
 });
 
+test('LOCKED — 카드 썸네일 대체 텍스트가 전환 전과 같다', async ({ page }) => {
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await settle(page);
+
+  // 대체 텍스트는 화면에 그려지지 않아서 스크린샷 비교로도, computed style
+  // 대조로도 안 잡힌다. 실제로 리액트 전환 때 카드 제목에서 조립하도록 바꿨다가
+  // QUIZ TOGETHER만 "같이교육 퀴즈 미리보기" -> "QUIZ TOGETHER 미리보기"로
+  // 바뀐 채 배포된 적이 있다(감사에서 발견). 그래서 값을 여기 고정한다.
+  const alts = await page.locator('main .thumb-img').evaluateAll((els) =>
+    els.map((el) => el.getAttribute('alt'))
+  );
+  expect(alts).toEqual([
+    'Poster Studio 미리보기',
+    'Voice Cinema 미리보기',
+    '같이교육 퀴즈 미리보기',
+    'CLASSCADE 미리보기',
+    'AI Ways Incheon 미리보기',
+    'Be a Googler 미리보기',
+  ]);
+});
+
 test('LOCKED — 플레이어 높이가 카드 위쪽 2행에 맞춰진다', async ({ page }) => {
   await page.setViewportSize({ width: 1600, height: 900 });
   await settle(page);

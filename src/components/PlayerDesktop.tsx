@@ -3,10 +3,8 @@ import { usePlayer } from "../player/PlayerContext";
 import { useSeekDrag } from "../player/useSeekDrag";
 import { fmt, volumeClass } from "../player/format";
 import { LyricsView } from "../player/LyricsView";
-import {
-  MoreIcon, NextIcon, PauseIcon, PlayIcon, PrevIcon, RepeatIcon, ShuffleIcon,
-  StarIcon, VolumeIcon,
-} from "./Icons";
+import { MoreIcon, StarIcon, VolumeIcon } from "./Icons";
+import { Transport } from "./Transport";
 import "./PlayerDesktop.css";
 
 export function PlayerDesktop({ onMore }: { onMore: () => void }) {
@@ -47,28 +45,7 @@ export function PlayerDesktop({ onMore }: { onMore: () => void }) {
             <span id="durTime">-{fmt(seek.remaining)}</span>
           </div>
           <div className="controls-row">
-            <button
-              className={`skip-btn toggle-btn${p.shuffleOn ? " active" : ""}`} id="shuffleBtn"
-              aria-label="셔플" type="button" onClick={p.toggleShuffle}
-            >
-              <ShuffleIcon />
-            </button>
-            <button className="skip-btn" id="prevBtn" aria-label="이전 곡" type="button" onClick={p.prev}>
-              <PrevIcon />
-            </button>
-            <button className="play-btn" id="playBtn" aria-label="재생/일시정지" type="button" onClick={p.togglePlay}>
-              <PlayIcon id="iconPlay" hidden={p.isPlaying} />
-              <PauseIcon id="iconPause" hidden={!p.isPlaying} />
-            </button>
-            <button className="skip-btn" id="nextBtn" aria-label="다음 곡" type="button" onClick={p.next}>
-              <NextIcon />
-            </button>
-            <button
-              className={`skip-btn toggle-btn${p.repeatOn ? " active" : ""}`} id="repeatBtn"
-              aria-label="반복" type="button" onClick={p.toggleRepeat}
-            >
-              <RepeatIcon />
-            </button>
+            <Transport />
           </div>
           <div className="volume">
             <button

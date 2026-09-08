@@ -36,7 +36,7 @@
 ## 명령
 - 로컬 실행: `npm run dev`
 - 빌드: `npm run build` (타입 검사 + Vite 빌드 + 404.html 자동 복사)
-- 테스트: `npm test` (Playwright 18개, 빌드된 `dist/`를 대상으로 돔 — 먼저 빌드할 것)
+- 테스트: `npm test` (Playwright 19개, 빌드된 `dist/`를 대상으로 돔 — 먼저 빌드할 것)
 - 시각 비교: `npm run test:visual` (로컬 전용, 기준 이미지는 gitignore)
 - 린트: `npm run lint`
 - 배포 전 게이트 수동 확인: `python3 scripts/check-inline-script.py`,
@@ -60,6 +60,12 @@
   폰트로 조용히 폴백된다. 검사 대상 글자는 **렌더된 DOM**에서 뽑는다 — 소스를 훑으면
   코드 식별자까지 사용 글자로 잡히기 때문이다. (전환 전 검사는 정적 HTML만 봐서
   곡 길이 표시 `2:05`의 숫자가 빠진 걸 못 잡고 있었다.)
+- **화면에 안 보이는 값을 다른 값에서 조립하는 것.** 카드 썸네일의 대체 텍스트(alt)를
+  카드 제목에서 조립했다가, QUIZ TOGETHER만 "같이교육 퀴즈 미리보기"에서
+  "QUIZ TOGETHER 미리보기"로 바뀐 채 배포된 적이 있다(2026-09-08, 감사에서 발견).
+  **화면에 그려지지 않는 값이라 스크린샷 비교도 computed style 대조도 못 잡는다.**
+  대체 텍스트·aria-label 같은 값은 데이터에 그대로 두고 그대로 쓸 것. 지금은
+  `tests/locked-geometry.spec.js`가 여섯 개 값을 문자열로 고정한다.
 - **화면이 바뀌지 않았는지 확인하지 않고 리팩터링하는 것.** 큰 변경 전에
   `npm run test:visual -- --update-snapshots`로 기준선을 만들어두고, 변경 후 비교한다.
   `tests/locked-geometry.spec.js`는 수치로도 같이 지킨다.

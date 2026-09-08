@@ -9,6 +9,9 @@ export interface AppLink {
   name: string;
   href: string;
   thumb: string;
+  /** 썸네일 대체 텍스트. name에서 조립하지 말 것 — QUIZ TOGETHER는 카드 제목과
+   *  대체 텍스트가 일부러 다르다("같이교육 퀴즈 미리보기"). 조립하면 화면에는
+   *  아무 변화가 없어서 스크린샷·computed style 비교로도 안 잡힌다. */
   alt: string;
   hook: string;
   full: string;

@@ -1,18 +1,18 @@
 name: 배포 (테스트 통과 후 Firebase Hosting)
 
-# 2026-08-29~09-01: GitHub Pages(legacy → Actions 기반) → Firebase Hosting
-# 순으로 전환. 이전엔 push하면 테스트 결과와 무관하게 무조건 배포됐다가,
-# Actions 기반 GitHub Pages로 바꾸면서 테스트 게이트가 생겼고, 이제는 배포
-# 대상만 Firebase Hosting으로 바뀌었을 뿐 게이트는 그대로 유지한다: sync-check
-# (index.html/404.html 동기화) + CSP 해시 검증 + 폰트 서브셋 커버리지 검증 +
-# 린트(eslint, 2026-09-07 CONVENTIONS.md §5.2 추가 — 저장소에 실제 있는
-# .js 파일만 대상, index.html 인라인 스크립트는 HTML 파싱이 필요해 대상 아님)
-# + 재생 스모크 테스트가 전부 통과해야만 실제 배포가 진행된다(2026-09-02부터
-# 폰트 커버리지 검사도 이 게이트 안으로 편입 — 이전엔 font-coverage-check.yml이
-# 배포와 병렬로만 돌아서, 서브셋에 없는 글자를 추가한 커밋이 이슈가 열리기도
-# 전에 먼저 라이브에 나갈 수 있었음).
-# index.html 자체는 여전히 빌드 없는 정적 파일 — 여기서도 변환/번들링 없이
-# 저장소 내용을 그대로 업로드만 한다.
+# 배포 이력: GitHub Pages(legacy → Actions 기반) → Firebase Hosting(2026-09-01) →
+# React+TS+Vite 빌드 도입(2026-09-08). 이전엔 push하면 테스트 결과와 무관하게 무조건
+# 배포됐지만, 지금은 아래 게이트를 전부 통과해야만 deploy job이 실행된다:
+#   린트(eslint) → 빌드 → 산출물에 인라인 script 없음 → dist/index.html과 404.html
+#   동일 → Playwright(재생 스모크 + LOCKED 기하 + 렌더 텍스트 덤프) → 폰트 서브셋
+#   커버리지.
+# "인라인 script 없음" 검사는 예전의 CSP 해시 검증을 대체한 것이다 — 빌드로 스크립트가
+# 외부 파일로 빠져 해시를 맞출 대상이 사라졌지만, 인라인 스크립트가 다시 들어오면
+# CSP(script-src 'self')가 조용히 차단하므로 그걸 막는 검사로 바꿔 남겼다.
+# 폰트 커버리지는 2026-09-02부터 이 게이트 안에 있다 — 이전엔 별도 워크플로가 배포와
+# 병렬로만 돌아서, 서브셋에 없는 글자를 추가한 커밋이 이슈가 열리기도 전에 먼저
+# 라이브에 나갈 수 있었다.
+# 배포 대상(dist/)은 저장소에 커밋하지 않으므로 test job과 deploy job이 각자 빌드한다.
 
 on:
   push:

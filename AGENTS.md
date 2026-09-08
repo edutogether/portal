@@ -37,7 +37,7 @@ npm ci                              # 의존성 설치
 npm run dev                         # 개발 서버
 npm run build                       # 타입 검사 + 빌드 (dist/index.html -> 404.html 복사 포함)
 npm run lint                        # eslint (TypeScript + 훅 의존성 배열)
-npm test                            # Playwright 18개 (스크린샷 비교 제외)
+npm test                            # Playwright 19개 (스크린샷 비교 제외)
 npm run test:visual                 # 스크린샷 비교 (로컬 전용, 아래 참고)
 
 python3 scripts/check-inline-script.py    # 산출물에 인라인 <script>가 없는지
@@ -46,7 +46,7 @@ python3 scripts/check-font-coverage.py    # 폰트 서브셋 글자 커버리지
 
 `npm test`와 두 파이썬 검사는 **빌드된 `dist/`를 대상으로** 돈다 — 먼저
 `npm run build`를 실행해야 한다. 폰트 검사는 `npm test`가 만들어주는
-`test-results/rendered-text.txt`를 읽으므로 테스트 뒤에 실행한다.
+`.cache/rendered-text.txt`를 읽으므로 테스트 뒤에 실행한다.
 
 ## ⚠️ 자주 틀리는 것 — 여기가 이 저장소의 핵심
 
@@ -84,7 +84,8 @@ python3 scripts/check-font-coverage.py    # 폰트 서브셋 글자 커버리지
 바뀌면 안 된다.** 두 가지로 지킨다:
 
 - `tests/locked-geometry.spec.js` — 카드 순서, 3열x2행 열 우선, 플레이어-그리드
-  이음매가 페이지 중심선과 일치, 반딧불이 200개 등을 **수치로** 단언한다. CI에서 돈다.
+  이음매가 페이지 중심선과 일치, 반딧불이 200개, 썸네일 대체 텍스트 등을 **수치·문자열로**
+  단언한다. CI에서 돈다.
 - `tests/visual-snapshot.spec.js` — 4개 뷰포트(1600/1180/560/390) 픽셀 비교.
   **로컬 전용**이다: Playwright 스냅샷은 파일명에 플랫폼이 들어가고 폰트 렌더링도
   OS마다 달라 리눅스 러너에선 비교가 성립하지 않는다. 기준 이미지는 gitignore 대상이라,
