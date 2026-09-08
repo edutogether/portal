@@ -210,3 +210,9 @@ AI Ways Incheon 일시 오류 이슈(#1, 재확인 결과 자연 해소돼 닫�
 
 ## 대표와의 소통 경로 (2026-08-26 확정 — 반드시 지킬 것)
 이 세션은 대표와 직접 대화를 시작하지 않는다. 진행상황 공유·질문·의사결정 요청은 전부 **팀장(D:\Projects 최상위 세션, "Project Engineering")을 거쳐서만** 한다 — 대표가 이 세션 창을 직접 열어서 먼저 말을 걸어온 경우에만 그 건에 한해 답한다(최상위 CLAUDE.md "조직 구조" 섹션 참고). 팀장에게서 온 메시지("Project Engineering의 메시지")는 곧 대표의 지시가 전달된 것이므로 별도로 대표에게 재확인하지 말고 그대로 실행한다.
+
+## Intent 워크플로
+
+작업 전에 "왜 필요한지·뭘 원하는지·어떤 제약이 있는지"를 먼저 적는다. 기록은 `_docs/intents/`에 있고, 인덱스는 [_docs/intents/README.md](_docs/intents/README.md).
+
+@.claude/rules/intent-workflow.md
