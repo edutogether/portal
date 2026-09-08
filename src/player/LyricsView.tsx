@@ -119,6 +119,11 @@ export function LyricsView({
     };
 
     const tick = () => {
+      // 모바일 가사는 지금 CSS로 숨겨져 있다(PlayerMobile.css 참고 — 다시 켤 수 있게
+      // 로직은 남겨둔 것이다). 숨겨져 있으면 높이가 0이라 눈에 보이는 결과가 전혀
+      // 없는데도 초당 25회 DOM을 건드리게 되므로, 그때는 아무 일도 하지 않는다.
+      // 다시 보이게 하면 높이가 생겨 그대로 되살아난다.
+      if (!mask.clientHeight) return;
       applyScroll(audio.currentTime);
       applyActiveLine(audio.currentTime);
     };

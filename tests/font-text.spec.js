@@ -22,9 +22,12 @@ const DYNAMIC_STRINGS = [
 test('@fonttext 렌더된 텍스트를 폰트 커버리지 검사용으로 덤프한다', async ({ page }) => {
   await settle(page);
   const rendered = await page.evaluate(() => document.body.textContent ?? '');
-  mkdirSync('test-results', { recursive: true });
+  // test-results/ 가 아니라 .cache/ 에 쓴다 — Playwright는 실행할 때마다
+  // test-results/ 를 비우기 때문에, 다른 테스트를 한 번만 더 돌려도 이 파일이
+  // 사라져서 폰트 검사가 "덤프가 없습니다"로 실패한다(실행 순서에 의존하게 됨).
+  mkdirSync('.cache', { recursive: true });
   writeFileSync(
-    'test-results/rendered-text.txt',
+    '.cache/rendered-text.txt',
     rendered + '\n' + DYNAMIC_STRINGS.join('\n'),
     'utf-8'
   );

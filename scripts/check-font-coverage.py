@@ -5,7 +5,7 @@
 그 글자만 시스템 폰트로 조용히 폴백된다 — 배포 전에 CI에서 잡기 위한 검사다.
 
 **검사 대상 글자는 렌더된 DOM에서 나온다.** tests/font-text.spec.js가 빌드된
-사이트를 실제로 띄워 body의 textContent를 test-results/rendered-text.txt로 덤프하고,
+사이트를 실제로 띄워 body의 textContent를 .cache/rendered-text.txt로 덤프하고,
 이 스크립트는 그 파일만 읽는다. 예전에는 index.html 소스를 정규식으로 훑었는데,
 빌드가 생긴 뒤로는 문구가 번들 JS 안 문자열 리터럴로 흩어져서 소스를 훑으면 코드
 식별자와 주석 글자까지 "사용 글자"로 잡힌다(그 오탐은 실제로 한 번 겪었다).
@@ -26,7 +26,7 @@ sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
 from fontTools.ttLib import TTFont
 
 ROOT = Path(__file__).resolve().parent.parent
-RENDERED_TEXT = ROOT / "test-results" / "rendered-text.txt"
+RENDERED_TEXT = ROOT / ".cache" / "rendered-text.txt"
 FONT_DIR = ROOT / "public" / "assets" / "fonts" / "pretendard"
 
 
