@@ -32,6 +32,7 @@ module.exports = [
         document: 'readonly',
         window: 'readonly',
         Event: 'readonly',
+        getComputedStyle: 'readonly',
       },
     },
   },
