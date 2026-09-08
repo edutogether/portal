@@ -6,6 +6,7 @@ firebase-debug.log
 skills-lock.json
 .claude/*
 !.claude/settings.json
+!.claude/rules/
 .env
 .env.*
 .cache/
