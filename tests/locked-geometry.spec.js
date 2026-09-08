@@ -24,18 +24,45 @@ test('LOCKED — 데스크탑 카드 순서·그리드·이음매·반딧불이'
     'https://g00gler.web.app/',
   ]);
 
-  // 2) 데스크탑 그리드 3열 x 2행, 열 우선 채우기
-  const grid = await page.locator('main').evaluate((el) => {
-    const s = getComputedStyle(el);
-    return {
-      cols: s.gridTemplateColumns.split(' ').length,
-      rows: s.gridTemplateRows.split(' ').length,
-      flow: s.gridAutoFlow,
-    };
-  });
-  expect(grid.cols).toBe(3);
-  expect(grid.rows).toBe(2);
-  expect(grid.flow).toContain('column');
+  // 2) 데스크탑 배치: 윗줄 Poster/Quiz/AI Ways, 아랫줄 Voice/CLASSCADE/Googler.
+  //
+  // 선언값(grid-template-columns)을 세는 방식은 쓰지 않는다 — grid-auto-flow:column이면
+  // 열을 2개로 줄여도 암묵 트랙이 생겨 계산값이 여전히 항목 3개("0px 0px 688px")로
+  // 나온다. 실제로 열을 2개로 바꿔놓고 확인해보니 그 방식은 배치가 깨졌는데도 통과했다.
+  // 그래서 선언이 아니라 **카드가 실제로 놓인 자리**를 본다.
+  const layout = await page.locator('main .app').evaluateAll((els) =>
+    els.map((el) => {
+      const b = el.getBoundingClientRect();
+      return {
+        name: el.querySelector('.name').textContent,
+        x: Math.round(b.x), y: Math.round(b.y),
+        w: Math.round(b.width), right: Math.round(b.right),
+      };
+    })
+  );
+  const xs = [...new Set(layout.map((c) => c.x))].sort((a, b) => a - b);
+  const ys = [...new Set(layout.map((c) => c.y))].sort((a, b) => a - b);
+  expect(xs, '데스크탑은 3열이어야 한다').toHaveLength(3);
+  expect(ys, '데스크탑은 2행이어야 한다').toHaveLength(2);
+
+  const rowOf = (y) => layout.filter((c) => c.y === y).sort((a, b) => a.x - b.x);
+  expect(rowOf(ys[0]).map((c) => c.name), '윗줄 배치').toEqual([
+    'Poster Studio', 'QUIZ TOGETHER', 'AI Ways Incheon',
+  ]);
+  expect(rowOf(ys[1]).map((c) => c.name), '아랫줄 배치').toEqual([
+    'Voice Cinema', 'CLASSCADE', 'Be a Googler',
+  ]);
+
+  // 자리 순서만 보면 배치가 무너져도 통과한다 — 열을 2개로 바꿔놓고 확인해보니
+  // 카드가 30px 간격으로 겹치고 행 높이가 1072px로 늘어난 상태에서도 이름 순서는
+  // 그대로라 위 단언들을 통과했다. 그래서 폭이 균일한지와 서로 겹치지 않는지까지 본다.
+  expect(new Set(layout.map((c) => c.w)).size, '카드 폭은 전부 같아야 한다').toBe(1);
+  for (const row of [rowOf(ys[0]), rowOf(ys[1])]) {
+    for (let i = 0; i < row.length - 1; i++) {
+      expect(row[i].right, `${row[i].name} 과 ${row[i + 1].name} 이 겹침`)
+        .toBeLessThanOrEqual(row[i + 1].x);
+    }
+  }
 
   // 3) 플레이어-그리드 이음매가 페이지 중심선과 일치 (2026-08-26, 실측 diff=0)
   const seam = await page.evaluate(() => {
