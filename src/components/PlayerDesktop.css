@@ -97,6 +97,11 @@
   font-size: 21px; font-weight: 700; line-height: 1.4;
   color: rgba(255, 255, 255, 0.32);
 }
+/* 지나간 줄만 아주 살짝 밝게 — "지금 어디까지 왔는지"가 한눈에 잡히도록
+   (2026-09-09 대표 지시). 값은 미결정 상태에서 실제로 보면서 0.32(앞으로 올 줄)와
+   1.0(지금 줄, 흰색)의 중간이되 앞쪽에 가깝게 잡았다 — 있는 듯 없는 듯해야 하고,
+   지금 줄과는 절대 헷갈리면 안 된다. */
+.lyrics-track p.past { color: rgba(255, 255, 255, 0.46); }
 .lyrics-track p.active { color: #fff; }
 
 /* 활성 줄을 왼쪽에서 오른쪽으로 채우는 카라오케 효과. background-clip:text를

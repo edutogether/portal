@@ -95,8 +95,9 @@ export function LyricsView({
       if (activeIndex === lastActiveRef.current) return;
 
       const els = lineEls();
-      els.forEach((el) => {
+      els.forEach((el, i) => {
         el.classList.remove("active");
+        el.classList.toggle("past", i < activeIndex);
         el.style.transition = "";
         el.style.backgroundPosition = "";
       });
