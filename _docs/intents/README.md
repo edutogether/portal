@@ -23,7 +23,7 @@
 
 | 날짜 | 슬러그 | 등급 | 상태 | 요약 |
 |---|---|---|---|---|
-| 2026-09-08 | [react-typescript-migration](2026-09-08-react-typescript-migration/intent.md) | 2 | draft | 빌드 없는 단일 index.html을 React+TS+Vite로 전환. 화면은 체감까지 동일해야 하고 스냅샷 비교로 증명한다. |
+| 2026-09-08 | [react-typescript-migration](2026-09-08-react-typescript-migration/intent.md) | 2 | done | 빌드 없는 단일 index.html을 React+TS+Vite로 전환. 화면은 체감까지 동일해야 하고 스냅샷 비교로 증명한다. |
 
 ## 폴더 규칙
 
