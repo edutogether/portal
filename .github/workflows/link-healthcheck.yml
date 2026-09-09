@@ -20,6 +20,26 @@ jobs:
           # 배포 환경변수 누락) 200을 받으면서도 기능이 죽어있는 경우가 있었음.
           # 그래서 상태코드에 더해 응답 본문에 그 앱의 고유 문자열이 실제로
           # 들어있는지까지 확인한다.
+          #
+          # 그래도 못 잡는 게 있다 — "페이지가 뜬다"는 "앱이 된다"가 아니다
+          # (COMMON_STANDARDS §21-5, 2026-09-10). 이 검사는 정적 HTML만 보고
+          # 백엔드·인증을 아예 건드리지 않아서, 2026-09-10에 AI Ways Incheon의
+          # 학교 검색 함수가 Firebase App Check 토큰을 못 만들어 실사용자 전원이
+          # 못 쓰는 상태였는데도 9/9 01:58부터 계속 초록불이었다. 아래
+          # check_function이 그 구멍을 메운다 — 실제 백엔드 함수를 인증 없이
+          # 불러서 "정확히 그 실패 코드"가 오는지 본다. 아무 응답이나 받는 게
+          # 아니라 **허용목록**이다: 함수가 살아 있고 배포돼 있고 오리진이
+          # 허용돼 있고 App Check 검사까지 도달했다는 뜻인 401
+          # app_check_missing이 아니면 전부 실패로 잡는다(!= 500 같은 배제
+          # 방식은 안 씀). 일부러 없는 함수 이름/호스트로 바꿔 실제로 빨간불이
+          # 뜨는 것까지 확인했다(404로 갈림, §21-2).
+          #
+          # Poster Studio/CLASSCADE/Be a Googler도 백엔드가 있지만, 이 저장소
+          # 밖에서 그 앱들의 정확한 엔드포인트·기대 응답 계약을 확신 있게
+          # 알아낼 수 없어서(포스터 스튜디오는 Cloud Function은 찾았지만 정확한
+          # 하위 경로를 못 찾음, CLASSCADE·Be a Googler는 초기 로드에서 백엔드
+          # 호출 자체가 안 보임) 지금은 AI Ways 하나만 추가한다. 억지로 만든
+          # 검사보다 없는 게 낫다.
           : > /tmp/failures.txt
           check() {
             local name="$1" url="$2" expect="$3"
@@ -38,11 +58,29 @@ jobs:
               return 1
             fi
           }
+          check_function() {
+            local name="$1" url="$2" expect_code="$3" expect_body="$4"
+            local body code
+            body=$(curl -sL --max-time 15 -X POST "$url" -H "Content-Type: application/json" -d '{}')
+            code=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 15 -X POST "$url" -H "Content-Type: application/json" -d '{}')
+            echo "$name (기능): $code ($url)"
+            if [ "$code" != "$expect_code" ]; then
+              echo "::error::$name 기능 확인 실패 — 상태코드 $code, 기대 $expect_code ($url)"
+              echo "- **$name (기능)**: 상태코드 $code, 기대 $expect_code ($url)" >> /tmp/failures.txt
+              return 1
+            fi
+            if ! echo "$body" | grep -qF "$expect_body"; then
+              echo "::error::$name 기능 확인 실패 — 상태코드는 기대값이지만 응답 본문에 '$expect_body'가 없음: $body ($url)"
+              echo "- **$name (기능)**: 응답 본문 불일치 — $body ($url)" >> /tmp/failures.txt
+              return 1
+            fi
+          }
           failed=0
           check "PORTAL(edutogether.kr 자기 자신)" "https://edutogether.kr/" "같교오락실" || failed=1
           check "QUIZ TOGETHER" "https://joo.is/%EA%B0%99%EC%9D%B4%EA%B5%90%EC%9C%A1%ED%80%B4%EC%A6%88" "같이교육 퀴즈" || failed=1
           check "CLASSCADE" "https://classcade.edutogether.kr" "CLASSCADE" || failed=1
           check "AI Ways Incheon" "https://ai-ways-incheon.web.app" "AI Ways Incheon" || failed=1
+          check_function "AI Ways Incheon searchSchool" "https://asia-northeast3-ai-ways-incheon.cloudfunctions.net/searchSchool" "401" '"code":"app_check_missing"' || failed=1
           check "Be a Googler" "https://googler.edutogether.kr" "Be a Googler" || failed=1
           check "Poster Studio" "https://poster.edutogether.kr" "InKY Poster Studio" || failed=1
           check "Voice Cinema" "https://voice.edutogether.kr" "InKY Voice Cinema" || failed=1
