@@ -93,3 +93,12 @@
   확인했다(§21-2). Poster Studio/CLASSCADE/Be a Googler도 백엔드가 있지만 이
   저장소 밖에서 정확한 엔드포인트·기대 응답 계약을 확신 있게 알아낼 수 없어서
   지금은 AI Ways 하나만 추가했다 — 억지로 만든 검사보다 없는 게 낫다.
+- **fix**: AI Ways Incheon 카드를 `.web.app`에서 정식 서브도메인
+  `incheon.edutogether.kr`로 다시 교체 — 조직 전체 주소 정리(헌법 §8)의 일부.
+  9/9~10 사이 두 번 되돌렸다 돌아온 이유는 도메인도 코드도 아니었다: 서버
+  Functions는 내내 정상이었고, App Check가 한 번 403을 준 브라우저가 24시간
+  재시도를 안 하는 클라이언트 캐싱 때문에 특정 기기에서만 안 되는 것처럼
+  보였다. `ai-ways-incheon.web.app`은 대비용으로 계속 허용목록에 남는다.
+  다섯 곳(`src/data/apps.ts`, `CLAUDE.md`, `tests/portal.spec.js`,
+  `tests/locked-geometry.spec.js`, `.github/workflows/link-healthcheck.yml`)
+  전부 갱신, 경위 전문은 `_docs/archive/history.md`.
