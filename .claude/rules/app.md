@@ -180,4 +180,18 @@
 지시가 없을 때 돌리는 배경작업과, 지금 어디까지 했는지 한 줄. **다음 세션은 여기서부터** 이어간다.
 
 - **지금 할 일**: README·문서가 지금 구조(리액트 전환 이후)와 맞는지 점검. 대표님 팀이 9/18까지 동료평가 중이라 평가자가 문서·저장소를 본다.
-- **진행 상황**: 아직 시작 전(2026-09-09) — 오늘은 팀장 경유 지시(가사·모바일 플레이어 대비)가 계속 들어와서 그쪽을 먼저 처리했다. 시작할 때는 README.md/AGENTS.md/`.claude/rules/app.md`/`_docs/`가 실제 코드 구조(React+TS+Vite, `src/` 분리)와 어긋난 곳이 없는지부터 훑을 것.
+- **진행 상황(2026-09-09, 1차 점검 완료, 커밋 `3d088c0`)**:
+  - README.md/AGENTS.md/CLAUDE.md/`.claude/rules/app.md`/`_docs/intents/README.md`의
+    내부 링크·백틱 파일 경로를 전수 대조 — `.github/workflows/` 실제 파일 8개와
+    문서상 언급 대조, 깨진 링크나 없는 파일 참조는 없었다.
+  - `_docs/ops/HANDOFF.md`의 "이 폴더의 CLAUDE.md" 참조가 파일 이동 전 문장이
+    그대로 남아 있던 것을 발견해 고침(`3d088c0`).
+  - `sync-check.yml`/`player-smoke-test.yml`이 오늘 낮 CLAUDE.md 축약(226→102줄,
+    `6cc3caf`) 때 유실 검사 키워드 목록에서 빠뜨려 문서에서 사라졌던 것을 발견,
+    `font-coverage-check.yml`/`budget-alert-check.yml`(원래도 미문서화)과 함께
+    AGENTS.md "배포 경로"에 8종 전부 정리(`3d088c0`).
+  - **다음에 확인할 것(아직 안 봄)**: `_docs/intents/2026-09-08-react-typescript-migration/intent.md`의
+    `status: draft`가 실제 완료·배포·10/10 감사 2회를 거친 상태와 안 맞는 것 같다 —
+    이건 세션이 스스로 못 바꾸는 값이라(intent-workflow.md, 상태는 Bumm님만) 고치지
+    않고 보고만 했다. `_docs/archive/history.md` 내용의 사실관계(날짜·수치)는 아직
+    전수 검증 안 함.
