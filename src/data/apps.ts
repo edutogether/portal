@@ -57,7 +57,7 @@ export const APPS: AppLink[] = [
   },
   {
     name: "AI Ways Incheon",
-    href: "https://incheon.edutogether.kr",
+    href: "https://ai-ways-incheon.web.app",
     thumb: "/assets/incheon.webp",
     alt: "AI Ways Incheon 미리보기",
     hook: "3초 안에 분리배출 척척 !",

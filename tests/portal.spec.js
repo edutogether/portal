@@ -12,7 +12,7 @@ const EXPECTED_CARDS = [
   { name: 'Voice Cinema', href: 'https://voice.edutogether.kr' },
   { name: 'QUIZ TOGETHER', href: 'https://joo.is/같이교육퀴즈' },
   { name: 'CLASSCADE', href: 'https://classcade.edutogether.kr' },
-  { name: 'AI Ways Incheon', href: 'https://incheon.edutogether.kr' },
+  { name: 'AI Ways Incheon', href: 'https://ai-ways-incheon.web.app' },
   { name: 'Be a Googler', href: 'https://googler.edutogether.kr' },
 ];
 

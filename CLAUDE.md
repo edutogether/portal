@@ -54,7 +54,7 @@
 | 2 | Voice Cinema | `https://voice.edutogether.kr` |
 | 3 | QUIZ TOGETHER | `https://joo.is/같이교육퀴즈` (Apps Script로 리다이렉트, 외부 서비스) |
 | 4 | CLASSCADE | `https://classcade.edutogether.kr` |
-| 5 | AI Ways Incheon | `https://incheon.edutogether.kr` |
+| 5 | AI Ways Incheon | `https://ai-ways-incheon.web.app` **(임시)** — 아래 경고 참고 |
 | 6 | Be a Googler | `https://googler.edutogether.kr` |
 
 **⚠️ 앱 주소는 다섯 곳에 박혀 있다** — 하나만 고치면 나머지가 어긋나고, 테스트와
@@ -63,6 +63,17 @@
 `.github/workflows/link-healthcheck.yml`(매일 확인), 이 표. 바꿀 땐 다섯 곳을 함께 고치고,
 새 주소가 실제로 200이며 기대 문자열이 본문에 있는지까지 확인한다(`web.app`/`github.io`를
 저장소 전수 검색하면 빠진 곳이 드러난다).
+
+**⚠️ 5번 AI Ways는 `incheon.edutogether.kr`가 아니라 `.web.app` 주소를 쓴다(2026-09-09, 임시).**
+커스텀 도메인에서는 **정적 파일은 정상인데 Functions 호출이 CORS로 전부 거부**된다(오리진
+`incheon.edutogether.kr` → 403, `ai-ways-incheon.web.app` → 204). 화면은 멀쩡히 떠서 겉보기엔
+문제가 없어 보이지만, 학교 검색·가입·기록 저장이 하나도 안 된다. **AI Ways 세션이 새 오리진에서
+기능이 실제로 된다고 확인해 줄 때까지 `incheon.edutogether.kr`로 되돌리지 말 것.**
+
+**주소를 바꾸기 전에 해당 앱 세션에게 새 오리진에서 기능이 실제로 되는지 확인받는다.**
+상태코드 200과 본문 문자열 일치는 **정적 계층만** 보는 것이라 백엔드가 끊긴 것을 못 잡는다 —
+이번에 정확히 그렇게 놓쳤다. 포털이 다른 앱의 내부 동작을 직접 검사하는 것은 범위를 넘으므로,
+검사 대신 **그 앱 세션의 확인**을 절차로 둔다.
 
 **classcade 쪽에서 `edutogether.kr`을 다시 claim하지 않도록 주의** — 그러면 이 포털이
 깨진다(경위는 archive).

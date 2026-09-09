@@ -20,7 +20,7 @@ test('LOCKED — 데스크탑 카드 순서·그리드·이음매·반딧불이'
     'https://voice.edutogether.kr',
     'https://joo.is/같이교육퀴즈',
     'https://classcade.edutogether.kr',
-    'https://incheon.edutogether.kr',
+    'https://ai-ways-incheon.web.app',
     'https://googler.edutogether.kr',
   ]);
 
