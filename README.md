@@ -23,4 +23,5 @@ Be a Googler. 카드를 누르면 각 앱이 새 탭으로 열린다(포털은 �
 - [AGENTS.md](AGENTS.md) — 도구 종류와 무관하게 이 저장소에서 작업할 때 알아야 할
   명령·배포 경로·함정. **코드를 고치기 전에 먼저 읽을 것.**
 - [CLAUDE.md](CLAUDE.md) — 클로드 코드 세션용 상세 지침과 설계 결정 이력.
-- [_docs/](_docs/) — 운영 문서·과거 핸드오프 등.
+- [_docs/CHANGELOG.md](_docs/CHANGELOG.md) — 무엇이 언제 왜 바뀌었는지.
+- [_docs/](_docs/) — 운영 문서·intent·지난 이력 등.
