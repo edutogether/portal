@@ -17,6 +17,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 // 사용자에게 보이는 새 문구를 코드에 추가했는데 초기 DOM에는 안 나온다면 여기 적을 것.
 const DYNAMIC_STRINGS = [
   '재생할 수 없습니다', // 오디오 로드/재생 실패 토스트
+  '龘', // §21-2 검증용 — 서브셋에 없는 글자, 되돌릴 예정
 ];
 
 test('@fonttext 렌더된 텍스트를 폰트 커버리지 검사용으로 덤프한다', async ({ page }) => {
