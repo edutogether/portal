@@ -51,6 +51,13 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: 테스트 (재생 스모크 + LOCKED 기하 + 렌더 텍스트 덤프)
         run: npm test
+      - name: 실패 시 Playwright trace 업로드
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: playwright-trace
+          path: test-results/
+          retention-days: 7
       - name: Pretendard 서브셋 글자 커버리지 확인
         run: |
           pip install fonttools brotli

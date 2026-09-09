@@ -25,5 +25,11 @@ export default defineConfig({
     baseURL: 'http://127.0.0.1:4319',
     // 절대 실제 스피커로 소리 내지 않는다 — CI/로컬 어느 쪽이든 항상 음소거.
     launchOptions: { args: ['--mute-audio'] },
+    // 실패한 테스트만 trace.zip을 남긴다(통과하면 안 남아 저장 공간을 안 먹는다).
+    // 2026-09-09에 CI에서 한 번 흔들린 테스트를 재현하려 했는데 그 실행의 흔적이
+    // 전혀 없어서 추측에만 의존해야 했다 — 다음에 또 흔들리면 최소한 실제 증거가
+    // 남게 하려고 켠다. CI 쪽에서 test-results/를 아티팩트로 올리는 스텝은
+    // deploy.yml에 있다.
+    trace: 'retain-on-failure',
   },
 });
