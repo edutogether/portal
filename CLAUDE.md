@@ -82,7 +82,7 @@
 | 2 | Voice Cinema | `https://voice.edutogether.kr` (2026-09-09 커스텀 도메인으로 교체 — 그 전엔 `voice-cinema.web.app`) |
 | 3 | QUIZ TOGETHER | `https://joo.is/같이교육퀴즈` (Google Apps Script로 리다이렉트) |
 | 4 | CLASSCADE | `https://classcade.edutogether.kr` (2026-09-09 Firebase Hosting 이전 완료 후 커스텀 도메인으로 교체 — 그 전엔 `edutogether.github.io/classcade/`) |
-| 5 | AI Ways Incheon | `https://ai-ways-incheon.web.app/` (2026-09-09 교체 — **그 전까지 폐기된 GitHub Pages 주소를 가리키고 있었다**. 그 주소가 404가 아니라 8월 빌드를 계속 서빙하고 있어서 아무도 눈치채지 못했다. `incheon.edutogether.kr` 도메인이 붙으면 다시 교체 예정) |
+| 5 | AI Ways Incheon | `https://incheon.edutogether.kr` (2026-09-09 커스텀 도메인으로 최종 교체. 같은 날 두 번 바뀌었다 — **그 전까지 폐기된 GitHub Pages 주소를 가리키고 있었고**, 그 주소가 404가 아니라 8월 빌드를 계속 서빙해서 아무도 눈치채지 못했다) |
 | 6 | Be a Googler | `https://googler.edutogether.kr` (2026-09-09 커스텀 도메인으로 교체 — 그 전엔 `g00gler.web.app`) |
 
 **⚠️ 앱 주소는 다섯 곳에 박혀 있다** — 하나만 고치면 나머지가 어긋난다:
