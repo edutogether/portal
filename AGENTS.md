@@ -145,7 +145,8 @@ python3 scripts/check-font-coverage.py    # 폰트 서브셋 글자 커버리지
 |---|---|
 | `bg-main.webp` | 메인/로딩 배경 (네온 오락기 아트) |
 | `bg-loading.webp` | **미사용, 보존** — 재사용 대비 의도적으로 남겨둔 것이라 지우지 말 것 |
-| `og-thumb.jpg` | 카카오톡 공유 배너 (1200×630) |
+| `og/portal.jpg` | 포털 자신의 카카오톡·소셜 공유 배너 (1200×630) |
+| `og/poster.jpg` / `voice.jpg` / `quiz.jpg` / `classcade.jpg` / `incheon.jpg` / `googler.jpg` | 6개 앱의 공유 배너 (1200×630, JPEG) — 2026-09-10, 6개 앱의 og 태그가 제각각(없거나·설명 없거나·문구가 카드와 다르거나)이라 대표 지시로 포털이 기준 이미지를 만들어 host한다. 각 앱은 `og:image`를 `https://edutogether.kr/assets/og/<이름>.jpg`로 절대주소 참조한다 — **JPEG인 이유는 카카오톡이 webp 썸네일을 제대로 못 쓰기 때문**(포털 자신은 처음부터 JPEG를 써서 문제가 없었다). 카드 썸네일(`*.webp`, 800×420/450)을 원본으로 1200×630에 맞춰 변환 — 비율이 다른 셋(poster-studio/voice-cinema/quiz, 16:9)은 잘라내지 않고 좌우 여백(사이트 배경색 `#0b0e1f`)을 채웠고, 나머지 셋(classcade/incheon/googler, 이미 1200×630과 같은 비율)은 그대로 확대했다.
 | `quiz.webp` / `classcade.webp` / `incheon.webp` / `googler.webp` / `poster-studio.webp` / `voice-cinema.webp` | 카드 썸네일 6종 |
 
 **`quiz.webp` 원본(1672×941, 무손실 보관)은 `_docs/archive/assets/quiz-original-1672x941.webp`에 있다(2026-09-09, 대표 지시).** 원래 파일이 다른 5개(800×420/450)보다 두 배 넘는 해상도라 표시 폭은 같은데 전송량만 컸다 — 카드 폭에 맞춰 800×450(정확히 16:9, `.thumb`의 컨테이너 비율)으로 재인코딩하고, 브라우저가 `object-fit: cover`로 원래도 미세하게 잘라내던 만큼만(1672×941→1672×940, 1px) 반영해서 구도는 그대로다(잘라낸 뒤 리샘플은 LANCZOS). 다시 필요하면 원본에서 재인코딩할 것.

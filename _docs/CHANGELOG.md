@@ -102,3 +102,12 @@
   다섯 곳(`src/data/apps.ts`, `CLAUDE.md`, `tests/portal.spec.js`,
   `tests/locked-geometry.spec.js`, `.github/workflows/link-healthcheck.yml`)
   전부 갱신, 경위 전문은 `_docs/archive/history.md`.
+- **feat**: 6개 앱의 카카오톡·소셜 공유 배너를 한 곳(`public/assets/og/`)에서
+  만들어 host하기 시작 — 대표 지시로 각 앱의 og 태그를 Portal 기준으로 통일한다.
+  카드 썸네일(`*.webp`)을 1200×630 JPEG로 변환(카카오톡이 webp 썸네일을 제대로
+  못 써서 JPEG로 통일 — Portal 자신이 처음부터 되던 이유가 이것이었다). 비율이
+  다른 셋(Poster Studio/Voice Cinema/QUIZ TOGETHER, 16:9)은 잘라내지 않고
+  사이트 배경색으로 여백을 채웠고, 나머지 셋(CLASSCADE/AI Ways/Be a Googler,
+  이미 1200×630과 같은 비율)은 그대로 확대. Portal 자신의 `og-thumb.jpg`도
+  같은 폴더·체계로 옮겨 통일. 문구 표(og:title/description/image/url)는
+  팀장에게 전달, 나머지 다섯 앱은 각 세션이 반영.
