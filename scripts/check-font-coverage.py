@@ -58,6 +58,20 @@ def main() -> int:
 
     used_chars = set(RENDERED_TEXT.read_text(encoding="utf-8"))
 
+    # 빈 게이트 방지(COMMON_STANDARDS §21-1) — 이 검사는 "빠진 글자가 0개"를 성공
+    # 기준으로 삼는데, 그건 "검사할 글자가 0개"일 때도 똑같이 참이 된다. 렌더
+    # 덤프 테스트가 조용히 빈 값을 쓰거나(예: 페이지가 제대로 안 떴는데도 그냥
+    # 넘어간 경우) DYNAMIC_STRINGS까지 지워지면, 이 검사는 "0자 전부 커버됨"으로
+    # 통과해버려 실제로는 아무것도 검사하지 않은 상태를 초록불로 보고한다.
+    meaningful = {c for c in used_chars if ord(c) > 0x20}
+    if not meaningful:
+        print(
+            "::error::렌더된 텍스트 덤프에 검사할 글자가 하나도 없습니다 — "
+            "이 검사는 아무것도 확인하지 못한 상태입니다.\n"
+            f"  {RENDERED_TEXT.relative_to(ROOT)}가 비어있거나 공백뿐인지 확인하세요."
+        )
+        return 1
+
     covered: set[int] = set()
     for woff2_path in sorted(FONT_DIR.glob("*.woff2")):
         covered |= font_covers(woff2_path)
