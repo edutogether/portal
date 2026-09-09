@@ -59,3 +59,22 @@
   (`HANDOFF.md`→`handoff.md`, 브리프 파일 한글명→영문). 이 CHANGELOG 신설도 그
   기준의 일부. (`2e821a2`, `3d088c0`, `7045aea`, `0f91307`, `eff5042`, `1e64996`,
   `68d6287`, `80ec475`, `3aaabeb`, `126503d`)
+- **docs/§19**: `D:\Projects\_shared\DOC-STANDARD.md`(문서 표준) 전면 반영 — `AGENTS.md`의
+  절차성 내용("운영 — 배포·비용·롤백")을 `_docs/ops/deploy-and-billing.md`로 이동.
+  헌법 §8/COMMON_STANDARDS §20("문서와 기록") 반영 — 프리즈 태그 38개 중 주요
+  시점 8개에 [GitHub 릴리스](https://github.com/edutogether/portal/releases)로
+  설명 부착(태그 자체는 이동 없음), README.md에 "어떻게 만들어졌는가" 절 추가,
+  "지금까지 모든 변경은 `main` 직접 커밋(PR 0건)"을 AGENTS.md에 명시(PR 트리거
+  워크플로우 설명 자체는 정확했으나 실사용 여부가 안 적혀 오해 소지가 있었음).
+  (`f16d382`, `53d8731`, `6ade65f`, `b571b38`, `60ea0de`)
+- **fix/ci**: **CI에서만 Playwright 워커 1로 내림** — 근본 원인 수정이 아니라
+  **비결정성 제거를 위한 환경 결정**이다. 볼륨 페이드 테스트가 CI에서 한 번
+  흔들려 trace로 조사했지만(진단 스크립트 자체의 `waitForFunction(v>임계값)`
+  결함으로 없는 버그를 만든 걸 발견해 정정하기도 했다) `toggleMute` 로직에서
+  근본 원인은 끝내 못 찾았다. 대신 2워커 8회 부하 테스트에서 서로 무관한
+  테스트 4개가 한꺼번에 흔들리는 걸 봐서, 특정 로직 결함보다 워커 경합 쪽
+  설명에 가깝다고 판단 — 워커 1로 CI 시간 1분 남짓을 더 쓰고 비결정성을
+  없앴다. 같은 흔들림이 다시 나오면 경합이 원인이 아니라는 새 증거이니 그때
+  다시 조사한다(되돌릴 수 있는 실험). `trace: 'retain-on-failure'`는 유지.
+  (`playwright.config.js` 변경 — 이 CHANGELOG 항목과 같은 커밋이라 해시 자기
+  참조를 피해 파일명으로 남긴다)
