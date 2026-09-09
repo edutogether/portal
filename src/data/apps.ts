@@ -48,7 +48,7 @@ export const APPS: AppLink[] = [
   },
   {
     name: "CLASSCADE",
-    href: "https://edutogether.github.io/classcade/",
+    href: "https://classcade.edutogether.kr",
     thumb: "/assets/classcade.webp",
     alt: "CLASSCADE 미리보기",
     hook: "나는 어떤 교사일까 ?",
