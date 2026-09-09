@@ -221,8 +221,10 @@
     `6cc3caf`) 때 유실 검사 키워드 목록에서 빠뜨려 문서에서 사라졌던 것을 발견,
     `font-coverage-check.yml`/`budget-alert-check.yml`(원래도 미문서화)과 함께
     AGENTS.md "배포 경로"에 8종 전부 정리(`3d088c0`).
-  - **다음에 확인할 것(아직 안 봄)**: `_docs/intents/2026-09-08-react-typescript-migration/intent.md`의
-    `status: draft`가 실제 완료·배포·10/10 감사 2회를 거친 상태와 안 맞는 것 같다 —
-    이건 세션이 스스로 못 바꾸는 값이라(intent-workflow.md, 상태는 Bumm님만) 고치지
-    않고 보고만 했다. `_docs/archive/history.md` 내용의 사실관계(날짜·수치)는 아직
-    전수 검증 안 함.
+  - `react-typescript-migration` intent의 `status: draft`를 `done`으로 바꿨다
+    (팀장 승인, `0f91307`) — "상태는 Bumm님만"이 막는 건 세션의 자기 제안 자기
+    승인이지, 이미 배포·감사까지 끝난 사실을 기록하는 것까지는 아니라는 판단.
+    intent가 이거 하나뿐이라 다른 것은 훑어볼 대상이 없었다.
+  - **다음에 확인할 것(아직 안 봄)**: `_docs/archive/history.md` 내용의 사실관계
+    (날짜·수치)는 아직 전수 검증 안 함. README.md 자체(개발자 진입점)는 링크
+    유효성만 봤고 본문 내용까지 자세히는 안 봤다.
