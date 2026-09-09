@@ -8,12 +8,12 @@ import { test, expect } from '@playwright/test';
 // (2026-09-01 감사에서 발견).
 
 const EXPECTED_CARDS = [
-  { name: 'Poster Studio', href: 'https://poster-studio.web.app' },
-  { name: 'Voice Cinema', href: 'https://voice-cinema.web.app' },
+  { name: 'Poster Studio', href: 'https://poster.edutogether.kr' },
+  { name: 'Voice Cinema', href: 'https://voice.edutogether.kr' },
   { name: 'QUIZ TOGETHER', href: 'https://joo.is/같이교육퀴즈' },
   { name: 'CLASSCADE', href: 'https://edutogether.github.io/classcade/' },
-  { name: 'AI Ways Incheon', href: 'https://edutogether.github.io/aiways-incheon/' },
-  { name: 'Be a Googler', href: 'https://g00gler.web.app/' },
+  { name: 'AI Ways Incheon', href: 'https://ai-ways-incheon.web.app/' },
+  { name: 'Be a Googler', href: 'https://googler.edutogether.kr' },
 ];
 
 test('6개 카드가 정확한 URL로, 새 탭(target=_blank, rel=noopener)으로 연결된다', async ({ page }) => {

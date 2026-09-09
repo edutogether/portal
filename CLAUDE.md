@@ -74,15 +74,22 @@
     이제 좌우가 다른 게(오른쪽이 카드그리드 폭만큼 더 좁게 튀어나옴) 의도된
     결과다** — 좌우 여백을 다시 동일하게 맞추려고 되돌리지 말 것.
 
-## 현재 링크 (2026-08-26 기준, 카드 DOM 순서와 동일 — 번호 뱃지는 화면에 없음)
+## 현재 링크 (2026-09-09 갱신, 카드 DOM 순서와 동일 — 번호 뱃지는 화면에 없음)
 | # | 앱 | URL |
 |---|---|---|
-| 1 | Poster Studio | `https://poster-studio.web.app` (2026-09-01 Firebase Hosting으로 이전 — GitHub Pages 주소는 더 이상 안 씀) |
-| 2 | Voice Cinema | `https://voice-cinema.web.app` (2026-09-01 Firebase Hosting으로 이전 — GitHub Pages 주소는 더 이상 안 씀. 클립 6종 플레이스홀더 여부는 이번 이전에서 확인 안 됨, 기존 캐비어트 유지) |
+| 1 | Poster Studio | `https://poster.edutogether.kr` (2026-09-09 커스텀 도메인으로 교체 — 그 전엔 `poster-studio.web.app`) |
+| 2 | Voice Cinema | `https://voice.edutogether.kr` (2026-09-09 커스텀 도메인으로 교체 — 그 전엔 `voice-cinema.web.app`) |
 | 3 | QUIZ TOGETHER | `https://joo.is/같이교육퀴즈` (Google Apps Script로 리다이렉트) |
-| 4 | CLASSCADE | `https://edutogether.github.io/classcade/` |
-| 5 | AI Ways Incheon | `https://edutogether.github.io/aiways-incheon/` |
-| 6 | Be a Googler | `https://g00gler.web.app/` (2026-09-02 Firebase Hosting으로 이전 — GitHub Pages 주소는 더 이상 안 씀) |
+| 4 | CLASSCADE | `https://edutogether.github.io/classcade/` (아직 GitHub Pages. Firebase 이전 산정 중이라 그때까지 이 주소를 유지한다) |
+| 5 | AI Ways Incheon | `https://ai-ways-incheon.web.app/` (2026-09-09 교체 — **그 전까지 폐기된 GitHub Pages 주소를 가리키고 있었다**. 그 주소가 404가 아니라 8월 빌드를 계속 서빙하고 있어서 아무도 눈치채지 못했다. `incheon.edutogether.kr` 도메인이 붙으면 다시 교체 예정) |
+| 6 | Be a Googler | `https://googler.edutogether.kr` (2026-09-09 커스텀 도메인으로 교체 — 그 전엔 `g00gler.web.app`) |
+
+**⚠️ 앱 주소는 다섯 곳에 박혀 있다** — 하나만 고치면 나머지가 어긋난다:
+`src/data/apps.ts`(실제 사이트), `tests/locked-geometry.spec.js`,
+`tests/portal.spec.js`, `.github/workflows/link-healthcheck.yml`(매일 확인), 이 표.
+주소를 바꿀 땐 다섯 곳을 함께 고치고, 바꾼 주소가 실제로 200이며 기대 문자열이
+본문에 있는지까지 확인한다(`web.app`/`github.io` 문자열을 저장소 전수 검색하면 빠진
+곳이 드러난다).
 
 **2026-08-31~09-01 카드 문구/썸네일 최종화**: 6개 카드 전부 "훅 한 줄 +
 설명 + 이모지" 형식의 대표 확정 소개 문구로 교체 완료(그 전엔 Poster

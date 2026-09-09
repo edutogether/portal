@@ -16,12 +16,12 @@ test('LOCKED — 데스크탑 카드 순서·그리드·이음매·반딧불이'
     els.map((el) => el.getAttribute('href'))
   );
   expect(hrefs).toEqual([
-    'https://poster-studio.web.app',
-    'https://voice-cinema.web.app',
+    'https://poster.edutogether.kr',
+    'https://voice.edutogether.kr',
     'https://joo.is/같이교육퀴즈',
     'https://edutogether.github.io/classcade/',
-    'https://edutogether.github.io/aiways-incheon/',
-    'https://g00gler.web.app/',
+    'https://ai-ways-incheon.web.app/',
+    'https://googler.edutogether.kr',
   ]);
 
   // 2) 데스크탑 배치: 윗줄 Poster/Quiz/AI Ways, 아랫줄 Voice/CLASSCADE/Googler.
@@ -145,6 +145,6 @@ test('LOCKED — 모바일에서 하단 고정 플레이어로 전환되고 1열
   const hrefs = await page.locator('main .app').evaluateAll((els) =>
     els.map((el) => el.getAttribute('href'))
   );
-  expect(hrefs[0]).toBe('https://poster-studio.web.app');
-  expect(hrefs[5]).toBe('https://g00gler.web.app/');
+  expect(hrefs[0]).toBe('https://poster.edutogether.kr');
+  expect(hrefs[5]).toBe('https://googler.edutogether.kr');
 });

@@ -21,7 +21,7 @@ export interface AppLink {
 export const APPS: AppLink[] = [
   {
     name: "Poster Studio",
-    href: "https://poster-studio.web.app",
+    href: "https://poster.edutogether.kr",
     thumb: "/assets/poster-studio.webp",
     alt: "Poster Studio 미리보기",
     hook: "사진 한 장이면 나도 영화 주인공 !",
@@ -30,7 +30,7 @@ export const APPS: AppLink[] = [
   },
   {
     name: "Voice Cinema",
-    href: "https://voice-cinema.web.app",
+    href: "https://voice.edutogether.kr",
     thumb: "/assets/voice-cinema.webp",
     alt: "Voice Cinema 미리보기",
     hook: "내가 배우가 되는 시간 !",
@@ -57,7 +57,7 @@ export const APPS: AppLink[] = [
   },
   {
     name: "AI Ways Incheon",
-    href: "https://edutogether.github.io/aiways-incheon/",
+    href: "https://ai-ways-incheon.web.app/",
     thumb: "/assets/incheon.webp",
     alt: "AI Ways Incheon 미리보기",
     hook: "3초 안에 분리배출 척척 !",
@@ -66,7 +66,7 @@ export const APPS: AppLink[] = [
   },
   {
     name: "Be a Googler",
-    href: "https://g00gler.web.app/",
+    href: "https://googler.edutogether.kr",
     thumb: "/assets/googler.webp",
     alt: "Be a Googler 미리보기",
     hook: "호기심이 이끄는 대로 !",
