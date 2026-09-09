@@ -147,3 +147,49 @@ test('다음 곡 버튼을 누르면 트랙이 다시 로드된다(가사 줄 �
   });
   expect(loadCalls).toBeGreaterThan(0);
 });
+
+// 탐색은 "드래그 중에는 안 되고, 놓을 때 한 번" 이어야 한다. 리액트에서 range 입력의
+// onChange는 드래그 중 매 입력마다 발생해서, 거기에 탐색을 걸면 원본의 동작("놓을 때
+// 한 번")과 달라진다 — 2026-09-09 리액트 전환 점검에서 실제로 그 상태였다.
+//
+// 이 테스트는 실제 audio.currentTime을 본다. 그러려면 서버가 HTTP Range를 지원해야
+// 하는데(안 그러면 seekable이 비어 있어 currentTime 설정이 조용히 무시된다), 그래서
+// playwright.config.js의 테스트 서버를 vite preview로 바꿨다.
+test('탐색은 드래그 중이 아니라 놓을 때 한 번만 걸린다', async ({ page }) => {
+  await expect
+    .poll(() => page.evaluate(() => document.getElementById('audio').duration || 0), { timeout: 5000 })
+    .toBeGreaterThan(0);
+
+  // 전제: 이 환경에서 오디오가 실제로 탐색 가능해야 이 테스트가 의미를 가진다.
+  const seekableEnd = await page.evaluate(() => {
+    const a = document.getElementById('audio');
+    return a.seekable.length ? a.seekable.end(0) : 0;
+  });
+  expect(seekableEnd, '서버가 Range를 지원하지 않으면 탐색 자체가 불가능하다').toBeGreaterThan(0);
+
+  // .player:hover가 플레이어를 6px 위로 들어올린다(transition 0.18s). 탐색바는 높이가
+  // 3px뿐이라, 호버 전에 잰 좌표로 누르면 6px 어긋나 빗나간다 — 먼저 호버해서 위치가
+  // 정착한 뒤에 다시 잰다.
+  await page.locator('#seek').hover();
+  await page.waitForTimeout(300);
+  const box = await page.locator('#seek').boundingBox();
+  const y = box.y + box.height / 2;
+
+  // 슬라이더를 잡고 오른쪽으로 끌되, 아직 놓지 않는다.
+  await page.mouse.move(box.x + 2, y);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * 0.6, y, { steps: 10 });
+
+  const duringDrag = await page.evaluate(() => ({
+    current: document.getElementById('audio').currentTime,
+    shown: document.getElementById('curTime').textContent,
+  }));
+  expect(duringDrag.current, '드래그 중에는 아직 탐색되면 안 된다').toBeLessThan(1);
+  expect(duringDrag.shown, '그래도 표시는 손을 따라가야 한다').not.toBe('0:00');
+
+  // 놓는 순간 한 번 탐색된다.
+  await page.mouse.up();
+  await expect
+    .poll(() => page.evaluate(() => document.getElementById('audio').currentTime), { timeout: 3000 })
+    .toBeGreaterThan(1);
+});

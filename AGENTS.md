@@ -37,7 +37,7 @@ npm ci                              # 의존성 설치
 npm run dev                         # 개발 서버
 npm run build                       # 타입 검사 + 빌드 (dist/index.html -> 404.html 복사 포함)
 npm run lint                        # eslint (TypeScript + 훅 의존성 배열)
-npm test                            # Playwright 24개 (스크린샷 비교 제외)
+npm test                            # Playwright 25개 (스크린샷 비교 제외)
 npm run test:visual                 # 스크린샷 비교 (로컬 전용, 아래 참고)
 
 python3 scripts/check-inline-script.py    # 산출물에 인라인 <script>가 없는지
