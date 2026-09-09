@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 // (2026-09-01 감사에서 발견).
 
 const EXPECTED_CARDS = [
-  { name: 'Poster Studio', href: 'https://intentionally-broken-for-ci-verification.invalid' },
+  { name: 'Poster Studio', href: 'https://poster.edutogether.kr' },
   { name: 'Voice Cinema', href: 'https://voice.edutogether.kr' },
   { name: 'QUIZ TOGETHER', href: 'https://joo.is/같이교육퀴즈' },
   { name: 'CLASSCADE', href: 'https://classcade.edutogether.kr' },
