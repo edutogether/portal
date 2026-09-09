@@ -27,7 +27,21 @@ jobs:
         run: npm ci
       - name: 빌드
         run: npm run build
+      - name: Playwright 버전 확인
+        id: playwright-version
+        run: echo "version=$(npx playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+      - name: Playwright 브라우저 캐시
+        id: playwright-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
       - name: Playwright 브라우저 설치
-        run: npx playwright install --with-deps chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        # deploy.yml과 같은 이유로 --with-deps를 뗐다(2026-09-10) — apt는 시스템
+        # 라이브러리에만 쓰이는데 ubuntu-latest에는 이미 대부분 있고, 브라우저
+        # 바이너리는 Playwright 자체 CDN에서 HTTPS로 받는다. 자세한 경위는
+        # .claude/rules/app.md 참고.
+        run: npx playwright install chromium
       - name: 테스트 실행
         run: npm test
