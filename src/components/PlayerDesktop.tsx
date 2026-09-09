@@ -49,7 +49,7 @@ export function PlayerDesktop({ onMore }: { onMore: () => void }) {
           </div>
           <div className="volume">
             <button
-              className={`vol-icon-btn ${volumeClass(p.volume, p.muted)}`} id="muteBtn"
+              className={`vol-icon-btn ${volumeClass(p.volume)}`} id="muteBtn"
               aria-label="음소거" type="button" onClick={p.toggleMute}
             >
               <VolumeIcon />

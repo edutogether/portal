@@ -30,13 +30,30 @@ test('6개 카드가 정확한 URL로, 새 탭(target=_blank, rel=noopener)으�
   }
 });
 
-test('자동재생은 항상 음소거 상태로 시작한다 (브라우저 정책 편차와 무관하게)', async ({ page }) => {
+// 2026-08-31에는 반대로 "항상 음소거로 시작"이 사양이었다. 2026-09-09에 대표가
+// 뒤집었다 — 사람이 직접 주소를 치거나 북마크로 들어오면 소리가 나야 한다.
+// 배경과 두 결정의 이유는 .claude/rules/app.md에 있다.
+//
+// audio.muted를 단언하지 않는 이유: 이 앱은 소리를 volume 하나로만 다루고 muted는
+// 아예 쓰지 않는다. 그리고 muted는 리액트에서 속성이 아니라 DOM 프로퍼티로 들어가서
+// hasAttribute('muted')로 보면 실제 값과 다르게 나온다 — 프로퍼티로 읽어야 한다.
+test('방문하면 음소거가 아니고, 볼륨이 정착값(0.5)까지 올라온다 (2026-09-09 대표 지시)', async ({ page }) => {
   await page.goto('/');
-  const muted = await page.evaluate(() => {
+  await expect
+    .poll(() => page.evaluate(() => document.getElementById('audio').volume), { timeout: 5000 })
+    .toBeCloseTo(0.5, 2);
+
+  const state = await page.evaluate(() => {
     const audio = document.getElementById('audio');
-    return audio ? audio.muted : null;
+    return {
+      mutedProperty: audio.muted,
+      mutedAttribute: audio.hasAttribute('muted'),
+      sliderValue: Number(document.getElementById('vol').value),
+    };
   });
-  expect(muted).toBe(true);
+  expect(state.mutedProperty, '음소거로 시작하면 안 된다').toBe(false);
+  expect(state.mutedAttribute, 'muted 속성 자체를 쓰지 않는다').toBe(false);
+  expect(state.sliderValue, '볼륨바도 같은 값을 가리켜야 한다').toBeCloseTo(0.5, 2);
 });
 
 test('OS의 동작 줄이기(prefers-reduced-motion) 설정이 켜지면 반딧불이 애니메이션이 정지한다', async ({ page }) => {

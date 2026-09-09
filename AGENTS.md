@@ -37,7 +37,7 @@ npm ci                              # 의존성 설치
 npm run dev                         # 개발 서버
 npm run build                       # 타입 검사 + 빌드 (dist/index.html -> 404.html 복사 포함)
 npm run lint                        # eslint (TypeScript + 훅 의존성 배열)
-npm test                            # Playwright 19개 (스크린샷 비교 제외)
+npm test                            # Playwright 24개 (스크린샷 비교 제외)
 npm run test:visual                 # 스크린샷 비교 (로컬 전용, 아래 참고)
 
 python3 scripts/check-inline-script.py    # 산출물에 인라인 <script>가 없는지
@@ -102,8 +102,11 @@ python3 scripts/check-font-coverage.py    # 폰트 서브셋 글자 커버리지
   되살리지 않는다.
 - 반딧불이 파티클 개수·애니메이션 구성, 카드 그리드 열 구성, 플레이어 높이 동기화
   로직 — 전부 여러 차례 조정을 거쳐 확정된 값이다. 임의로 "개선"하지 말 것.
-- 방문 시 배경음악 자동재생은 의도된 설계다. 테스트하느라 소리를 끄고 싶으면 제품
-  코드가 아니라 테스트하는 쪽에서 처리한다.
+- **방문 시 소리 나는 배경음악 자동재생은 의도된 설계다**(2026-09-09 대표 확정 —
+  볼륨 0에서 50%까지 부드럽게 올라온다). 2026-08-31에는 반대로 "항상 음소거로 시작"이
+  사양이었다가 뒤집혔으니, 음소거로 되돌리지 말 것. 배경은 `.claude/rules/app.md`의
+  "소리" 절에 있다. 테스트하느라 소리를 끄고 싶으면 제품 코드가 아니라 테스트하는
+  쪽에서 처리한다(`playwright.config.js`의 `--mute-audio`).
 
 자세한 배경과 이유는 [CLAUDE.md](CLAUDE.md)의 "LOCKED — 핵심 설계 결정",
 "알려진 / 수용된 사항" 섹션에 있다.

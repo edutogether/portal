@@ -7,10 +7,10 @@ import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await page.evaluate(() => {
-    const audio = document.getElementById('audio');
-    if (audio) audio.muted = true;
-  });
+  // 예전엔 여기서 audio.muted = true를 걸었는데, 지금은 제품이 muted를 아예 쓰지
+  // 않으므로(소리는 volume 하나로만 다룬다) 테스트가 그걸 건드리면 실제와 다른 상태를
+  // 만든다. 스피커로 소리가 나가지 않는 것은 playwright.config.js의 --mute-audio가
+  // 브라우저 수준에서 보장한다.
 });
 
 test('재생 버튼을 누르면 audio.paused가 false로 바뀐다', async ({ page }) => {
@@ -21,15 +21,42 @@ test('재생 버튼을 누르면 audio.paused가 false로 바뀐다', async ({ p
 });
 
 test('볼륨을 0으로 내린 뒤 음소거 버튼을 누르면 최대음량(1.0)이 아니라 0.5로 복귀한다 (2026-08-25 회귀버그)', async ({ page }) => {
-  await page.evaluate(() => {
-    const vol = document.getElementById('vol');
-    vol.value = '0';
-    vol.dispatchEvent(new Event('input'));
+  await page.locator('#vol').fill('0');
+  await page.click('#muteBtn'); // 볼륨 0 → 클릭하면 해제 시도
+  // 이제 복귀가 페이드라서 값이 즉시 도달하지 않는다 — 끝날 때까지 기다린다.
+  await expect
+    .poll(() => page.evaluate(() => document.getElementById('audio').volume), { timeout: 3000 })
+    .toBeCloseTo(0.5, 2);
+});
+
+test('음소거를 껐다 켜면 직전 볼륨으로 돌아온다 (0.5가 아니라 그 값으로)', async ({ page }) => {
+  await page.locator('#vol').fill('0.55');
+  await page.click('#muteBtn'); // 끔 → 0으로 페이드
+  await expect
+    .poll(() => page.evaluate(() => document.getElementById('audio').volume), { timeout: 3000 })
+    .toBeCloseTo(0, 2);
+
+  await page.click('#muteBtn'); // 켬 → 직전 값(0.55)으로 페이드
+  await expect
+    .poll(() => page.evaluate(() => document.getElementById('audio').volume), { timeout: 3000 })
+    .toBeCloseTo(0.55, 2);
+});
+
+test('볼륨 변화는 즉시 튀지 않고 중간값을 거쳐 흐른다 (볼륨바가 따라 움직인다)', async ({ page }) => {
+  await page.locator('#vol').fill('0.8');
+  // 페이드 도중의 슬라이더 값을 표본으로 모은다. 즉시 0으로 튀면 표본이 0과 0.8뿐이다.
+  const samples = await page.evaluate(async () => {
+    const slider = document.getElementById('vol');
+    const seen = [];
+    const timer = setInterval(() => seen.push(Number(slider.value)), 25);
+    document.getElementById('muteBtn').click();
+    await new Promise((r) => setTimeout(r, 600));
+    clearInterval(timer);
+    return seen;
   });
-  await page.click('#muteBtn'); // 볼륨 0 → 사실상 음소거 상태 → 클릭하면 해제 시도
-  const volume = await page.evaluate(() => document.getElementById('audio').volume);
-  expect(volume).toBeCloseTo(0.5, 5);
-  expect(volume).not.toBe(1);
+  const between = samples.filter((v) => v > 0.02 && v < 0.78);
+  expect(between.length, `중간값이 없다 = 값이 튀었다는 뜻. 표본: ${samples.join(',')}`)
+    .toBeGreaterThan(2);
 });
 
 test('반복이 꺼져 있고 곡이 1개뿐이면 재생이 끝나도 같은 곡이 무한재생되지 않는다 (2026-08-25 회귀버그)', async ({ page }) => {
@@ -96,6 +123,12 @@ test('탐색바를 드래그하면 현재 시간 표시가 그 값으로 갱신�
   // 값이 바뀐 걸 못 알아채서(내부 value tracker가 이미 새 값을 본 상태가 됨) 핸들러가
   // 안 불린다. 실제 사용자 조작과 같은 경로인 fill()로 바꾼다 — 진짜 입력 이벤트가
   // 발생하므로 구현 방식과 무관하게 통하고, 검사 내용은 그대로다.
+  // 메타데이터가 오기 전에 seek하면 브라우저가 그 위치를 못 잡고, 곧이어 오는
+  // timeupdate가 0으로 되돌려버린다 — 길이를 알게 된 뒤에 조작한다.
+  await expect
+    .poll(() => page.evaluate(() => document.getElementById('audio').duration || 0), { timeout: 5000 })
+    .toBeGreaterThan(0);
+
   await page.locator('#seek').fill('65'); // 1:05
   const curTime = await page.textContent('#curTime');
   expect(curTime).toBe('1:05');

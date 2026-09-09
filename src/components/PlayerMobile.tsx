@@ -49,7 +49,7 @@ export function PlayerMobile({ onMore }: { onMore: () => void }) {
         <Transport idSuffix="M" />
         <div className="pm-volume">
           <button
-            className={`vol-icon-btn ${volumeClass(p.volume, p.muted)}`} id="muteBtnM"
+            className={`vol-icon-btn ${volumeClass(p.volume)}`} id="muteBtnM"
             aria-label="음소거" type="button" onClick={p.toggleMute}
           >
             <VolumeIcon />
