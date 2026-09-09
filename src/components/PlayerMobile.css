@@ -63,12 +63,12 @@
 .pm-lyrics-track p {
   margin: 0; padding: 2px 0;
   font-size: 12px; font-weight: 700; line-height: 1.4;
-  color: rgba(255, 255, 255, 0.32);
+  color: rgba(255, 255, 255, 0.26);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
 }
 /* 데스크탑과 같은 값 — 지금은 위 .pm-lyrics-mask가 display:none이라 화면엔
    안 보이지만, 로직은 공유하므로 다시 켤 때를 위해 같이 맞춰둔다. */
-.pm-lyrics-track p.past { color: rgba(255, 255, 255, 0.46); }
+.pm-lyrics-track p.past { color: rgba(255, 255, 255, 0.52); }
 .pm-lyrics-track p.active { color: #fff; }
 
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
