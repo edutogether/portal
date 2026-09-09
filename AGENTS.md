@@ -126,6 +126,8 @@ python3 scripts/check-font-coverage.py    # 폰트 서브셋 글자 커버리지
 | `bg-loading.webp` | **미사용, 보존** — 재사용 대비 의도적으로 남겨둔 것이라 지우지 말 것 |
 | `og-thumb.jpg` | 카카오톡 공유 배너 (1200×630) |
 | `quiz.webp` / `classcade.webp` / `incheon.webp` / `googler.webp` / `poster-studio.webp` / `voice-cinema.webp` | 카드 썸네일 6종 |
+
+**`quiz.webp` 원본(1672×941, 무손실 보관)은 `_docs/archive/assets/quiz-original-1672x941.webp`에 있다(2026-09-09, 대표 지시).** 원래 파일이 다른 5개(800×420/450)보다 두 배 넘는 해상도라 표시 폭은 같은데 전송량만 컸다 — 카드 폭에 맞춰 800×450(정확히 16:9, `.thumb`의 컨테이너 비율)으로 재인코딩하고, 브라우저가 `object-fit: cover`로 원래도 미세하게 잘라내던 만큼만(1672×941→1672×940, 1px) 반영해서 구도는 그대로다(잘라낸 뒤 리샘플은 LANCZOS). 다시 필요하면 원본에서 재인코딩할 것.
 | `gaegujangi.m4a` / `gaegujangi-cover.webp` | 배경음악 + 앨범 커버 |
 
 폰트는 `public/assets/fonts/pretendard/`에 자가호스팅한다(실사용 5개 굵기만, pyftsubset으로
