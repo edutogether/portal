@@ -29,6 +29,22 @@ dist/               빌드 산출물 = 배포 대상 (커밋하지 않음)
 - `main`에 push하면 GitHub Actions(`.github/workflows/deploy.yml`)가 린트 → 빌드 →
   게이트 → 테스트를 전부 통과시킨 뒤에만 배포한다. 로컬에서 수동 배포할 일은 없다.
 - `dist/`는 커밋하지 않는다 — CI가 배포 직전에 다시 빌드한다.
+- **워크플로우 8종**(`.github/workflows/`) — 각 파일 상단 주석에 왜 그런 트리거인지
+  적혀 있으니 자세한 건 거기서 읽을 것:
+  - `deploy.yml` — `main` push. 위에서 말한 배포 전 전체 게이트 + 배포.
+  - `firebase-hosting-pull-request.yml` — PR마다 임시 미리보기 URL에만 배포.
+  - `sync-check.yml` / `player-smoke-test.yml` — 404 동일성·인라인 script 없음 /
+    Playwright 전체. **PR에서만 돈다** — `main` push에서 돌리면 `deploy.yml`의
+    게이트와 완전히 중복되기 때문(2026-09-01 정리).
+  - `font-coverage-check.yml` — push/PR마다 Pretendard 서브셋 커버리지 확인(위
+    `check-font-coverage.py`를 CI에서 돌리는 것).
+  - `link-healthcheck.yml` — 매일 09:00 KST, 6개 앱 + 포털 자신 응답 확인(아래
+    "현재 링크" 절 참고).
+  - `budget-alert-check.yml` — 매달 1일, Blaze 예산 알림이 콘솔에 살아있는지
+    사람이 재확인하도록 리마인더 이슈를 자동 생성(콘솔 설정이라 코드로 직접
+    조회는 못 한다 — 아래 "운영" 절 참고).
+  - `keepalive.yml` — 매달 빈 커밋. 위 예약 워크플로우들이 60일 뒤 자동
+    비활성화되는 걸 막는다.
 
 ## 명령
 
