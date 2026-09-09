@@ -111,3 +111,10 @@
   이미 1200×630과 같은 비율)은 그대로 확대. Portal 자신의 `og-thumb.jpg`도
   같은 폴더·체계로 옮겨 통일. 문구 표(og:title/description/image/url)는
   팀장에게 전달, 나머지 다섯 앱은 각 세션이 반영.
+- **fix/ci**: `deploy.yml`의 Playwright 브라우저 설치가 Google 자체 Chrome apt
+  저장소의 `Hash Sum mismatch`로 5연속 실패한 것을 고쳤다. 로컬 apt 캐시를
+  지우고 재시도해도 똑같이 실패해서 캐시가 아니라 저장소 자체(서버 쪽)가
+  깨진 것으로 확인 — Playwright는 브라우저 바이너리를 자체 CDN에서 받고
+  apt는 시스템 라이브러리에만 쓰므로, Google Chrome 저장소 목록만 지우고
+  `apt-get update`를 재실행한 뒤 재시도하도록 했다. 배포 대상 식별자(Firebase
+  사이트 이름 등)는 손대지 않음. (`fc9a420`)
