@@ -205,6 +205,11 @@
     `trace: 'retain-on-failure'`를 켜고 `deploy.yml`에 실패 시 trace를 아티팩트로
     올리는 스텝을 추가 — **다음에 또 흔들리면 이번처럼 추측만 하지 않고 실제
     증거(trace.zip)를 볼 수 있다.**
+- **GitHub Actions 액션 SHA를 추측해서 적는 것.** `upload-artifact@v4`의 SHA를 커밋
+  전에 손으로 짐작해 적었다가(`...fa9`), `gh api repos/<org>/<repo>/git/refs/tags/<태그>`로
+  실제 태그가 가리키는 커밋과 대조해보니 마지막 자리가 틀려 있었다(`...fa02`가 맞음).
+  **SHA는 항상 `gh api`로 대조한 뒤에 적는다** — 틀린 SHA는 그 스텝이 그냥 실패할
+  뿐이라 눈에 띄긴 하지만, 커밋에 들어가기 전에 잡는 게 맞다.
 
 ## 배경작업 재개 지점 (§19)
 
