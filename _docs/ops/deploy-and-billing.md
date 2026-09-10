@@ -35,4 +35,5 @@ firebase deploy --only hosting --account=edutogether2015@gmail.com
 [Firebase Hosting 콘솔](https://console.firebase.google.com/project/edutogether-portal/hosting/sites)의
 "Previous releases"에서 이전 릴리스를 원클릭으로 되돌릴 수 있다(재배포 불필요, 수십
 초). 저장소를 건드리지 않으므로 원인 분석 시간을 벌 수 있다 — **사고 시엔 이걸
-먼저 하고**, 그다음 `git revert` + push로 저장소 상태를 맞춘다(CI 실측 평균 1.7분).
+먼저 하고**, 그다음 `git revert` + push로 저장소 상태를 맞춘다(CI 실측 평균 2분 안팎 —
+2026-09-10 기준 4회 연속 2:07~2:44, 캐시 히트/미스에 따라 변동).
