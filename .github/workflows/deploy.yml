@@ -41,6 +41,11 @@ jobs:
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: filter
         with:
+          # 기본값(predicate-quantifier: 'some')은 '!' 패턴을 독립된 대안으로
+          # OR 취급해서 제외가 전혀 안 걸린다 — 첫 시도에서 실제로 문서 전용
+          # 커밋이 deploy = true로 나온 걸 보고서야 발견했다(dorny/paths-filter
+          # 공식 문서: "some-with-excludes"라야 '!'가 진짜 배제로 동작한다).
+          predicate-quantifier: 'some-with-excludes'
           filters: |
             deploy:
               - '**'
