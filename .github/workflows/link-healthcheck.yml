@@ -97,13 +97,35 @@ jobs:
             # 만든 원본과 각 앱의 배포본을 바이트 해시로 대조한다 — 아직 원본을
             # 적용하지 않은 앱(og:image가 아예 없거나 다른 이미지)도 같은 방식으로
             # 걸린다.
+            #
+            # 2026-09-10, 첫 실행에서 Be a Googler가 "태그 없음"으로 잡혔는데
+            # 실제로는 태그가 있었다(다른 이미지를 가리켰을 뿐) — 원래 추출기가
+            # `property="og:image" content="..."` 순서·큰따옴표만 봐서, 순서가
+            # 반대거나 작은따옴표를 쓰면 진짜로 있는 태그도 못 찾고 "없음"으로
+            # 뭉뚱그렸다(COMMON_STANDARDS §21-6, 읽기 실패와 진짜 부재를 같은
+            # 결과로 보고). 페이지를 못 받아온 것(FETCH_FAIL)·태그가 정말 없는
+            # 것(NOTAG)·태그는 찾았는데 해시가 다른 것(MISMATCH)을 서로 다른
+            # 메시지로 가른다 — 태그 찾기도 <meta ...> 조각을 먼저 순서 무관하게
+            # 골라낸 뒤 그 안에서 content 값을 따옴표 종류 무관하게 뽑는 2단계로
+            # 바꿔 속성 순서·따옴표 종류에 안 흔들리게 했다.
             local name="$1" page_url="$2" local_ref="$3"
-            local html image_url remote_hash local_hash
+            local html meta_tag image_url remote_hash local_hash
             html=$(curl -sL --max-time 15 "$page_url")
-            image_url=$(echo "$html" | grep -oP '(?<=property="og:image" content=")[^"]+' | head -n1)
-            if [ -z "$image_url" ]; then
-              echo "::error::$name og:image 메타 태그를 찾지 못함 ($page_url)"
+            if [ -z "$html" ]; then
+              echo "::error::$name 페이지를 받아오지 못함 — og:image 확인 불가 ($page_url)"
+              echo "- **$name (OG 이미지)**: 페이지를 받아오지 못함 ($page_url)" >> /tmp/failures.txt
+              return 1
+            fi
+            meta_tag=$(echo "$html" | grep -oP '<meta\b[^>]*\bproperty=["'"'"']og:image["'"'"'][^>]*>' | head -n1)
+            if [ -z "$meta_tag" ]; then
+              echo "::error::$name og:image 메타 태그를 찾지 못함 (페이지는 정상 응답, ${#html}자) ($page_url)"
               echo "- **$name (OG 이미지)**: og:image 태그 없음 ($page_url)" >> /tmp/failures.txt
+              return 1
+            fi
+            image_url=$(echo "$meta_tag" | grep -oP '\bcontent=["'"'"']\K[^"'"'"']+')
+            if [ -z "$image_url" ]; then
+              echo "::error::$name og:image 태그는 있는데 content 값을 못 뽑음: $meta_tag ($page_url)"
+              echo "- **$name (OG 이미지)**: content 값 추출 실패 — $meta_tag ($page_url)" >> /tmp/failures.txt
               return 1
             fi
             remote_hash=$(curl -sL --max-time 15 "$image_url" | sha256sum | awk '{print $1}')
