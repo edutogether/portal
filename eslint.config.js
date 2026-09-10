@@ -61,6 +61,7 @@ export default [
         setInterval: "readonly",
         clearInterval: "readonly",
         getComputedStyle: "readonly",
+        URL: "readonly",
       },
     },
   },
