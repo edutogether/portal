@@ -29,7 +29,17 @@ jobs:
         run: npm run build
       - name: Playwright 버전 확인
         id: playwright-version
-        run: echo "version=$(npx playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+        # 명령치환 실패가 바깥 echo에 가려지면(2026-09-10 감사에서 발견) 빈
+        # 버전으로 캐시 키가 만들어지고, 다음에도 그 빈 키에 계속 히트해
+        # 설치 스텝이 조용히 스킵될 위험이 있다 — 빈 값이면 그 자리에서
+        # 실패시킨다.
+        run: |
+          version=$(npx playwright --version | awk '{print $2}')
+          if [ -z "$version" ]; then
+            echo "::error::Playwright 버전을 확인하지 못했습니다 (빈 값)."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
       - name: Playwright 브라우저 캐시
         id: playwright-cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0

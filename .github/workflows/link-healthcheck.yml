@@ -60,9 +60,18 @@ jobs:
           }
           check_function() {
             local name="$1" url="$2" expect_code="$3" expect_body="$4"
-            local body code
-            body=$(curl -sL --max-time 15 -X POST "$url" -H "Content-Type: application/json" -d '{}')
-            code=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 15 -X POST "$url" -H "Content-Type: application/json" -d '{}')
+            local response body code short_body
+            # 본문·상태코드를 curl 한 번으로 같이 받는다 — 예전엔 두 번 따로
+            # 불러서, 롤링 배포·간헐 장애 중이면 서로 다른 요청의 응답을
+            # 섞어서 "상태코드는 맞는데 본문은 다른 것"이라는 실제로는 한 번도
+            # 함께 일어나지 않은 조합을 보고할 수 있었다(2026-09-10 감사에서 발견).
+            response=$(curl -sL --max-time 15 -X POST "$url" -H "Content-Type: application/json" -d '{}' -w $'\n%{http_code}')
+            code=$(printf '%s' "$response" | tail -n1)
+            body=$(printf '%s' "$response" | sed '$d')
+            # 이 본문은 남의 프로젝트가 돌려준 응답이라 스택트레이스·내부
+            # 식별자가 섞여 있을 수 있다 — 실패 시 공개 저장소의 GitHub 이슈로
+            # 그대로 실리므로(2026-09-10 감사에서 발견) 200자로 자른다.
+            short_body="${body:0:200}"
             echo "$name (기능): $code ($url)"
             if [ "$code" != "$expect_code" ]; then
               echo "::error::$name 기능 확인 실패 — 상태코드 $code, 기대 $expect_code ($url)"
@@ -70,8 +79,8 @@ jobs:
               return 1
             fi
             if ! echo "$body" | grep -qF "$expect_body"; then
-              echo "::error::$name 기능 확인 실패 — 상태코드는 기대값이지만 응답 본문에 '$expect_body'가 없음: $body ($url)"
-              echo "- **$name (기능)**: 응답 본문 불일치 — $body ($url)" >> /tmp/failures.txt
+              echo "::error::$name 기능 확인 실패 — 상태코드는 기대값이지만 응답 본문에 '$expect_body'가 없음: $short_body ($url)"
+              echo "- **$name (기능)**: 응답 본문 불일치 — $short_body ($url)" >> /tmp/failures.txt
               return 1
             fi
           }
