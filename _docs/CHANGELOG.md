@@ -192,3 +192,18 @@
   `predicate-quantifier: 'some-with-excludes'`를 추가해서 고쳤다
   (`46c9a52`). 이 문단 자체가 그 수정을 다시 뒤집어 확인하는 문서 전용
   커밋이다 — deploy가 실제로 스킵되는지는 이 커밋의 CI 결과로 확인한다.
+- **chore**: 대표 지시로 GitHub 보안 기능(Dependabot 경보/자동수정,
+  비밀 보호+푸시 차단, CodeQL, 비공개 취약점 제보)을 조직 전체에 켰다.
+  이 저장소의 첫 CodeQL 실행이 `actions/missing-workflow-permissions`
+  경고 2건을 찾았다 — `sync-check.yml`·`player-smoke-test.yml`에
+  workflow-level `permissions`이 없었다(나머지 6개는 이미 있었음).
+  둘 다 배포·이슈 생성이 없어 최소 권한(`contents: read`)으로 명시.
+  `npm audit`·Dependabot 경보 둘 다 0건(둘 다 실제로 스캔했는지 확인 —
+  빈 lockfile이나 권한 거부로 인한 침묵이 아님).
+- **fix**: 프리즈 태그 39개 중 38개를 `refs/archive/tags/`로 옮기고
+  1개(`portal-freeze-20260910-audited-100`)만 남겼다(COMMON_STANDARDS
+  §23-6, Bumm님 결정 — GitHub Pages·React 전환 이전은 전부 버려도 된다는
+  판단). 전문은 `_docs/archive/tags-20260910.md`. 태그 삭제로 GitHub
+  Release 8개가 자동 Draft로 남는 것을 발견해 원문만 백업하고
+  (`_docs/archive/orphaned-release-notes-20260910.md`) 삭제 여부는
+  팀장 판단으로 올렸다.
