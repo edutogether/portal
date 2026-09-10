@@ -478,3 +478,14 @@
     20260910-audited-100` 태그를 그 커밋에 찍고 GitHub 릴리스 부착,
     `git checkout <태그>` → `git diff main <태그>`로 **차이 0건** 실측
     확인 후 `git checkout main`으로 원위치까지 마쳤다.
+  - **2026-09-10, OG 이미지 원본-배포본 대조 추가(팀장 판단, `c7a31ee`)** —
+    위 미해결 1건에 대한 팀장 판단: 6개 저장소에 도구를 심지 않고, 포털이
+    **자기 저장소 안에서만** `actions/checkout` 추가해 원본과 각 앱 라이브
+    `og:image`를 curl+sha256으로 대조(`check_og_image`, `link-healthcheck.yml`).
+    QUIZ TOGETHER는 외부 서비스라 제외. §21-2 검증(포스터 원본 1바이트 변조 →
+    실제 라이브 엔드포인트로 불일치 확인 → 원복 → 재확인)까지 실측 완료. 실제
+    첫 실행에서 Poster/Voice/CLASSCADE/Portal 4곳 일치, AI Ways·Be a Googler는
+    아직 미적용으로 불일치(버그 아님, 정상 신호) — 기존 헬스체크 실패 이슈(#5)
+    에 코멘트로 남김. **이건 새 프리즈 태그를 만들지 않는다**(팀장 지시,
+    "기존 태그 뒤의 정상 변경") — CHANGELOG에만 기록, 다음 감사 라운드에서
+    함께 태그.
