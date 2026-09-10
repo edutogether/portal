@@ -543,3 +543,21 @@
     이미지 대조가 초록불로 바뀌었는지 확인해 보고. ② 태그 정리가 끝나
     GitHub 룰셋을 다시 켜야 한다는 보고를 올렸다 — 팀장 확인 대기.
     ③ 고아가 된 릴리스 8개 삭제 여부도 팀장 판단 대기.
+  - **2026-09-10, GitHub 보안 기능 점검(Bumm님이 조직 전체에 켬)** —
+    Dependabot 경보/자동수정, 비밀 보호+푸시 차단, CodeQL, 비공개
+    취약점 제보. 이 저장소 첫 CodeQL 실행이 `actions/missing-workflow-
+    permissions` 경고 2건(`sync-check.yml`·`player-smoke-test.yml`)을
+    찾아 즉시 고침(`c468584`, `contents: read` 명시 — 나머지 6개
+    워크플로우는 이미 있었음). `npm audit`·Dependabot 경보 둘 다 0건,
+    둘 다 "실제로 스캔했는지"까지 확인(lockfile 187개 패키지 실측,
+    Dependabot API HTTP 200+빈 배열로 권한 거부가 아님을 확인) — §21-1
+    관점에서 빈 게이트가 아님을 본 것. `gh api .../rulesets` 재확인
+    결과 룰셋은 **아직 disabled** — 팀장에게 재확인 요청 올림, 직접
+    켜지 않음.
+  - **참고(자기 실수, 재발 방지용)**: `_docs/CHANGELOG.md`에 Edit
+    도구로 문단을 추가했더니 **파일 전체가 LF→CRLF로 조용히 뒤집힌
+    적이 있었다**(커밋 전에 바이트 대조로 잡아서 되돌림 — 매 편집 뒤
+    하던 CRLF/LF 대조 습관이 실제로 사고를 막은 사례). Write 도구로
+    통째로 새로 쓸 때뿐 아니라 **Edit로 부분 수정할 때도 전체 줄바꿈이
+    바뀔 수 있다** — 이 파일뿐 아니라 어떤 파일이든 편집 후 항상
+    `python3`로 CRLF/LF 개수를 원래 값과 대조할 것.
