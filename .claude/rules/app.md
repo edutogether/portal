@@ -139,6 +139,15 @@
 ## 자주 틀리는 것
 (헌법의 "이력"이 아니라, 실제로 두 번 이상 반복된 함정 목록)
 
+- **Playwright `addInitScript`에서 `document.documentElement`를 바로 쓰는 것.**
+  2026-09-11에 로딩 화면 2바퀴 하한(COMMON_STANDARDS §27) 테스트를 만들며 겪었다
+  — `MutationObserver.observe(document.documentElement, ...)`가
+  `"Failed to execute 'observe'... parameter 1 is not of type 'Node'"`로 그
+  자리에서 실패했는데, **에러가 콘솔에만 찍히고 테스트는 그냥 10초 타임아웃으로
+  조용히 실패**해서 원인을 알아채기 까다로웠다. `addInitScript`는 `<html>` 태그가
+  파싱되기 **전**에 실행되므로 그 시점엔 `document.documentElement`가 아직
+  `null`이다. `document` 자신(Document 노드)은 언제나 있으므로 그걸 관찰 대상으로
+  쓸 것 — `subtree: true`면 나중에 붙는 `<html>` 이하 전부를 그대로 잡는다.
 - **`backdrop-filter`를 표준 속성 먼저, `-webkit-` 접두사판을 나중에 쓰는 것.**
   순서가 그러면 빌드 미니파이어가 표준 속성을 지우고 접두사판만 남기는데, 현대 크롬은
   접두사판을 적용하지 않아 **블러가 조용히 사라진다.** 반드시 `-webkit-`을 먼저,
@@ -583,3 +592,12 @@
     안 붙인다 — 다음 감사부터 이 형식 적용. 오늘 하루 있었던 AI Ways/
     OG/CI/문서정리/종합감사/태그정리/보안기능 스트림 전부 종결, 지시
     작업도 배경작업도 남은 게 없다 — 다음 지시 대기.
+  - **2026-09-11, 로딩 화면 두 바퀴 하한(COMMON_STANDARDS §27, 대표 지시,
+    `d7d6e03`)** — `MIN_SHOW_MS`를 반복 애니메이션(`flicker`, 1.6s/바퀴)
+    두 바퀴(3200ms)로 명시적으로 계산해 올렸다(기존 2100ms는 진행 바
+    fill 지속시간과 맞춘 값이라 1.3바퀴에서 끊길 수 있었음). 이 앱은
+    기기별 로더 분리가 없어(App.tsx `<Loader />` 하나, 반응형 CSS로
+    공유) AI Ways가 겪은 "한쪽에만 넣고 다른 쪽 놓침" 위험 자체가 없음을
+    확인. 새 테스트가 `performance.now()`로 실제 노출 시간을 재고, 하한을
+    일부러 낮춰 빨간불(1218ms 측정)이 되는 것 확인 후 원복(§21-2). 확인
+    끝나고 손으로 띄운 `vite preview`(포트 4319, 디버깅용)를 종료.
