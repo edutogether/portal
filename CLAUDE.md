@@ -1,5 +1,7 @@
 # CLAUDE.md — portal (같교오락실)
 
+표시: 🔴 어기면 실사용자 화면이 깨지거나 개인정보가 샌다 · 🟠 중간 · 🟡 낮음 · 🟢 확인 끝남 (COMMON_STANDARDS §30)
+
 같이교육이 만든 앱들을 골라서 체험하는 전시용 포털. 상위 원칙은
 [D:\Projects\CLAUDE.md](../../CLAUDE.md) 상속 — 여기는 **지금 유효한 규칙·금지·정체성**만
 둔다. 지난 이력은 [_docs/archive/history.md](_docs/archive/history.md)에 있다.

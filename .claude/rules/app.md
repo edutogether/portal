@@ -1,5 +1,7 @@
 # portal (같교오락실) 개별 규칙
 
+표시: 🔴 어기면 실사용자 화면이 깨지거나 개인정보가 샌다 · 🟠 중간 · 🟡 낮음 · 🟢 확인 끝남 (COMMON_STANDARDS §30)
+
 헌법(D:\Projects\CLAUDE.md → _shared/CONVENTIONS.md)에 없는 것만.
 
 ## 앱
