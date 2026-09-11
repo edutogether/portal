@@ -30,7 +30,7 @@ React + TypeScript + Vite로 전면 재작성했다(빌드 없는 단일 파일 
 
 이후로도 Sonnet+Opus가 서로 사전 정보를 공유하지 않고 각자 독립적으로
 채점하는 방식(`COMMON_STANDARDS.md` §7)의 종합감사를 여러 차례 거쳐 매번
-10/10 100점을 받았다. 각 고정점에 무엇이 완성됐는지는
+10/10을 받았다. 각 고정점에 무엇이 완성됐는지는
 [릴리스](https://github.com/edutogether/portal/releases)에 한 문단씩 적혀 있고,
 그 이후 변경은 [`_docs/CHANGELOG.md`](_docs/CHANGELOG.md)에 있다.
 
