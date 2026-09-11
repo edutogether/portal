@@ -98,6 +98,47 @@ test('og:image가 가리키는 파일이 실제로 존재하고 응답한다', a
   expect(res.headers()['content-type'], 'JPEG여야 한다 — 카카오톡이 webp를 못 씀').toContain('image/jpeg');
 });
 
+// COMMON_STANDARDS §27(2026-09-11) — 스플래시는 자기 반복 애니메이션이 최소
+// 두 바퀴 도는 동안 떠 있어야 한다. 상수(MIN_SHOW_MS)를 넣은 것만으로는
+// 부족하다 — 다른 경로(예: assetsReady가 그보다 먼저 끝나는 조건)가 실제로는
+// 상수보다 먼저 끊는지 실측해야 한다. 그래서 자산 지연을 걸지 않은
+// 빠른(캐시 있는 재방문에 해당) 조건에서, 로더가 DOM에 나타난 시각과
+// `.done` 클래스가 붙는 시각을 페이지 안에서 performance.now()로 직접 재서
+// 비교한다 — 바깥에서 page.goto() 앞뒤로 재면 내비게이션 시간이 섞여
+// 실제보다 길게 나와 하한이 깨져도 통과할 수 있다.
+test('로딩 화면은 반복 애니메이션이 최소 두 바퀴(3200ms) 도는 동안 떠 있는다 (COMMON_STANDARDS §27)', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.__loaderTiming = { mountTime: null, doneTime: null };
+    const record = () => {
+      const el = document.getElementById('loader');
+      if (!el) return;
+      if (window.__loaderTiming.mountTime === null) {
+        window.__loaderTiming.mountTime = performance.now();
+      }
+      if (el.classList.contains('done') && window.__loaderTiming.doneTime === null) {
+        window.__loaderTiming.doneTime = performance.now();
+      }
+    };
+    // document.documentElement은 addInitScript 실행 시점엔 아직 없다(<html>이
+    // 파싱되기 전) — document 자신은 항상 있으므로 그걸 관찰 대상으로 쓴다.
+    new MutationObserver(record).observe(document, {
+      childList: true, subtree: true, attributes: true, attributeFilter: ['class'],
+    });
+  });
+
+  // 한 번 미리 방문해 브라우저 캐시를 데운다 — "캐시가 다 있는 재방문 상태,
+  // 스로틀 없이" 조건(§27)을 맞추기 위함. 느린 조건에서만 재면 assetsReady가
+  // 늦게 끝나 하한(MIN_SHOW_MS)이 실제로 안 걸려도 통과해버린다.
+  await page.goto('/');
+  await page.waitForSelector('#loader.done');
+
+  await page.goto('/');
+  await page.waitForFunction(() => window.__loaderTiming?.doneTime !== null, { timeout: 10000 });
+  const timing = await page.evaluate(() => window.__loaderTiming);
+  const visibleMs = timing.doneTime - timing.mountTime;
+  expect(visibleMs, '로딩 화면이 화면에 떠 있던 실제 시간(ms)').toBeGreaterThanOrEqual(3200);
+});
+
 test('로딩 화면은 진행 바 애니메이션이 끝나도 실제 페이지 로드가 끝나기 전엔 사라지지 않는다 (2026-09-03 회귀버그)', async ({ page }) => {
   // 예전엔 진행 바 애니메이션(2.1s)만 끝나면 실제 로딩 상태와 무관하게
   // 로딩 화면이 사라져서, 느린 회선에서 아직 다 안 그려진 메인 화면이

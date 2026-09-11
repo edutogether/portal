@@ -62,6 +62,8 @@ export default [
         clearInterval: "readonly",
         getComputedStyle: "readonly",
         URL: "readonly",
+        performance: "readonly",
+        MutationObserver: "readonly",
       },
     },
   },

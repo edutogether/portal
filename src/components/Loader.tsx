@@ -13,7 +13,16 @@ import "./Loader.css";
 //   - 화면에 있는 모든 <img>의 로드 완료 (카드 썸네일, 앨범 커버)
 //   - 로딩 화면 자신의 배경 이미지
 // 셋 다 실패해도(네트워크 오류 등) 화면은 떠야 하므로 에러도 "끝난 것"으로 친다.
-const MIN_SHOW_MS = 2100;
+// COMMON_STANDARDS §27(2026-09-11, 대표 지시) — 스플래시는 자기 애니메이션이
+// 최소 두 바퀴 도는 동안 떠 있어야 한다("초"가 아니라 "바퀴": 애니메이션
+// 주기가 바뀌면 이 하한도 같이 바뀌어야 한다). 이 로더의 유일한 반복
+// 애니메이션은 Loader.css의 `flicker`(로고·마크, 1.6s/바퀴, infinite) —
+// `.bar > i`의 `fill`은 한 번만 채우고 끝나는 애니메이션이라 "바퀴"가 없다.
+// 두 바퀴 = 3200ms. 예전 값(2100ms, 진행 바의 fill 지속시간과 맞춘 것)은
+// 1.3바퀴에서 끊길 수 있었다.
+const FLICKER_CYCLE_MS = 1600;
+const MIN_LOOPS = 2;
+const MIN_SHOW_MS = FLICKER_CYCLE_MS * MIN_LOOPS;
 const SAFETY_MS = 8000;
 
 // 로더 배경 이미지 경로의 유일한 출처. 여기서 CSS 변수로 넘겨 Loader.css가 쓰고,
