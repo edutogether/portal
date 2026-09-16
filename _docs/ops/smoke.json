@@ -1,0 +1,25 @@
+{
+  "$comment": "배포 후 검증용 주요 화면 선언 (_shared/CONVENTIONS.md §3.5). 화면 문구를 바꾸면 이 파일의 expect도 같은 커밋에서 고친다.",
+  "baseUrl": "https://edutogether.kr",
+  "screens": [
+    {
+      "name": "첫 화면 (체험관)",
+      "path": "/",
+      "expect": [
+        "같교오락실",
+        "같이교육 제작 앱 체험관",
+        "© 같이교육 · EDUTOGETHER"
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "screen": "앱 카드 목록(Poster Studio·Voice Cinema·CLASSCADE 등)",
+      "reason": "앱이 추가·정리될 때마다 바뀐다. 포털이 떴는지는 제목과 꼬리말로 충분히 판정된다."
+    },
+    {
+      "screen": "BGM 플레이어와 가사",
+      "reason": "재생 상태에 따라 텍스트가 달라지는 타이밍 의존 영역이다."
+    }
+  ]
+}
