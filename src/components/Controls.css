@@ -8,6 +8,17 @@
   color: rgba(255, 255, 255, 0.5); transition: color 0.15s ease;
 }
 .icon-btn svg { width: 16px; height: 16px; }
+
+/* 키보드 초점 테두리. 마우스로 누를 때는 안 나오고 Tab으로 닿을 때만 나온다
+   (:focus-visible). 이게 없으면 키보드 사용자는 지금 어느 버튼에 가 있는지
+   볼 수 없다 — _shared/CONVENTIONS.md §5.6-4. */
+.icon-btn:focus-visible,
+.play-btn:focus-visible,
+.skip-btn:focus-visible,
+.vol-icon-btn:focus-visible {
+  outline: 2px solid #fff; outline-offset: 3px; border-radius: 6px;
+}
+
 .icon-btn.active { color: #fff; }
 .icon-btn.active svg { fill: currentColor; }
 .icon-btn.more-btn:hover { color: #fff; }
