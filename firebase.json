@@ -11,6 +11,66 @@
         "source": "/calculator/**",
         "destination": "https://calc.edutogether.kr",
         "type": 301
+      },
+      {
+        "source": "/calc",
+        "destination": "https://calc.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/calc/**",
+        "destination": "https://calc.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/googler",
+        "destination": "https://googler.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/googler/**",
+        "destination": "https://googler.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/classcade",
+        "destination": "https://classcade.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/classcade/**",
+        "destination": "https://classcade.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/poster",
+        "destination": "https://poster.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/poster/**",
+        "destination": "https://poster.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/voice",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/voice/**",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/incheon",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/incheon/**",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
       }
     ],
     "ignore": [
