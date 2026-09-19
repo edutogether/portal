@@ -1,6 +1,18 @@
 {
   "hosting": {
     "public": "dist",
+    "redirects": [
+      {
+        "source": "/calculator",
+        "destination": "https://calc.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/calculator/**",
+        "destination": "https://calc.edutogether.kr",
+        "type": 301
+      }
+    ],
     "ignore": [
       "**/.*"
     ],
