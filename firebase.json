@@ -3,6 +3,16 @@
     "public": "dist",
     "redirects": [
       {
+        "source": "/calc",
+        "destination": "https://calc.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/calc/**",
+        "destination": "https://calc.edutogether.kr",
+        "type": 301
+      },
+      {
         "source": "/calculator",
         "destination": "https://calc.edutogether.kr",
         "type": 301
@@ -13,12 +23,42 @@
         "type": 301
       },
       {
-        "source": "/calc",
+        "source": "/inky-calculator",
         "destination": "https://calc.edutogether.kr",
         "type": 301
       },
       {
-        "source": "/calc/**",
+        "source": "/inky-calculator/**",
+        "destination": "https://calc.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inkycalculator",
+        "destination": "https://calc.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inkycalculator/**",
+        "destination": "https://calc.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inkycalc",
+        "destination": "https://calc.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inkycalc/**",
+        "destination": "https://calc.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inky-calc",
+        "destination": "https://calc.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inky-calc/**",
         "destination": "https://calc.edutogether.kr",
         "type": 301
       },
@@ -33,12 +73,72 @@
         "type": 301
       },
       {
+        "source": "/be-a-googler",
+        "destination": "https://googler.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/be-a-googler/**",
+        "destination": "https://googler.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/beagoogler",
+        "destination": "https://googler.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/beagoogler/**",
+        "destination": "https://googler.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/bagoogler",
+        "destination": "https://googler.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/bagoogler/**",
+        "destination": "https://googler.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/be-googler",
+        "destination": "https://googler.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/be-googler/**",
+        "destination": "https://googler.edutogether.kr",
+        "type": 301
+      },
+      {
         "source": "/classcade",
         "destination": "https://classcade.edutogether.kr",
         "type": 301
       },
       {
         "source": "/classcade/**",
+        "destination": "https://classcade.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/class-cade",
+        "destination": "https://classcade.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/class-cade/**",
+        "destination": "https://classcade.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/cascade",
+        "destination": "https://classcade.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/cascade/**",
         "destination": "https://classcade.edutogether.kr",
         "type": 301
       },
@@ -53,6 +153,66 @@
         "type": 301
       },
       {
+        "source": "/poster-studio",
+        "destination": "https://poster.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/poster-studio/**",
+        "destination": "https://poster.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/posterstudio",
+        "destination": "https://poster.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/posterstudio/**",
+        "destination": "https://poster.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inky-poster-studio",
+        "destination": "https://poster.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inky-poster-studio/**",
+        "destination": "https://poster.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inkyposterstudio",
+        "destination": "https://poster.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inkyposterstudio/**",
+        "destination": "https://poster.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inky-poster",
+        "destination": "https://poster.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inky-poster/**",
+        "destination": "https://poster.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inkyposter",
+        "destination": "https://poster.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inkyposter/**",
+        "destination": "https://poster.edutogether.kr",
+        "type": 301
+      },
+      {
         "source": "/voice",
         "destination": "https://voice.edutogether.kr",
         "type": 301
@@ -63,12 +223,152 @@
         "type": 301
       },
       {
+        "source": "/voice-cinema",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/voice-cinema/**",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/voicecinema",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/voicecinema/**",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inky-voice-cinema",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inky-voice-cinema/**",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inkyvoicecinema",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inkyvoicecinema/**",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inky-voice",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inky-voice/**",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inkyvoice",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/inkyvoice/**",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/cinema",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/cinema/**",
+        "destination": "https://voice.edutogether.kr",
+        "type": 301
+      },
+      {
         "source": "/incheon",
         "destination": "https://incheon.edutogether.kr",
         "type": 301
       },
       {
         "source": "/incheon/**",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/aiways",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/aiways/**",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/ai-ways",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/ai-ways/**",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/aiways-incheon",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/aiways-incheon/**",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/aiwaysincheon",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/aiwaysincheon/**",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/ai-ways-incheon",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/ai-ways-incheon/**",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/aiway",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/aiway/**",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/ai-ways-in",
+        "destination": "https://incheon.edutogether.kr",
+        "type": 301
+      },
+      {
+        "source": "/ai-ways-in/**",
         "destination": "https://incheon.edutogether.kr",
         "type": 301
       }
