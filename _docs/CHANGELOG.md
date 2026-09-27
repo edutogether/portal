@@ -230,3 +230,6 @@
 - **docs**: Codex 클라우드·Claude 클라우드에서도 이 저장소만 받아 일할 수 있도록
   `AGENTS.md`에 조직 공통 규칙(D:\Projects 헌법 요약) 절을 추가했다(179줄, DOC-STANDARD
   100~180줄 기준 안). CLAUDE.md·app.md와 겹치는 설명은 줄이고 규칙 자체는 남겼다.
+- **docs**: `.claude/rules/app.md`는 Codex 등 다른 도구가 자동으로 안 읽는다는
+  팀장 지적에 따라, AGENTS.md 금지 목록에 "app.md의 금지·함정 목록도 반드시
+  읽는다"를 명시했다(179줄 유지).

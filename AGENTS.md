@@ -102,10 +102,8 @@ python3 scripts/check-font-coverage.py    # 폰트 서브셋 글자 커버리지
    실제로 겪음 — 스크린샷 비교로 발견).
 3. **CSP는 `script-src 'self'`다.** 인라인 `<script>`를 넣으면 브라우저가 조용히
    차단한다(콘솔 CSP 에러 외엔 증상 없음). `scripts/check-inline-script.py`가
-   산출물에 인라인 스크립트가 생기면 CI를 실패시킨다. 정말 필요하면 이 검사를 지우지
-   말고 CSP에 해시를 함께 추가할 것.
-   `style-src`의 `'unsafe-inline'`은 유지해야 한다 — 반딧불이가 입자마다 인라인 CSS
-   변수를 설정한다.
+   산출물에 인라인 스크립트가 생기면 CI를 실패시킨다 — 지우지 말고 CSP에 해시를
+   함께 추가할 것. `style-src`의 `'unsafe-inline'`은 유지(반딧불이 인라인 CSS).
 4. **화면에 새 문구를 추가하면 폰트 서브셋 재생성이 필요할 수 있다.** Pretendard는
    실제 쓰는 글자만 남겨 서브셋해뒀다. `check-font-coverage.py`가 잡아주며, 검사
    대상 글자는 **렌더된 DOM**에서 뽑는다(소스를 훑으면 코드 식별자까지 사용 글자로
@@ -117,6 +115,8 @@ python3 scripts/check-font-coverage.py    # 폰트 서브셋 글자 커버리지
 8. **`*-freeze-*` 태그를 삭제하거나 옮기지 말 것** — 훅·룰셋이 막는다, 새 클론은
    `git config core.hooksPath .githooks` 한 번 필요(자세한 건 `CLAUDE.md`의 "프리즈 / 태그").
 9. **배포 확인을 HTTP 200만으로 하지 말 것.** 실제 HTML 내용과 자산 로드까지 확인한다.
+10. 🔴 **`.claude/rules/app.md`의 금지·함정 목록도 반드시 읽는다** — 클로드 코드는 자동으로
+    읽지만 Codex 등 다른 도구는 자동으로 안 읽는다. 위 목록은 그중 일부일 뿐이다.
 
 ## 화면이 바뀌지 않았는지 확인하는 법
 
