@@ -227,3 +227,6 @@
   태그로 되돌릴 지점을 남겼다. lint·build·Playwright 27개 로컬 전부 통과,
   배포 후 라이브에서 새 번들 해시(`index-xLXvfQkN.js`) 서빙과 콘솔 에러
   없음까지 확인.
+- **docs**: Codex 클라우드·Claude 클라우드에서도 이 저장소만 받아 일할 수 있도록
+  `AGENTS.md`에 조직 공통 규칙(D:\Projects 헌법 요약) 절을 추가했다(179줄, DOC-STANDARD
+  100~180줄 기준 안). CLAUDE.md·app.md와 겹치는 설명은 줄이고 규칙 자체는 남겼다.
