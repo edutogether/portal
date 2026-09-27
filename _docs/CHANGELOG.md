@@ -218,3 +218,12 @@
   `<Loader />` 한 번) 기기별로 따로 놓치는 구조 자체가 없다. 새 테스트가
   performance.now()로 실제 화면 노출 시간을 재서 확인 — 하한을 일부러
   낮춰 실제로 빨간불이 되는 것까지 확인 후 원복(§21-2).
+
+## 2026-09-27
+
+- **chore**: react·react-dom을 19.3.0으로 올렸다(전 저장소 공통 지시,
+  Bumm 9/27 — `@types` 짝 버전만 같이, Vite·TypeScript 등 다른 의존성은
+  이번엔 안 건드림). 업그레이드 전 `portal-freeze-20260927-pre-react-19.3.0`
+  태그로 되돌릴 지점을 남겼다. lint·build·Playwright 27개 로컬 전부 통과,
+  배포 후 라이브에서 새 번들 해시(`index-xLXvfQkN.js`) 서빙과 콘솔 에러
+  없음까지 확인.
