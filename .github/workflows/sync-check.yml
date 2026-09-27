@@ -10,6 +10,11 @@ name: 빌드 산출물 확인 (404 복사 + 인라인 script 없음)
 #
 # main push에서는 안 돈다 — deploy.yml의 test job이 배포 전 게이트로 같은 검사를
 # 이미 돌려서 커밋 하나당 중복 실행된다. PR 사전 검증 용도로만 남긴다(2026-09-01 정리).
+#
+# 린트도 여기서 돈다(2026-09-27 추가) — deploy.yml의 test job엔 있는데 PR 쪽 세
+# 워크플로우(이 파일·player-smoke-test.yml·font-coverage-check.yml) 어디에도 없어서
+# Codex 클라우드 PR이 자동 검사를 통과해도 린트 오류가 그대로 넘어갈 수 있었다.
+# 새 워크플로우를 늘리지 않고 가장 짧은 이 파일에 붙였다.
 
 on:
   pull_request:
@@ -28,6 +33,8 @@ jobs:
           node-version: 22
       - name: 의존성 설치
         run: npm ci
+      - name: 린트
+        run: npm run lint
       - name: 빌드
         run: npm run build
       - name: index.html과 404.html이 동일한지 확인
