@@ -233,3 +233,11 @@
 - **docs**: `.claude/rules/app.md`는 Codex 등 다른 도구가 자동으로 안 읽는다는
   팀장 지적에 따라, AGENTS.md 금지 목록에 "app.md의 금지·함정 목록도 반드시
   읽는다"를 명시했다(179줄 유지).
+- **ci**: PR 사전 검증 워크플로우 4종(firebase-hosting-pull-request·player-smoke-test·
+  sync-check·font-coverage-check)을 deploy.yml의 배포 전 게이트와 대조 — 린트만
+  PR 쪽에 없었다(Codex 클라우드가 올리는 PR이 통과해도 린트 오류가 넘어갈 수
+  있었음). 가장 짧은 `sync-check.yml`에 린트 스텝을 추가했다. 확인 가지(PR #6)로
+  4개 검사 전부 초록 확인 후 머지 없이 닫고 가지 삭제. **검증 중 발견**: 확인용
+  커밋 메시지에 설명 목적으로 적은 "[skip ci]" 문자열도 GitHub가 문맥과 무관하게
+  그대로 인식해 PR 워크플로우 4개가 전부 스킵됐다 — 그 표기는 실제로 스킵을
+  의도할 때만 커밋 메시지에 써야 한다.
