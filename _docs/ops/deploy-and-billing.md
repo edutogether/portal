@@ -22,7 +22,7 @@ firebase deploy --only hosting --account=edutogether2015@gmail.com
 설정돼 있다. Spark 시절엔 결제계정이 없어 과금 폭탄이 구조적으로 불가능했지만 지금은
 그 안전장치가 예산 알림뿐이다 — **알림이 실제로 살아있는지, 임계값이 맞는지는
 주기적으로 [GCP 콘솔](https://console.cloud.google.com/billing/budgets?project=edutogether-portal)에서
-재확인할 것**(코드로는 확인 불가, 대표님 계정 필요).
+재확인할 것**(코드로는 확인 불가, 대표님 계정 필요). 매달 1일 점검은 팀장의 예약 작업 «Monthly Budget Check»가 전 앱과 함께 맡는다(저장소의 월간 리마인더 워크플로는 2026-10-05에 없앴다).
 
 **Hosting 무료 전송 한도는 월 10GB.** 첫 방문 전송량 약 2.88MB이고 그중 73%(2.09MB)가
 배경음악이다(자동재생이 항상 걸리므로 음악을 안 듣는 방문자도 전곡을 받는다 — 의도된
