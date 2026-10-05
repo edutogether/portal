@@ -241,3 +241,13 @@
   커밋 메시지에 설명 목적으로 적은 "[skip ci]" 문자열도 GitHub가 문맥과 무관하게
   그대로 인식해 PR 워크플로우 4개가 전부 스킵됐다 — 그 표기는 실제로 스킵을
   의도할 때만 커밋 메시지에 써야 한다.
+
+## 2026-10-05
+
+- **security**: 보안 스캔 지적 두 건을 `.github/workflows`만 고쳐 반영했다(앱 코드 변경 없음, 가지 `fix/ci-pr-preview-isolation`).
+  ① `firebase-hosting-pull-request.yml`(Medium) — 한 job에서 PR 코드를 실행한 뒤 같은 job에서 운영 배포와 같은
+  서비스계정 비밀로 배포하던 것을 `build`(비밀 없음, `contents: read`, `dist/`를 artifact로 전달)와
+  `preview`(PR 코드 실행 없음, base의 `firebase.json` 사용, 비밀은 배포 step에만)로 갈랐다. 동작은 그대로(같은 저장소 PR만, 미리보기 주소가 PR에 달림).
+  ② `link-healthcheck.yml`(Low) — 앱 페이지·응답에서 읽은 값(`og:image` URL·메타 태그, 함수 응답 본문)을 로그와
+  이슈 본문에 쓰기 전에 `clean`(제어문자→공백·`::` 무력화·200자 절단)·`log_safe`(`%` 이스케이프)·`md_safe`(코드 서식으로 감쌈)로
+  거르게 했다. 판정 로직과 이슈 생성 방식은 그대로.

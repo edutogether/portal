@@ -355,6 +355,7 @@ OG 이미지 대조 등)이 전부 세션 자신의 브라우저로 된다 — �
     않는다** — 우회해야 하면 같은 검사를 다른 곳에서 실제로 돌려 근거를
     만들고, 우회 사실과 대체 근거를 기록하고, 풀리면 정규 경로로 다시
     내보낸다.
+- **PR 워크플로에서 PR 코드를 실행하는 job과 비밀을 쓰는 job을 한 job에 같이 두는 것.** `on: pull_request` 워크플로가 같은 job 안에서 PR의 코드를 실행(`npm ci`·`npm run build`)한 뒤 `secrets.*`를 쓰는 step을 두면, 앞 단계가 `$GITHUB_ENV`·`$GITHUB_PATH` 등으로 뒤 단계를 오염시켜 비밀이 있는 단계에서 PR 코드가 실행될 수 있다(2026-10-05 보안 스캔에서 `firebase-hosting-pull-request.yml`이 운영 배포와 같은 서비스계정 비밀로 이렇게 돌고 있던 것이 지적됨). **job을 가를 것** — `build`는 `contents: read`만 갖고 비밀을 전혀 참조하지 않으며 `dist/`만 artifact로 넘기고, `preview`는 PR 코드를 실행하지 않고(`npm ci`·빌드 금지) `firebase.json`도 PR 것이 아니라 base(main) 것을 받아 비밀은 배포 step에만 건다. 같은 이유로 외부(각 앱 페이지·응답)에서 읽은 값을 로그·공개 이슈 본문에 그대로 쓰지 않는다 — `link-healthcheck.yml`의 `clean`/`log_safe`/`md_safe`가 그 역할이다.
 
 ## 배경작업 재개 지점 (§19)
 
