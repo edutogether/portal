@@ -254,3 +254,9 @@
 
 - **chore**: Firebase Hosting 배포 액션 고정 값을 v0 태그 객체(`7c850a48…`)에서 v0.11.0 커밋 SHA(`500ac625…`)로 통일했다(다른 앱과 같은 방식). 동작 변화 없음.
 - **chore**: `budget-alert-check.yml`(매달 1일 예산 알림 재확인 리마인더 이슈)를 없앴다 — 팀장의 «Monthly Budget Check» 예약 작업이 전 앱의 결제·예산을 한 번에 점검해 같은 일이 겹쳤다(Bumm님 지시 2026-10-05). 월 25,000원 예산 알림 자체는 콘솔에 그대로 있다. 열린 리마인더 이슈 #7은 Bumm님이 콘솔 확인 뒤 닫는다.
+
+## 2026-10-06
+
+- **ci**: `firebase-hosting-pull-request.yml`의 `preview`(미리보기 배포) job만 Dependabot이 연 PR이면 건너뛰게 했다(Bumm님 승인).
+  Dependabot PR에는 Actions 비밀이 주어지지 않아 이 job이 매번 입력 누락으로 실패했다. 비밀을 Dependabot에게 주지 않고, `build` job과
+  나머지 검사는 그대로 돈다. 사람이 연 PR의 미리보기는 그대로 동작한다.
