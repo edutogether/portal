@@ -251,3 +251,5 @@
   ② `link-healthcheck.yml`(Low) — 앱 페이지·응답에서 읽은 값(`og:image` URL·메타 태그, 함수 응답 본문)을 로그와
   이슈 본문에 쓰기 전에 `clean`(제어문자→공백·`::` 무력화·200자 절단)·`log_safe`(`%` 이스케이프)·`md_safe`(코드 서식으로 감쌈)로
   거르게 했다. 판정 로직과 이슈 생성 방식은 그대로.
+
+- **chore**: Firebase Hosting 배포 액션 고정 값을 v0 태그 객체(`7c850a48…`)에서 v0.11.0 커밋 SHA(`500ac625…`)로 통일했다(Portal·Be a Googler·Codyssey가 같은 값을 쓴다). 동작 변화 없음.
