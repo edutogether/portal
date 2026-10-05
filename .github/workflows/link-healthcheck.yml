@@ -45,6 +45,36 @@ jobs:
           # 호출 자체가 안 보임) 지금은 AI Ways 하나만 추가한다. 억지로 만든
           # 검사보다 없는 게 낫다.
           : > /tmp/failures.txt
+          # 2026-10-05, 보안 스캔 지적(Low) — 6개 앱 페이지·응답에서 읽은 값은
+          # 신뢰하지 않는다. 그대로 로그에 쓰면 값 안의 줄바꿈·"::"로 워크플로
+          # 명령(::error:: 등)을 끼워 넣을 수 있고, 봇이 쓰는 공개 이슈 본문에
+          # 그대로 들어가면 @멘션·링크·이미지가 렌더링된다. 판정 로직은 그대로고
+          # 바뀐 것은 외부 값을 출력하는 방식뿐이다.
+          #   clean    — 제어문자(줄바꿈·탭·CR 등)를 공백으로, "::"를 ": :"로,
+          #              200자 초과는 잘라 "…"를 붙인다.
+          #   log_safe — clean + "%"를 "%25"로. ::error:: 줄의 데이터 부분에서는
+          #              %0A·%0D·%25가 이스케이프라 값에 들어 있는 "%0A"가
+          #              줄바꿈으로 풀리는 것을 막는다.
+          #   md_safe  — clean 후 역따옴표를 작은따옴표로 바꾸고 코드 서식(역따옴표)
+          #              으로 감싼다. 이슈 본문에서 코드 서식 안은 멘션·링크·이미지가
+          #              렌더링되지 않는다.
+          clean() {
+            local s
+            s=$(printf '%s' "$1" | tr '\000-\037\177' ' ')
+            while [[ "$s" == *::* ]]; do s="${s//::/: :}"; done
+            if [ "${#s}" -gt 200 ]; then s="${s:0:200}…"; fi
+            printf '%s' "$s"
+          }
+          log_safe() {
+            local s
+            s=$(clean "$1")
+            printf '%s' "${s//\%/%25}"
+          }
+          md_safe() {
+            local s
+            s=$(clean "$1")
+            printf '`%s`' "${s//\`/\'}"
+          }
           check() {
             local name="$1" url="$2" expect="$3"
             local body code
@@ -83,8 +113,8 @@ jobs:
               return 1
             fi
             if ! echo "$body" | grep -qF "$expect_body"; then
-              echo "::error::$name 기능 확인 실패 — 상태코드는 기대값이지만 응답 본문에 '$expect_body'가 없음: $short_body ($url)"
-              echo "- **$name (기능)**: 응답 본문 불일치 — $short_body ($url)" >> /tmp/failures.txt
+              echo "::error::$name 기능 확인 실패 — 상태코드는 기대값이지만 응답 본문에 '$expect_body'가 없음: $(log_safe "$short_body") ($url)"
+              echo "- **$name (기능)**: 응답 본문 불일치 — $(md_safe "$short_body") ($url)" >> /tmp/failures.txt
               return 1
             fi
           }
@@ -130,16 +160,16 @@ jobs:
             fi
             image_url=$(echo "$meta_tag" | grep -oP '\bcontent=["'"'"']\K[^"'"'"']+')
             if [ -z "$image_url" ]; then
-              echo "::error::$name og:image 태그는 있는데 content 값을 못 뽑음: $meta_tag ($page_url)"
-              echo "- **$name (OG 이미지)**: content 값 추출 실패 — $meta_tag ($page_url)" >> /tmp/failures.txt
+              echo "::error::$name og:image 태그는 있는데 content 값을 못 뽑음: $(log_safe "$meta_tag") ($page_url)"
+              echo "- **$name (OG 이미지)**: content 값 추출 실패 — $(md_safe "$meta_tag") ($page_url)" >> /tmp/failures.txt
               return 1
             fi
             remote_hash=$(curl -sL --max-time 15 "$image_url" | sha256sum | awk '{print $1}')
             local_hash=$(sha256sum "$local_ref" | awk '{print $1}')
-            echo "$name (OG 이미지): $([ "$remote_hash" = "$local_hash" ] && echo 일치 || echo 불일치) ($image_url)"
+            echo "$name (OG 이미지): $([ "$remote_hash" = "$local_hash" ] && echo 일치 || echo 불일치) ($(clean "$image_url"))"
             if [ "$remote_hash" != "$local_hash" ]; then
-              echo "::error::$name의 배포된 og:image가 포털 원본과 다름 — 아직 최신 원본을 안 받았거나 원본이 바뀐 뒤 갱신을 안 한 것일 수 있음 ($image_url)"
-              echo "- **$name (OG 이미지)**: 배포본과 포털 원본 해시 불일치 ($image_url)" >> /tmp/failures.txt
+              echo "::error::$name의 배포된 og:image가 포털 원본과 다름 — 아직 최신 원본을 안 받았거나 원본이 바뀐 뒤 갱신을 안 한 것일 수 있음 ($(log_safe "$image_url"))"
+              echo "- **$name (OG 이미지)**: 배포본과 포털 원본 해시 불일치 ($(md_safe "$image_url"))" >> /tmp/failures.txt
               return 1
             fi
           }
