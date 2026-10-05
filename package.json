@@ -1,5 +1,5 @@
 {
-  "name": "edutogether-portal",
+  "name": "portal",
   "private": true,
   "description": "같교오락실 — 같이교육 앱 6종 전시용 포털. React + TypeScript + Vite.",
   "scripts": {
