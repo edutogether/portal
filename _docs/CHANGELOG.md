@@ -271,3 +271,5 @@
   로고로 바꿨다(COMMON_STANDARDS §33이 «앱마다 로고를 따로 정한다»로 고쳐짐, 대표 지시). `Logos/Color`의 `EDUTOGETHER.png`에서
   심볼(얼굴 모양)만 원본 화소 그대로 잘라 정사각 투명 여백을 넣은 64x64 PNG를 `public/favicon-edutogether.png`로 쓴다.
   `favicon-black.png`는 지웠다. 비활성 회색 전환 폐기는 그대로다.
+- **fix**: 파비콘 심볼이 탭·즐겨찾기 바에서 Be a Googler의 «G»보다 작아 보여(사방 1/30 투명 여백), 여백 없이 긴 변이 64칸을 꽉 채우는
+  같은 심볼의 64x64 PNG로 바꿨다(대표 지시 «다른 애들도 다 Be a Googler에 맞춰 줘»). 심볼과 원본 화소는 그대로이고 여백만 없앴다.
