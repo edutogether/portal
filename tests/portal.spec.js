@@ -103,15 +103,18 @@ test('og:image가 가리키는 파일이 실제로 존재하고 응답한다', a
 // 있었다 — 탭에 뜰 때와 즐겨찾기에 들어갈 때 아이콘이 달라지던 것이라 폐기했다.
 // 그래서 (1) 정적 HTML에 href가 박혀 있어야 하고(스크립트가 돌기 전에 즐겨찾기에
 // 들어가도 같다) (2) 탭이 숨겨졌다 돌아와도 주소가 그대로여야 하며 (3) 그 파일이
-// 실제로 PNG(64x64)로 응답해야 한다.
+// 실제로 PNG(64x64)로 응답해야 한다. (4) 주소 끝에 `?v=날짜(8자리)`가 있어야 한다 — 주소가
+// 그대로면 브라우저가 이미 받은 옛 아이콘을 한 시간 넘게 쓴다(2026-10-08). 날짜 값 자체는
+// 단언하지 않는다(그림을 바꿀 때마다 올리는 값이라 테스트를 같이 고칠 일이 없게) — 형식만 본다.
 test('파비콘은 EDUTOGETHER 심볼 PNG로 고정이고 탭을 바꿔도 주소가 변하지 않는다 (COMMON_STANDARDS §33)', async ({ page, request }) => {
   await page.goto('/');
   const icon = page.locator('link[rel="icon"]');
   await expect(icon, 'rel=icon 링크는 정확히 하나').toHaveCount(1);
-  expect(await icon.getAttribute('href')).toBe('/favicon-edutogether.png');
+  const href = await icon.getAttribute('href');
+  expect(href, '아이콘 주소는 /favicon-edutogether.png?v=날짜(8자리)').toMatch(/^\/favicon-edutogether\.png\?v=\d{8}$/);
 
-  const res = await request.get('/favicon-edutogether.png');
-  expect(res.status(), '/favicon-edutogether.png 응답 코드').toBe(200);
+  const res = await request.get(href);
+  expect(res.status(), `${href} 응답 코드`).toBe(200);
   expect(res.headers()['content-type']).toContain('image/png');
   const body = await res.body();
   expect(body.subarray(0, 8).toString('hex'), 'PNG 시그니처').toBe('89504e470d0a1a0a');
@@ -130,8 +133,8 @@ test('파비콘은 EDUTOGETHER 심볼 PNG로 고정이고 탭을 바꿔도 주�
     await new Promise((resolve) => setTimeout(resolve, 100));
     return { whileHidden, afterReturn: read() };
   });
-  expect(hrefs.whileHidden, '탭이 숨겨진 동안').toBe('/favicon-edutogether.png');
-  expect(hrefs.afterReturn, '탭으로 돌아온 뒤').toBe('/favicon-edutogether.png');
+  expect(hrefs.whileHidden, '탭이 숨겨진 동안').toBe(href);
+  expect(hrefs.afterReturn, '탭으로 돌아온 뒤').toBe(href);
 });
 
 // COMMON_STANDARDS §27(2026-09-11) — 스플래시는 자기 반복 애니메이션이 최소
