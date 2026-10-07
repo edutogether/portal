@@ -267,3 +267,7 @@
   회색으로 바꾸던 동작(`useFaviconGray` 훅)을 폐기했다(COMMON_STANDARDS §33, 대표 지시). 예전 파비콘은 런타임에 만든
   🕹️ 이모지 SVG였고 정적 HTML에는 `href`가 없었다 — 지금은 `index.html`에 정적 `<link rel="icon">`로 걸려 탭에 뜰 때와
   즐겨찾기에 들어갈 때 항상 같은 아이콘이다. 홈 화면 아이콘(apple-touch-icon·manifest)은 이 저장소에 원래 없어 그대로다.
+- **fix**: 파비콘 로고를 정정했다 — 같은 날 오전에 넣은 Calendar의 검은 로고(`favicon-black.png`)가 아니라 Portal 몫의 EDUTOGETHER
+  로고로 바꿨다(COMMON_STANDARDS §33이 «앱마다 로고를 따로 정한다»로 고쳐짐, 대표 지시). `Logos/Color`의 `EDUTOGETHER.png`에서
+  심볼(얼굴 모양)만 원본 화소 그대로 잘라 정사각 투명 여백을 넣은 64x64 PNG를 `public/favicon-edutogether.png`로 쓴다.
+  `favicon-black.png`는 지웠다. 비활성 회색 전환 폐기는 그대로다.
