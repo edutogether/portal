@@ -30,6 +30,10 @@
 - **외부 리소스에 SRI(`integrity`) 적용.** 과거 실제 장애 이력이 있다.
 - **`prefers-reduced-motion` 정지 로직 부활, `bg-loading.webp` 삭제, 번호 뱃지(①~⑥)
   부활** — 전부 대표가 명시적으로 없애기로 한 것.
+- **파비콘을 탭 상태에 따라 바꾸는 것(비활성 회색 전환 등).** 2026-10-07 대표 지시(COMMON_STANDARDS
+  §33)로 폐기했다 — 탭에 뜰 때와 즐겨찾기에 들어갈 때 항상 같은 아이콘이어야 한다. 파비콘은
+  같이교육 로고 `public/favicon-black.png`(Calendar의 `favicon-black.png`와 바이트 동일) 하나를
+  `index.html`의 정적 `<link rel="icon">`로 건다. `tests/portal.spec.js`가 주소 고정을 단언한다.
 - **음원 사용 근거를 "저작권 확보 완료"·"상업적 사용권 확보" 류로 과장 표기하는 것.**
   정확한 사실은 아래 "음원" 절에 있다.
 - **CLASSCADE 쪽에서 `edutogether.kr` 커스텀 도메인을 다시 설정하는 것**(이 저장소

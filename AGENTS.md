@@ -14,7 +14,7 @@ index.html          Vite 진입 HTML (메타 태그·CSP·폰트 링크)
 src/                앱 소스
   components/       화면 조각. 각 컴포넌트가 자기 CSS 파일을 함께 갖는다
   player/           재생 상태(PlayerContext)와 가사 스크롤(LyricsView)
-  hooks/            플레이어 높이 동기화, 파비콘
+  hooks/            플레이어 높이 동기화
   data/             카드·플레이리스트·배경 원 데이터
   styles/base.css   전역 토큰과 문서 기본값
 public/assets/      이미지·폰트·음원 (빌드가 dist/assets로 그대로 복사)

@@ -260,3 +260,10 @@
 - **ci**: `firebase-hosting-pull-request.yml`의 `preview`(미리보기 배포) job만 Dependabot이 연 PR이면 건너뛰게 했다(Bumm님 승인).
   Dependabot PR에는 Actions 비밀이 주어지지 않아 이 job이 매번 입력 누락으로 실패했다. 비밀을 Dependabot에게 주지 않고, `build` job과
   나머지 검사는 그대로 돈다. 사람이 연 PR의 미리보기는 그대로 동작한다.
+
+## 2026-10-07
+
+- **feat**: 파비콘을 같이교육 로고(Calendar와 같은 `favicon-black.png`, 64x64 투명 PNG)로 통일하고, 탭이 비활성일 때
+  회색으로 바꾸던 동작(`useFaviconGray` 훅)을 폐기했다(COMMON_STANDARDS §33, 대표 지시). 예전 파비콘은 런타임에 만든
+  🕹️ 이모지 SVG였고 정적 HTML에는 `href`가 없었다 — 지금은 `index.html`에 정적 `<link rel="icon">`로 걸려 탭에 뜰 때와
+  즐겨찾기에 들어갈 때 항상 같은 아이콘이다. 홈 화면 아이콘(apple-touch-icon·manifest)은 이 저장소에 원래 없어 그대로다.

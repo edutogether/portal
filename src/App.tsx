@@ -10,7 +10,6 @@ import { Footer } from "./components/Footer";
 import { Toast, useToast } from "./components/Toast";
 import { PlayerProvider } from "./player/PlayerContext";
 import { useSyncPlayerHeight } from "./hooks/useSyncPlayerHeight";
-import { useFaviconGray } from "./hooks/useFaviconGray";
 import "./components/Stage.css";
 import "./components/Controls.css";
 
@@ -18,7 +17,6 @@ export function App() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const toast = useToast();
   useSyncPlayerHeight();
-  useFaviconGray();
 
   const showMore = useCallback(() => toast.show(), [toast]);
   const onAudioError = useCallback(() => toast.show("재생할 수 없습니다"), [toast]);

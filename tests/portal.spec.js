@@ -98,6 +98,42 @@ test('og:image가 가리키는 파일이 실제로 존재하고 응답한다', a
   expect(res.headers()['content-type'], 'JPEG여야 한다 — 카카오톡이 webp를 못 씀').toContain('image/jpeg');
 });
 
+// COMMON_STANDARDS §33(2026-10-07, 대표 지시) — 파비콘은 같이교육 로고 PNG 하나로
+// 고정이다. 예전에는 탭이 비활성이 되면 href를 흑백 아이콘으로 갈아끼우는 훅이
+// 있었다 — 탭에 뜰 때와 즐겨찾기에 들어갈 때 아이콘이 달라지던 것이라 폐기했다.
+// 그래서 (1) 정적 HTML에 href가 박혀 있어야 하고(스크립트가 돌기 전에 즐겨찾기에
+// 들어가도 같다) (2) 탭이 숨겨졌다 돌아와도 주소가 그대로여야 하며 (3) 그 파일이
+// 실제로 PNG(64x64)로 응답해야 한다.
+test('파비콘은 같이교육 로고 PNG로 고정이고 탭을 바꿔도 주소가 변하지 않는다 (COMMON_STANDARDS §33)', async ({ page, request }) => {
+  await page.goto('/');
+  const icon = page.locator('link[rel="icon"]');
+  await expect(icon, 'rel=icon 링크는 정확히 하나').toHaveCount(1);
+  expect(await icon.getAttribute('href')).toBe('/favicon-black.png');
+
+  const res = await request.get('/favicon-black.png');
+  expect(res.status(), '/favicon-black.png 응답 코드').toBe(200);
+  expect(res.headers()['content-type']).toContain('image/png');
+  const body = await res.body();
+  expect(body.subarray(0, 8).toString('hex'), 'PNG 시그니처').toBe('89504e470d0a1a0a');
+  expect([body.readUInt32BE(16), body.readUInt32BE(20)], '가로x세로').toEqual([64, 64]);
+
+  const hrefs = await page.evaluate(async () => {
+    const setHidden = (hidden) => {
+      Object.defineProperty(document, 'hidden', { configurable: true, get: () => hidden });
+      document.dispatchEvent(new Event('visibilitychange'));
+    };
+    const read = () => document.querySelector('link[rel="icon"]').getAttribute('href');
+    setHidden(true);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    const whileHidden = read();
+    setHidden(false);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    return { whileHidden, afterReturn: read() };
+  });
+  expect(hrefs.whileHidden, '탭이 숨겨진 동안').toBe('/favicon-black.png');
+  expect(hrefs.afterReturn, '탭으로 돌아온 뒤').toBe('/favicon-black.png');
+});
+
 // COMMON_STANDARDS §27(2026-09-11) — 스플래시는 자기 반복 애니메이션이 최소
 // 두 바퀴 도는 동안 떠 있어야 한다. 상수(MIN_SHOW_MS)를 넣은 것만으로는
 // 부족하다 — 다른 경로(예: assetsReady가 그보다 먼저 끝나는 조건)가 실제로는
