@@ -75,6 +75,20 @@ jobs:
             s=$(clean "$1")
             printf '`%s`' "${s//\`/\'}"
           }
+          # 2026-10-09 — og:image 주소는 각 앱 페이지가 알려 주는 값이라 신뢰하지 않는다.
+          # 러너가 그 주소로 아무 데나 요청하지 않도록, https이고 호스트가 우리 도메인 목록에
+          # 정확히 있을 때만 요청한다(사용자정보 @·포트·http·상대경로·다른 도메인은 거부).
+          # 허용 호스트는 이 파일의 check_og_image 대상 페이지의 호스트와 같다 — 앱을 더하거나
+          # 주소를 바꾸면 여기도 같이 고친다.
+          og_url_allowed() {
+            local url="$1" host
+            [[ "$url" =~ ^https://([A-Za-z0-9.-]+)(/[^[:space:]]*)?$ ]] || return 1
+            host="${BASH_REMATCH[1]}"
+            case "$host" in
+              edutogether.kr|poster.edutogether.kr|voice.edutogether.kr|classcade.edutogether.kr|incheon.edutogether.kr|googler.edutogether.kr) return 0 ;;
+            esac
+            return 1
+          }
           check() {
             local name="$1" url="$2" expect="$3"
             local body code
@@ -164,7 +178,13 @@ jobs:
               echo "- **$name (OG 이미지)**: content 값 추출 실패 — $(md_safe "$meta_tag") ($page_url)" >> /tmp/failures.txt
               return 1
             fi
-            remote_hash=$(curl -sL --max-time 15 "$image_url" | sha256sum | awk '{print $1}')
+            if ! og_url_allowed "$image_url"; then
+              echo "::error::$name og:image 주소가 허용 호스트가 아니라 요청하지 않음: $(log_safe "$image_url") ($page_url)"
+              echo "- **$name (OG 이미지)**: 허용 호스트가 아닌 og:image 주소라 요청하지 않음 — $(md_safe "$image_url") ($page_url)" >> /tmp/failures.txt
+              return 1
+            fi
+            # 리디렉션을 따라가지 않는다(-L 없음) — 허용 호스트가 다른 곳으로 보내도 러너가 따라가지 않게.
+            remote_hash=$(curl -s --max-time 15 --proto '=https' --max-redirs 0 "$image_url" | sha256sum | awk '{print $1}')
             local_hash=$(sha256sum "$local_ref" | awk '{print $1}')
             echo "$name (OG 이미지): $([ "$remote_hash" = "$local_hash" ] && echo 일치 || echo 불일치) ($(clean "$image_url"))"
             if [ "$remote_hash" != "$local_hash" ]; then

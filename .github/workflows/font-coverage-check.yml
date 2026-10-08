@@ -5,9 +5,11 @@ name: Pretendard 서브셋 글자 커버리지 확인
 # 시스템 폰트로 폴백된다 — 이 워크플로우가 push/PR마다 미리 잡는다.
 # 재서브셋 방법은 public/assets/fonts/pretendard/pretendard.css 상단 주석 참고.
 
+# 2026-10-09 — 이 워크플로우는 PR 코드를 실행(npm ci·빌드·테스트·검사 스크립트)하므로
+# 이슈 쓰기 토큰을 주지 않는다. 이슈를 만드는 일은 아래 report-failure job이 따로
+# 맡고, 그 job은 push(main)에서만 돌며 저장소 코드를 실행하지 않는다.
 permissions:
   contents: read
-  issues: write
 
 on:
   push:
@@ -57,8 +59,10 @@ jobs:
       # 사용 글자로 잡힌다) — 이 테스트가 .cache/rendered-text.txt를 만든다.
       - name: 렌더된 텍스트 덤프
         run: npx playwright test --grep @fonttext
+      # 버전·해시 고정(scripts/requirements-ci.txt) — 해시가 안 맞으면 설치가 실패한다.
       - name: fonttools 설치
-        run: pip install fonttools brotli
+        run: |
+          pip install --require-hashes --only-binary=:all: -r scripts/requirements-ci.txt
       - name: 글자 커버리지 확인
         run: |
           python3 scripts/check-font-coverage.py > /tmp/coverage-output.txt 2>&1
@@ -66,13 +70,40 @@ jobs:
           cat /tmp/coverage-output.txt
           exit $code
 
-      - name: 실패 시 GitHub 이슈 자동 생성
-        if: failure()
+      # 이슈 본문 재료만 다음 job으로 넘긴다. PR에서 나온 출력은 넘기지 않는다(push만).
+      - name: 실패 출력 보존
+        if: failure() && github.event_name == 'push'
+        run: |
+          [ -f /tmp/coverage-output.txt ] || echo "(커버리지 검사 출력 없음 — 그 앞 단계에서 실패)" > /tmp/coverage-output.txt
+      - name: 실패 출력 올림
+        if: failure() && github.event_name == 'push'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: coverage-output
+          path: /tmp/coverage-output.txt
+          if-no-files-found: error
+          retention-days: 1
+
+  report-failure:
+    # main push에서 실패했을 때만 이슈를 만든다 — PR의 실패는 PR 검사 결과로 충분하다.
+    # 이 job은 체크아웃도 의존성 설치도 하지 않는다(저장소 코드를 실행하지 않는다).
+    needs: check-coverage
+    if: ${{ always() && github.event_name == 'push' && needs.check-coverage.result == 'failure' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: coverage-output
+          path: /tmp/cov
+      - name: 이슈 자동 생성
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           # link-healthcheck.yml과 같은 패턴 — 이미 열린 실패 이슈가 있으면
-          # push/PR마다 새로 만들지 않는다.
+          # push마다 새로 만들지 않는다.
           existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --label font-coverage-failure --state open --json number --jq 'length')
           if [ "$existing" -gt 0 ]; then
             echo "이미 열린 폰트 커버리지 실패 이슈가 있어 새로 만들지 않음"
@@ -81,7 +112,7 @@ jobs:
           {
             echo "Pretendard 서브셋 글자 커버리지 확인이 실패했습니다. [실행 로그]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
             echo ""
-            cat /tmp/coverage-output.txt
+            cat /tmp/cov/coverage-output.txt
           } > /tmp/issue-body.txt
           gh issue create --repo "$GITHUB_REPOSITORY" \
             --title "🔴 Pretendard 폰트 커버리지 실패 ($(date -u +%Y-%m-%d))" \
