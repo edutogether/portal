@@ -59,8 +59,10 @@ jobs:
       # 사용 글자로 잡힌다) — 이 테스트가 .cache/rendered-text.txt를 만든다.
       - name: 렌더된 텍스트 덤프
         run: npx playwright test --grep @fonttext
+      # 버전·해시 고정(scripts/requirements-ci.txt) — 해시가 안 맞으면 설치가 실패한다.
       - name: fonttools 설치
-        run: pip install fonttools brotli
+        run: |
+          pip install --require-hashes --only-binary=:all: -r scripts/requirements-ci.txt
       - name: 글자 커버리지 확인
         run: |
           python3 scripts/check-font-coverage.py > /tmp/coverage-output.txt 2>&1

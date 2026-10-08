@@ -120,7 +120,8 @@ jobs:
           retention-days: 7
       - name: Pretendard 서브셋 글자 커버리지 확인
         run: |
-          pip install fonttools brotli
+          # 버전·해시 고정(scripts/requirements-ci.txt) — 해시가 안 맞으면 설치가 실패한다.
+          pip install --require-hashes --only-binary=:all: -r scripts/requirements-ci.txt
           python3 scripts/check-font-coverage.py
       # 위 검사를 전부 통과한 dist/만 올린다(마지막 스텝이라 실패하면 올라가지 않는다).
       - name: 검사를 통과한 dist/를 배포용 artifact로 올림
