@@ -12,7 +12,9 @@ name: 배포 (테스트 통과 후 Firebase Hosting)
 # 폰트 커버리지는 2026-09-02부터 이 게이트 안에 있다 — 이전엔 별도 워크플로가 배포와
 # 병렬로만 돌아서, 서브셋에 없는 글자를 추가한 커밋이 이슈가 열리기도 전에 먼저
 # 라이브에 나갈 수 있었다.
-# 배포 대상(dist/)은 저장소에 커밋하지 않으므로 test job과 deploy job이 각자 빌드한다.
+# 배포 대상(dist/)은 저장소에 커밋하지 않는다. test job이 만든 dist/를 검사하고, 검사를
+# 마친 바로 그 산출물을 artifact로 넘겨 deploy job이 그대로 배포한다 — deploy job은 다시
+# 빌드하지 않는다(2026-10-09, 검사한 것과 배포되는 것이 같다는 것을 구조로 보장).
 
 on:
   push:
@@ -120,21 +122,32 @@ jobs:
         run: |
           pip install fonttools brotli
           python3 scripts/check-font-coverage.py
+      # 위 검사를 전부 통과한 dist/만 올린다(마지막 스텝이라 실패하면 올라가지 않는다).
+      - name: 검사를 통과한 dist/를 배포용 artifact로 올림
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: deploy-dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 1
 
   deploy:
     needs: [test, changes]
     if: needs.changes.outputs.deploy == 'true'
     runs-on: ubuntu-latest
     steps:
+      # firebase.json·.firebaserc만 필요하다. 여기서는 의존성 설치·빌드를 하지 않는다.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      # 배포 대상(dist/)은 저장소에 커밋되지 않으므로 여기서 다시 빌드한다.
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          node-version: 22
-      - name: 의존성 설치
-        run: npm ci
-      - name: 빌드
-        run: npm run build
+          name: deploy-dist
+          path: dist
+      - name: 받은 산출물 확인
+        run: |
+          if [ ! -s dist/index.html ] || [ ! -s dist/404.html ]; then
+            echo "::error::받은 artifact에 dist/index.html 또는 404.html이 없거나 비어 있음 — 배포하지 않는다."
+            exit 1
+          fi
       - id: deployment
         uses: FirebaseExtended/action-hosting-deploy@500ac625ca2dd40cbd15f7659af953801858032a # v0.11.0
         with:
