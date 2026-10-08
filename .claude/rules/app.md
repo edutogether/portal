@@ -365,6 +365,7 @@ OG 이미지 대조 등)이 전부 세션 자신의 브라우저로 된다 — �
     만들고, 우회 사실과 대체 근거를 기록하고, 풀리면 정규 경로로 다시
     내보낸다.
 - **PR 워크플로에서 PR 코드를 실행하는 job과 비밀을 쓰는 job을 한 job에 같이 두는 것.** `on: pull_request` 워크플로가 같은 job 안에서 PR의 코드를 실행(`npm ci`·`npm run build`)한 뒤 `secrets.*`를 쓰는 step을 두면, 앞 단계가 `$GITHUB_ENV`·`$GITHUB_PATH` 등으로 뒤 단계를 오염시켜 비밀이 있는 단계에서 PR 코드가 실행될 수 있다(2026-10-05 보안 스캔에서 `firebase-hosting-pull-request.yml`이 운영 배포와 같은 서비스계정 비밀로 이렇게 돌고 있던 것이 지적됨). **job을 가를 것** — `build`는 `contents: read`만 갖고 비밀을 전혀 참조하지 않으며 `dist/`만 artifact로 넘기고, `preview`는 PR 코드를 실행하지 않고(`npm ci`·빌드 금지) `firebase.json`도 PR 것이 아니라 base(main) 것을 받아 비밀은 배포 step에만 건다. 같은 이유로 외부(각 앱 페이지·응답)에서 읽은 값을 로그·공개 이슈 본문에 그대로 쓰지 않는다 — `link-healthcheck.yml`의 `clean`/`log_safe`/`md_safe`가 그 역할이다.
+- **CI 설정 규칙(2026-10-09 재스캔 반영).** ① 배포 job은 다시 빌드하지 않고 test job이 검사한 `dist/` artifact를 그대로 배포한다. ② 이슈 쓰기 토큰은 PR 코드를 실행하는 job에 주지 않는다(`font-coverage-check.yml`의 `report-failure`는 main push에서만, 저장소 코드 실행 없이). ③ CI 파이썬 패키지는 `scripts/requirements-ci.txt`(버전·파일 해시 고정)로만 설치한다 — 버전을 올릴 때는 새 버전의 모든 파일 해시를 PyPI에서 다시 받아 파일을 통째로 고친다. ④ 헬스체크가 요청하는 og:image 주소는 `og_url_allowed`의 허용 호스트(https, 우리 도메인 6개)일 때만 요청한다 — 앱을 더하거나 주소를 바꾸면 그 목록도 같이 고친다.
 
 ## 배경작업 재개 지점 (§19)
 

@@ -279,3 +279,10 @@
 - **fix**: 파비콘 주소 끝에 날짜(`?v=20261008`)를 붙였다(대표 지시). 아이콘을 바꿔도 주소가 그대로여서 브라우저가
   이미 받은 옛 그림을 최대 1시간(또는 그 이상) 계속 써 대표님 화면에 바로 반영되지 않았다. 그림을 바꿀 때마다 이 날짜를
   같이 올린다(`.claude/rules/app.md`). 테스트는 날짜 값이 아니라 `?v=` + 8자리 형식만 단언한다.
+
+## 2026-10-09
+
+- **security**: 재스캔 지적 4건(Low)을 `.github/workflows`와 `scripts/requirements-ci.txt`만 고쳐 반영했다(앱 코드 변경 없음, 대표 지시).
+  ① 배포 job이 다시 빌드하지 않고 test job이 검사한 `dist/`를 artifact로 받아 그대로 배포 ② `font-coverage-check.yml`의 이슈 생성을
+  PR 코드를 실행하는 job에서 떼어 main push 전용 `report-failure` job으로 분리(이슈 쓰기 권한은 그 job에만) ③ CI 파이썬 패키지(`fonttools`·`brotli`)를
+  버전·파일 해시 고정(`--require-hashes`)으로 설치 ④ 헬스체크의 og:image 요청을 우리 도메인 https일 때만 허용(리디렉션 없음).
