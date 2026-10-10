@@ -24,6 +24,8 @@ firebase deploy --only hosting --account=edutogether2015@gmail.com
 주기적으로 [GCP 콘솔](https://console.cloud.google.com/billing/budgets?project=edutogether-portal)에서
 재확인할 것**(코드로는 확인 불가, 대표님 계정 필요). 매달 1일 점검은 팀장의 예약 작업 «Monthly Budget Check»가 전 앱과 함께 맡는다(저장소의 월간 리마인더 워크플로는 2026-10-05에 없앴다).
 
+**예산 알림 최종 확인: 기록 없음 — 확인 필요(2026-10-10 종합감사 시점).** 콘솔 전용이라 저장소에서 확인할 수 없다(결제 API가 꺼져 있어 CLI로도 조회 못 함). 확인하면 이 줄을 «최종 확인: YYYY-MM-DD, 결과»로 고친다.
+
 **Hosting 무료 전송 한도는 월 10GB.** 첫 방문 전송량 약 2.88MB이고 그중 73%(2.09MB)가
 배경음악이다(자동재생이 항상 걸리므로 음악을 안 듣는 방문자도 전곡을 받는다 — 의도된
 설계). `firebase.json`의 `Cache-Control`: HTML은 `no-cache`, `/assets/**`는
