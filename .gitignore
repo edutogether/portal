@@ -3,6 +3,7 @@ node_modules/
 .firebase/
 firebase-debug.log
 .agents/
+.codex/
 skills-lock.json
 .claude/*
 !.claude/settings.json

@@ -108,7 +108,9 @@ python3 scripts/check-font-coverage.py    # 폰트 서브셋 글자 커버리지
 5. **404.html은 빌드가 자동으로 만든다**(`vite.config.ts`의 `copy-index-to-404`).
    손으로 복사하지 말 것.
 6. **외부 CDN 리소스에 SRI(`integrity`)를 넣지 말 것** — 경위는 `.claude/rules/app.md`의 "폰트" 절.
-7. **6개 앱의 코드는 이 저장소에서 절대 고치지 않는다.** 포털은 링크만 건다.
+7. **6개 앱의 코드는 이 저장소에서 절대 고치지 않는다.** 포털은 링크만 건다. 다른 앱 쪽 변경이
+   필요해 보이면 직접 고치지 말고 `CROSS-APP DEPENDENCY: <대상 앱/경로>에 별도 변경 필요`
+   형식으로 팀장에게 보고한다.
 8. **`*-freeze-*` 태그를 삭제하거나 옮기지 말 것** — 훅·룰셋이 막는다, 새 클론은
    `git config core.hooksPath .githooks` 한 번 필요(자세한 건 `CLAUDE.md`의 "프리즈 / 태그").
 9. **배포 확인을 HTTP 200만으로 하지 말 것.** 실제 HTML 내용과 자산 로드까지 확인한다.
