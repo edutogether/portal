@@ -193,3 +193,43 @@ test('탐색은 드래그 중이 아니라 놓을 때 한 번만 걸린다', asy
     .poll(() => page.evaluate(() => document.getElementById('audio').currentTime), { timeout: 3000 })
     .toBeGreaterThan(1);
 });
+
+// 오디오를 못 받는 실패(배포 중 파일 누락·네트워크 오류)는 조용히 죽지 않고 토스트로
+// 알려야 한다(COMMON_STANDARDS §3 — 사용자에게 영향 있는 실패는 최소한의 피드백).
+// 지금까지 이 문구는 폰트 커버리지용 고정 문자열로만 있었고, 실제로 오디오 에러가 이
+// 토스트로 이어지는지는 아무 테스트도 보지 않았다.
+test('오디오를 받지 못하면 "재생할 수 없습니다" 토스트가 뜬다', async ({ page }) => {
+  await page.route('**/assets/gaegujangi.m4a', (route) => route.fulfill({ status: 404, body: '' }));
+  await page.goto('/');
+  const toast = page.locator('#modalOverlay');
+  await expect(toast).toHaveClass(/open/, { timeout: 8000 });
+  await expect(toast).toHaveText('재생할 수 없습니다');
+});
+
+// 가사는 재생 위치에 맞춰 "지금 줄"(active)과 "지난 줄"(past)이 바뀐다. 이 판정
+// (LyricsView의 applyActiveLine)에는 지금까지 회귀 테스트가 없었다 — 앞으로도 뒤로도
+// 탐색했을 때 둘 다 맞게 따라와야 한다. 데이터는 src/data/playlist.ts: 인덱스 1은
+// t=8초 "뜀을 뛰며 공을 차며 놀아요", 인덱스 15는 t=69초 "우리 같이 놀아요".
+test('가사의 지금 줄과 지난 줄이 재생 위치를 앞으로·뒤로 탐색해도 따라온다', async ({ page }) => {
+  await page.click('#playBtn');
+  await expect
+    .poll(() => page.evaluate(() => document.getElementById('audio').paused))
+    .toBe(false);
+
+  const seekTo = (seconds) =>
+    page.evaluate((s) => { document.getElementById('audio').currentTime = s; }, seconds);
+  const active = page.locator('#lyricsTrack p.active');
+  const past = page.locator('#lyricsTrack p.past');
+
+  await seekTo(9);
+  await expect(active).toHaveText('뜀을 뛰며 공을 차며 놀아요');
+  await expect(past).toHaveCount(1);
+
+  await seekTo(70);
+  await expect(active).toHaveText('우리 같이 놀아요');
+  await expect(past).toHaveCount(15);
+
+  await seekTo(9);
+  await expect(active).toHaveText('뜀을 뛰며 공을 차며 놀아요');
+  await expect(past).toHaveCount(1);
+});

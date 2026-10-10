@@ -15,12 +15,14 @@ export function useSeekDrag() {
 
   const displayTime = dragValue ?? currentTime;
 
+  // 탐색은 상태 갱신 함수 안이 아니라 여기서 건다 — 갱신 함수는 순수해야 하고(개발 모드
+  // StrictMode가 두 번 부른다), 놓는 이벤트와 blur가 연달아 와도 첫 호출이 dragValue를
+  // 비우므로 같은 값으로 두 번 탐색하지 않는다.
   const commit = useCallback(() => {
-    setDragValue((pending) => {
-      if (pending !== null) seekTo(pending);
-      return null;
-    });
-  }, [seekTo]);
+    if (dragValue === null) return;
+    seekTo(dragValue);
+    setDragValue(null);
+  }, [dragValue, seekTo]);
 
   return {
     displayTime,
