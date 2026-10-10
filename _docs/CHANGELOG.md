@@ -286,3 +286,12 @@
   ① 배포 job이 다시 빌드하지 않고 test job이 검사한 `dist/`를 artifact로 받아 그대로 배포 ② `font-coverage-check.yml`의 이슈 생성을
   PR 코드를 실행하는 job에서 떼어 main push 전용 `report-failure` job으로 분리(이슈 쓰기 권한은 그 job에만) ③ CI 파이썬 패키지(`fonttools`·`brotli`)를
   버전·파일 해시 고정(`--require-hashes`)으로 설치 ④ 헬스체크의 og:image 요청을 우리 도메인 https일 때만 허용(리디렉션 없음).
+
+## 2026-10-10
+
+- **chore**: 저장소를 정리하고 보안 알림을 0으로 맞췄다(대표 지시). 10/5에 Codex에서 Claude Code로 개발 도구를 되돌리며 만든
+  인계 가지 `codex/portal-claude-handoff-20261005`(`982732384d1d79cfb4b6cea1ec21a5f0e16b34ce`)와 기록 가지
+  `claude/portal-takeover-record-20261005`(`32a50d0f81e1dfe3fb89600503319bc887b83d00`)는 내용이 문서뿐이고 현재 문서에 이미 반영돼
+  있어 삭제했고(이미 병합된 작업 가지 5개도 함께 삭제), Codex가 남긴 미커밋 `AGENTS.md` 개편본에서는 «다른 앱 변경은 직접 고치지 않고
+  보고한다»는 한 줄만 살려 `AGENTS.md`에 넣었다. `.codex/`는 `.gitignore`에 추가했다. Dependabot 알림(`source-map-js`, 개발 의존, vite →
+  postcss 경유)은 `package-lock.json`만 1.2.2로 올려 닫았다(`npm audit` 0건).
