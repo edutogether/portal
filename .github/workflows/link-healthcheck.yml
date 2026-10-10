@@ -193,6 +193,43 @@ jobs:
               return 1
             fi
           }
+          # 2026-10-10 — firebase.json의 주소 리다이렉트(/calc, /poster … → 각 앱)가 라이브에서
+          # 선언대로 동작하는지 매일 본다. 이것들은 vite preview로 재현되지 않아 CI 테스트로는
+          # 볼 수 없고(COMMON_STANDARDS §21-11), 대상 앱이 내려가거나 주소가 바뀌면 조용히
+          # 죽은 주소로 보내게 된다. 선언을 읽지 못한 것(0건)은 «리다이렉트가 없다»가 아니라
+          # 읽기 실패이므로 실패로 친다(§21-1·§21-6). "/x/**" 선언은 "/x/x"로 요청한다.
+          check_redirects() {
+            local rows src dst type path out code loc total=0 bad=0
+            rows=$(node -e '
+              const r = JSON.parse(require("fs").readFileSync("firebase.json", "utf8")).hosting.redirects;
+              for (const x of r) console.log([x.source, x.destination, x.type].join("\t"));
+            ') || rows=""
+            if [ -z "$rows" ]; then
+              echo "::error::firebase.json에서 리다이렉트 선언을 한 건도 읽지 못함 — 검사 불가"
+              echo "- **주소 리다이렉트**: firebase.json에서 선언을 읽지 못함(검사 불가)" >> /tmp/failures.txt
+              return 1
+            fi
+            while IFS=$'\t' read -r src dst type; do
+              [ -n "$src" ] || continue
+              total=$((total + 1))
+              path="${src/\/\*\*/\/x}"
+              out=$(curl -s -o /dev/null --max-time 15 --proto '=https' -w '%{http_code} %{redirect_url}' "https://edutogether.kr$path")
+              code="${out%% *}"
+              loc="${out#* }"
+              if [ "$code" != "$type" ] || [ "${loc%/}" != "${dst%/}" ]; then
+                bad=$((bad + 1))
+                if [ "$bad" -le 10 ]; then
+                  echo "::error::리다이렉트 어긋남 — $path: 기대 $type → $dst, 실제 $code → $(log_safe "$loc")"
+                  echo "- **리다이렉트 $path**: 기대 $type → $dst, 실제 $code → $(md_safe "$loc")" >> /tmp/failures.txt
+                fi
+              fi
+            done <<< "$rows"
+            echo "주소 리다이렉트: 선언 ${total}건 중 어긋남 ${bad}건"
+            if [ "$bad" -gt 10 ]; then
+              echo "- **리다이렉트**: 위 10건 외 $((bad - 10))건 더 어긋남" >> /tmp/failures.txt
+            fi
+            [ "$bad" -eq 0 ]
+          }
           failed=0
           check "PORTAL(edutogether.kr 자기 자신)" "https://edutogether.kr/" "같교오락실" || failed=1
           check "QUIZ TOGETHER" "https://joo.is/%EA%B0%99%EC%9D%B4%EA%B5%90%EC%9C%A1%ED%80%B4%EC%A6%88" "같이교육 퀴즈" || failed=1
@@ -208,6 +245,7 @@ jobs:
           check_og_image "CLASSCADE" "https://classcade.edutogether.kr/" "public/assets/og/classcade.jpg" || failed=1
           check_og_image "AI Ways Incheon" "https://incheon.edutogether.kr/" "public/assets/og/incheon.jpg" || failed=1
           check_og_image "Be a Googler" "https://googler.edutogether.kr/" "public/assets/og/googler.jpg" || failed=1
+          check_redirects || failed=1
           # QUIZ TOGETHER는 외부 Google Apps Script 서비스라 og 태그를 넣을 수
           # 없어 대상에서 제외한다(link-healthcheck.yml 위 주석·CLAUDE.md 참고).
           exit $failed

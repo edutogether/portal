@@ -205,3 +205,33 @@ test('로딩 화면은 진행 바 애니메이션이 끝나도 실제 페이지 
     })
     .toBe(true);
 });
+
+// COMMON_STANDARDS §27의 "상한" — 자산이 영영 안 와도 로딩 화면은 SAFETY_MS(8000ms)에
+// 강제로 사라져야 한다. 하한(위 테스트)만 지키고 상한을 안 보면, 상한이 깨져도(예: 상수가
+// 바뀌거나 타이머가 취소되는 회귀) 느린 회선의 방문자가 로딩 화면에 영원히 갇힌다.
+// route.abort()는 이미지에 error 이벤트를 즉시 쏘고 이 로더는 에러도 "끝난 것"으로 치므로
+// 상한을 시험하지 못한다(2026-09-11 실제로 겪음) — 요청을 응답도 에러도 없이 방치한다.
+test('로딩 화면은 자산이 영영 안 와도 상한(약 8초)에 강제로 사라진다 (COMMON_STANDARDS §27 상한)', async ({ page }) => {
+  test.setTimeout(30000);
+  await page.addInitScript(() => {
+    window.__loaderTiming = { mountTime: null, doneTime: null };
+    const record = () => {
+      const el = document.getElementById('loader');
+      if (!el) return;
+      if (window.__loaderTiming.mountTime === null) window.__loaderTiming.mountTime = performance.now();
+      if (el.classList.contains('done') && window.__loaderTiming.doneTime === null) {
+        window.__loaderTiming.doneTime = performance.now();
+      }
+    };
+    new MutationObserver(record).observe(document, {
+      childList: true, subtree: true, attributes: true, attributeFilter: ['class'],
+    });
+  });
+  await page.route('**/assets/bg-main.webp', () => {});
+  await page.goto('/', { waitUntil: 'commit' });
+  await page.waitForFunction(() => window.__loaderTiming?.doneTime !== null, null, { timeout: 15000 });
+  const timing = await page.evaluate(() => window.__loaderTiming);
+  const visibleMs = timing.doneTime - timing.mountTime;
+  expect(visibleMs, '자산이 안 오는 동안 로딩 화면이 떠 있던 시간(ms)').toBeGreaterThanOrEqual(7800);
+  expect(visibleMs, '상한(8000ms)을 훨씬 넘겨 떠 있으면 방문자가 갇힌다').toBeLessThan(10500);
+});

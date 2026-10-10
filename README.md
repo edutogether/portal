@@ -18,6 +18,24 @@ npm run lint              # eslint
 수록 앱: Poster Studio · Voice Cinema · QUIZ TOGETHER · CLASSCADE · AI Ways Incheon ·
 Be a Googler. 카드를 누르면 각 앱이 새 탭으로 열린다(포털은 원래 탭에 그대로 남는다).
 
+## 실운영 상태
+
+지금은 **실운영 모드**다 — 새 기능을 만들지 않고, 피드백이나 버그가 있을 때만 고친다.
+
+- **자동으로 도는 것**: `main`에 push하면 검사(린트·빌드·테스트·폰트 커버리지)를 통과한 산출물이
+  Firebase Hosting에 자동 배포되고 라이브 반영까지 확인한다(`deploy.yml`). 매일 09:00 KST에 6개 앱
+  링크·OG 이미지·주소 리다이렉트를 확인하고 문제가 있으면 GitHub 이슈를 자동으로 만든다
+  (`link-healthcheck.yml`). 월 1회 빈 커밋으로 예약 워크플로가 멈추지 않게 한다(`keepalive.yml`).
+  Dependabot 보안 알림·CodeQL·비밀 스캔이 켜져 있다.
+- **백업**: 해당 없음 — 수집·저장하는 데이터가 없다(로그인·폼·쿠키·DB 없음). 소스는 GitHub에 있고,
+  되돌리기는 Firebase Hosting의 이전 릴리스 또는 프리즈 태그로 한다.
+- **사람이 주기적으로 할 일**: **없음.** (월 1회 Firebase 예산 알림 확인은 콘솔에서만 되는 일이라
+  팀장의 월간 예약 작업이 맡는다.)
+- **문제가 생기면 어디부터**: ① <https://edutogether.kr>을 직접 연다 ② GitHub Actions 최근 실행과 열린
+  이슈(`healthcheck-failure`)를 본다 ③ 되돌리는 법은 [_docs/ops/deploy-and-billing.md](_docs/ops/deploy-and-billing.md).
+- **끝나는 날짜**: 없음(상시 운영). 다만 카드와 주소 리다이렉트(`firebase.json`)가 가리키는 앱이 내려가면
+  그 선언도 같이 정리한다.
+
 ## 어떻게 만들어졌는가
 
 2026-08-13에 단일 정적 HTML(270줄) 하나로 시작해, 호스팅을 GitHub Pages →

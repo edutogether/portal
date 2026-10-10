@@ -47,7 +47,7 @@
 ## 명령
 - 로컬 실행: `npm run dev`
 - 빌드: `npm run build` (타입 검사 + Vite 빌드 + 404.html 자동 복사)
-- 테스트: `npm test` (Playwright 25개, 빌드된 `dist/`를 대상으로 돔 — 먼저 빌드할 것)
+- 테스트: `npm test` (Playwright 28개, 빌드된 `dist/`를 대상으로 돔 — 먼저 빌드할 것)
 - 시각 비교: `npm run test:visual` (로컬 전용, 기준 이미지는 gitignore)
 - 린트: `npm run lint`
 - 배포 전 게이트 수동 확인: `python3 scripts/check-inline-script.py`,
@@ -366,12 +366,16 @@ OG 이미지 대조 등)이 전부 세션 자신의 브라우저로 된다 — �
     내보낸다.
 - **PR 워크플로에서 PR 코드를 실행하는 job과 비밀을 쓰는 job을 한 job에 같이 두는 것.** `on: pull_request` 워크플로가 같은 job 안에서 PR의 코드를 실행(`npm ci`·`npm run build`)한 뒤 `secrets.*`를 쓰는 step을 두면, 앞 단계가 `$GITHUB_ENV`·`$GITHUB_PATH` 등으로 뒤 단계를 오염시켜 비밀이 있는 단계에서 PR 코드가 실행될 수 있다(2026-10-05 보안 스캔에서 `firebase-hosting-pull-request.yml`이 운영 배포와 같은 서비스계정 비밀로 이렇게 돌고 있던 것이 지적됨). **job을 가를 것** — `build`는 `contents: read`만 갖고 비밀을 전혀 참조하지 않으며 `dist/`만 artifact로 넘기고, `preview`는 PR 코드를 실행하지 않고(`npm ci`·빌드 금지) `firebase.json`도 PR 것이 아니라 base(main) 것을 받아 비밀은 배포 step에만 건다. 같은 이유로 외부(각 앱 페이지·응답)에서 읽은 값을 로그·공개 이슈 본문에 그대로 쓰지 않는다 — `link-healthcheck.yml`의 `clean`/`log_safe`/`md_safe`가 그 역할이다.
 - **CI 설정 규칙(2026-10-09 재스캔 반영).** ① 배포 job은 다시 빌드하지 않고 test job이 검사한 `dist/` artifact를 그대로 배포한다. ② 이슈 쓰기 토큰은 PR 코드를 실행하는 job에 주지 않는다(`font-coverage-check.yml`의 `report-failure`는 main push에서만, 저장소 코드 실행 없이). ③ CI 파이썬 패키지는 `scripts/requirements-ci.txt`(버전·파일 해시 고정)로만 설치한다 — 버전을 올릴 때는 새 버전의 모든 파일 해시를 PyPI에서 다시 받아 파일을 통째로 고친다. ④ 헬스체크가 요청하는 og:image 주소는 `og_url_allowed`의 허용 호스트(https, 우리 도메인 6개)일 때만 요청한다 — 앱을 더하거나 주소를 바꾸면 그 목록도 같이 고친다.
+- **`firebase.json`의 주소 리다이렉트(`/poster`·`/calc` 등 74선언)를 검사 없이 두는 것.** 9/20에 들어갔는데 `vite preview`가 Firebase의 리다이렉트를 재현하지 못해 CI 테스트로는 볼 수 없고, 헬스체크도 안 봐서 2026-10-10 감사 전까지 검사가 0개였다. 지금은 라이브를 매일 보는 `link-healthcheck.yml`의 `check_redirects`가 선언마다 `301`과 `Location`을 대조한다(선언을 한 건도 못 읽으면 실패). 리다이렉트를 더하거나 대상 앱이 내려가면 그 선언도 같이 정리한다.
+- **로딩 화면의 상한(`SAFETY_MS` 8000ms)과 오디오 실패 토스트, 가사의 지금·지난 줄은 `tests/`가 지킨다**(2026-10-10 추가, 그전엔 회귀 테스트가 없었다). 상한 테스트는 `route.abort()`가 아니라 요청을 응답 없이 방치해야 한다 — abort는 error 이벤트로 로더가 «끝난 것»으로 치기 때문이다(위 9/11 항목).
+- **TypeScript 7(주 버전 하나 뒤)을 올리지 않은 것은 의도다(2026-10-10).** `typescript-eslint`가 `typescript`를 `>=4.8.4 <6.1.0`으로만 허용해 올리면 린트 체인이 깨진다. **전제 붕괴 조건**: `npm view typescript-eslint peerDependencies`가 7을 허용하면 올리고 전체 검사를 다시 통과시킨다 — 다음 감사에서 이 전제부터 다시 확인한다(§4-1-1).
 
 ## 배경작업 재개 지점 (§19)
 
 지시가 없을 때 돌리는 배경작업과, 지금 어디까지 했는지 한 줄. **다음 세션은 여기서부터** 이어간다.
 
-- **지금 할 일**: README·문서가 지금 구조(리액트 전환 이후)와 맞는지 점검. 대표님 팀이 9/18까지 동료평가 중이라 평가자가 문서·저장소를 본다.
+- **지금 할 일**: 없음 — 실운영 모드라 지시가 올 때만 일한다(2026-10-10 종합감사 10/10, 다음 정기감사 2026-12-31).
+  아래 «진행 상황»은 지난 점검 기록이다. 지시 없이 문서·코드 점검을 다시 돌리지 않는다.
 - **진행 상황(2026-09-09, 1차 점검 완료, 커밋 `3d088c0`)**:
   - README.md/AGENTS.md/CLAUDE.md/`.claude/rules/app.md`/`_docs/intents/README.md`의
     내부 링크·백틱 파일 경로를 전수 대조 — `.github/workflows/` 실제 파일 8개와
