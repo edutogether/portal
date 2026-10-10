@@ -28,23 +28,23 @@ dist/               빌드 산출물 = 배포 대상 (커밋하지 않음)
   `.github/`, `.claude/`는 저장소에만 있고 배포되지 않는다.
 - `main`에 push하면 GitHub Actions(`.github/workflows/deploy.yml`)가 린트 → 빌드 →
   게이트 → 테스트를 전부 통과시킨 뒤에만 배포한다. 로컬에서 수동 배포할 일은 없다.
-- `dist/`는 커밋하지 않는다 — CI가 배포 직전에 다시 빌드한다.
-- **지금까지 모든 변경은 `main`에 직접 커밋됐다(병합 PR 0건).** 아래 PR 관련
-  워크플로우는 설정만 돼 있고 실제로 발동한 적은 없다 — 작고 급한 변경은 계속
-  `main` 직접 커밋으로 가고, **구조를 크게 바꾸는 변경은 짧은 브랜치 → PR →
-  설명을 남기고 즉시 머지**한다(`D:\Projects\COMMON_STANDARDS.md` §20). PR은
-  리뷰 절차가 아니라 **기록**을 남기는 용도다.
-- **워크플로우 8종**(`.github/workflows/`) — 각 파일 상단 주석에 왜 그런 트리거인지
+- `dist/`는 커밋하지 않는다 — test job이 만든 `dist/`를 검사하고, 검사를 통과한 그
+  산출물을 artifact로 넘겨 deploy job이 **다시 빌드하지 않고 그대로** 배포한다.
+- 작고 급한 변경은 `main` 직접 커밋, **구조·CI를 바꾸는 변경은 짧은 브랜치 → PR →
+  설명을 남기고 머지**한다(`D:\Projects\COMMON_STANDARDS.md` §20 — CI 분리 #8·보안
+  4건 #16이 그렇게 들어갔다). PR은 리뷰 절차가 아니라 **기록**을 남기는 용도다.
+- **워크플로우 7종**(`.github/workflows/`) — 각 파일 상단 주석에 왜 그런 트리거인지
   적혀 있으니 자세한 건 거기서 읽을 것:
-  - `deploy.yml` — `main` push. 위에서 말한 배포 전 전체 게이트 + 배포.
-  - `firebase-hosting-pull-request.yml` — PR마다 임시 미리보기 URL에만 배포.
-  - `sync-check.yml` / `player-smoke-test.yml` — 404 동일성·인라인 script 없음 /
+  - `deploy.yml` — `main` push. 위에서 말한 배포 전 전체 게이트 + 검사한 `dist/` 배포.
+  - `firebase-hosting-pull-request.yml` — PR마다 임시 미리보기 URL에만 배포. PR 코드를
+    실행하는 `build`(비밀 없음)와 비밀을 쓰는 `preview`(PR 코드 실행 없음) 두 job이다.
+  - `sync-check.yml` / `player-smoke-test.yml` — 린트·404 동일성·인라인 script 없음 /
     Playwright 전체. **PR에서만 돈다** — `main` push에서 돌리면 `deploy.yml`의
     게이트와 완전히 중복되기 때문(2026-09-01 정리).
   - `font-coverage-check.yml` — push/PR마다 Pretendard 서브셋 커버리지 확인(위
-    `check-font-coverage.py`를 CI에서 돌리는 것).
-  - `link-healthcheck.yml` — 매일 09:00 KST, 6개 앱 + 포털 자신 응답 확인(아래
-    "현재 링크" 절 참고).
+    `check-font-coverage.py`를 CI에서 돌리는 것). 이슈는 main push 실패 때만 별도 job이 만든다.
+  - `link-healthcheck.yml` — 매일 09:00 KST, 6개 앱 + 포털 자신 응답·OG 이미지·주소
+    리다이렉트(`firebase.json`) 확인(아래 "현재 링크" 절 참고).
   - `keepalive.yml` — 매달 빈 커밋. 위 예약 워크플로우들이 60일 뒤 자동
     비활성화되는 걸 막는다.
 
@@ -77,7 +77,7 @@ npm ci                              # 의존성 설치
 npm run dev                         # 개발 서버
 npm run build                       # 타입 검사 + 빌드 (dist/index.html -> 404.html 복사 포함)
 npm run lint                        # eslint (TypeScript + 훅 의존성 배열)
-npm test                            # Playwright 25개 (스크린샷 비교 제외)
+npm test                            # Playwright 28개 (스크린샷 비교 제외)
 npm run test:visual                 # 스크린샷 비교 (로컬 전용, 아래 참고)
 
 python3 scripts/check-inline-script.py    # 산출물에 인라인 <script>가 없는지
