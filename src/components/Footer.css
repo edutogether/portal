@@ -1,1 +1,12 @@
-footer { margin: 40px 0 auto; color: var(--muted); font-size: 13.5px; text-align: center; }
+/* 하단 고정 플레이어(1180px 이하)가 푸터를 가리지 않게 바 높이만큼 푸터 아래를 비운다.
+   바 높이는 폰 폭 약 178px, 태블릿 폭(561px~) 약 208px(Playwright로 실측)에 여유 24px.
+   body의 padding-bottom이 아니라 푸터 자신의 padding인 이유: body는 height:100%라 내용이
+   body 밖으로 넘칠 때 body의 아래 padding은 스크롤 영역에 들어가지 않는다. */
+@media (max-width: 1180px) {
+  footer { padding-bottom: calc(202px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (min-width: 561px) and (max-width: 1180px) {
+  footer { padding-bottom: calc(232px + env(safe-area-inset-bottom, 0px)); }
+}
+
+footer { margin: calc(40 * var(--u)) 0 auto; color: var(--muted); font-size: calc(13.5 * var(--t)); text-align: center; }

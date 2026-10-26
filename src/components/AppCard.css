@@ -6,7 +6,7 @@
   background: rgba(23, 26, 46, 0.42);
   -webkit-backdrop-filter: blur(26px) saturate(1.5);
   backdrop-filter: blur(26px) saturate(1.5);
-  border-radius: 22px; overflow: hidden;
+  border-radius: calc(22 * var(--u)); overflow: hidden;
   text-decoration: none; color: inherit;
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
@@ -42,21 +42,29 @@
 
 .play {
   position: absolute; inset: 0; margin: auto;
-  width: 60px; height: 60px; border-radius: 50%;
+  width: calc(60 * var(--u)); height: calc(60 * var(--u)); border-radius: 50%;
   background: rgba(11, 14, 31, 0.58);
   display: flex; align-items: center; justify-content: center;
   transition: transform 0.18s ease, background 0.18s ease;
 }
 .play::after {
-  content: ""; width: 0; height: 0; margin-left: 5px;
-  border-left: 19px solid #fff;
-  border-top: 12px solid transparent; border-bottom: 12px solid transparent;
+  content: ""; width: 0; height: 0; margin-left: calc(5 * var(--u));
+  border-left: calc(19 * var(--u)) solid #fff;
+  border-top: calc(12 * var(--u)) solid transparent; border-bottom: calc(12 * var(--u)) solid transparent;
 }
 .app:hover .play { transform: scale(1.1); background: var(--neon-a); }
 
-.body { padding: 16px 18px 20px; display: flex; flex-direction: column; gap: 6px; }
+.body { padding: calc(16 * var(--u)) calc(18 * var(--u)) calc(20 * var(--u)); display: flex; flex-direction: column; gap: calc(6 * var(--u)); }
 .name { font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; letter-spacing: -0.01em; }
-.desc { font-size: clamp(12px, 1.1vw, 14px); color: var(--muted); line-height: 1.55; }
+/* 한글은 어절 단위로 줄을 바꾼다. 어절 하나가 카드 폭보다 길 때만 글자 단위로 끊는다. */
+.desc { font-size: clamp(12px, 1.1vw, 14px); color: var(--muted); line-height: 1.55; word-break: keep-all; overflow-wrap: anywhere; }
+
+/* 데스크탑은 위 clamp 대신 레이아웃 단위(base.css의 --t)를 따라 폭에 비례해 커진다 —
+   카드 폭이 비례해 커지는데 글자만 고정이면 1920·2560에서 글자가 작아 보인다. */
+@media (min-width: 1181px) {
+  .name { font-size: calc(19 * var(--t)); }
+  .desc { font-size: calc(14 * var(--t)); }
+}
 
 /* 설명 문장이 모바일 폭에서 3줄로 넘어가던 카드들만, 원문 의미를 유지한 채 최소한으로
    다듬은 대체 문구로 바꾼다(단어 하나 또는 짧은 구 하나를 빼는 수준). PC는 원문

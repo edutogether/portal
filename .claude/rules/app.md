@@ -47,7 +47,7 @@
 ## 명령
 - 로컬 실행: `npm run dev`
 - 빌드: `npm run build` (타입 검사 + Vite 빌드 + 404.html 자동 복사)
-- 테스트: `npm test` (Playwright 28개, 빌드된 `dist/`를 대상으로 돔 — 먼저 빌드할 것)
+- 테스트: `npm test` (Playwright 46개, 빌드된 `dist/`를 대상으로 돔 — 먼저 빌드할 것)
 - 시각 비교: `npm run test:visual` (로컬 전용, 기준 이미지는 gitignore)
 - 린트: `npm run lint`
 - 배포 전 게이트 수동 확인: `python3 scripts/check-inline-script.py`,
@@ -369,6 +369,15 @@ OG 이미지 대조 등)이 전부 세션 자신의 브라우저로 된다 — �
 - **`firebase.json`의 주소 리다이렉트(`/poster`·`/calc` 등 74선언)를 검사 없이 두는 것.** 9/20에 들어갔는데 `vite preview`가 Firebase의 리다이렉트를 재현하지 못해 CI 테스트로는 볼 수 없고, 헬스체크도 안 봐서 2026-10-10 감사 전까지 검사가 0개였다. 지금은 라이브를 매일 보는 `link-healthcheck.yml`의 `check_redirects`가 선언마다 `301`과 `Location`을 대조한다(선언을 한 건도 못 읽으면 실패). 리다이렉트를 더하거나 대상 앱이 내려가면 그 선언도 같이 정리한다.
 - **로딩 화면의 상한(`SAFETY_MS` 8000ms)과 오디오 실패 토스트, 가사의 지금·지난 줄은 `tests/`가 지킨다**(2026-10-10 추가, 그전엔 회귀 테스트가 없었다). 상한 테스트는 `route.abort()`가 아니라 요청을 응답 없이 방치해야 한다 — abort는 error 이벤트로 로더가 «끝난 것»으로 치기 때문이다(위 9/11 항목).
 - **TypeScript 7(주 버전 하나 뒤)을 올리지 않은 것은 의도다(2026-10-10).** `typescript-eslint`가 `typescript`를 `>=4.8.4 <6.1.0`으로만 허용해 올리면 린트 체인이 깨진다. **전제 붕괴 조건**: `npm view typescript-eslint peerDependencies`가 7을 허용하면 올리고 전체 검사를 다시 통과시킨다 — 다음 감사에서 이 전제부터 다시 확인한다(§4-1-1).
+- **데스크탑 크기를 고정 px로 쓰는 것(2026-10-27).** 1181px 이상의 크기는 `base.css`의 `--u`(상자)·`--t`(글자)의 배수로 쓴다 — 1600px에서 1px이고
+  폭에 비례한다(`calc(14 * var(--t))`). 고정 px를 새로 넣으면 1280px에서 빽빽하고 2560px에서 작아진다. `zoom`·`transform: scale`로 통째로 키우지 않는다(플레이어
+  높이 동기화·이음매 단언이 어긋난다). 1600px 값이 숫자 그대로라 `locked-geometry.spec.js`가 그대로 통과해야 한다. 터치(`pointer: coarse`)에서는 버튼 칸 36px·슬라이더
+  입력 칸 28px(눈에 보이는 막대는 배경 그라디언트로 3px)이다 — 아이콘 크기를 줄이거나 슬라이더를 다시 3px 높이로 되돌리지 말 것. `pointer: coarse` 규칙은 **같은 선택자의
+  기본 규칙보다 뒤에** 있어야 이긴다(소스 순서 — 각 CSS 파일 맨 끝에 둔 이유).
+- **터치에서 `touchstart`와 `click`이 둘 다 재생을 건드리는 것.** 자동재생이 막힌 폰에서 재생 버튼을 처음 누르면 전역 `touchstart` 리스너가 재생을 켠 직후 `click`이 토글로 꺼
+  버렸다(`PlayerContext.tsx`의 `start`). 지금은 `touchstart`가 버튼 위면 비켜서고 뒤따르는 `click`이 시작시킨다. `tests/responsive.spec.js`의 «손가락으로 탭하면» 테스트가 지킨다.
+- **하단 고정 플레이어가 푸터를 가리는 것.** 바 높이만큼 비우는 자리는 `body`가 아니라 `footer`의 `padding-bottom`이다 — `body`는 `height: 100%`라 내용이 넘칠 때 body의 아래 padding은
+  스크롤 영역에 들어가지 않는다(실측으로 확인).
 
 ## 배경작업 재개 지점 (§19)
 

@@ -1,12 +1,12 @@
-header { text-align: center; margin: auto 0 40px; }
+header { text-align: center; margin: auto 0 calc(40 * var(--u)); }
 
 .brand-line {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 14px; font-weight: 700; letter-spacing: 0.12em;
-  color: var(--muted); margin-bottom: 16px; text-transform: none;
+  display: inline-flex; align-items: center; gap: calc(8 * var(--u));
+  font-size: calc(14 * var(--t)); font-weight: 700; letter-spacing: 0.12em;
+  color: var(--muted); margin-bottom: calc(16 * var(--u)); text-transform: none;
 }
 .brand-line::before, .brand-line::after {
-  content: ""; width: 26px; height: 1px; background: rgba(255, 255, 255, 0.25);
+  content: ""; width: calc(26 * var(--u)); height: 1px; background: rgba(255, 255, 255, 0.25);
 }
 
 h1 {
@@ -16,7 +16,18 @@ h1 {
   text-shadow: 0 0 18px rgba(123, 92, 255, 0.65), 0 0 42px rgba(53, 184, 255, 0.45);
 }
 
-header p { margin: 14px 0 0; color: var(--muted); font-size: clamp(14px, 1.6vw, 18px); }
+/* 한글은 어절 단위로 줄을 바꾼다 — 좁은 모바일에서 "체험해보/세요"처럼 낱말 중간에서
+   끊기지 않게 한다. 어절 하나가 한 줄보다 길 때만 글자 단위로 끊는다. */
+header p {
+  margin: calc(14 * var(--u)) 0 0; color: var(--muted); font-size: clamp(14px, 1.6vw, 18px);
+  word-break: keep-all; overflow-wrap: anywhere;
+}
+
+/* 데스크탑은 위 clamp 대신 레이아웃 단위(base.css의 --t)를 따라 폭에 비례해 커진다. */
+@media (min-width: 1181px) {
+  h1 { font-size: calc(78 * var(--t)); }
+  header p { font-size: calc(18 * var(--t)); }
+}
 
 /* 모바일에선 "선생님들이"를 숨기고, 그 자리에 필요해진 주격조사 "이"만 드러낸다
    (2026-09-04 대표 지시 — PC 문구는 그대로). 문장을 새로 짓거나 강제 줄바꿈을 넣지

@@ -1,13 +1,16 @@
 /* 데스크탑 뮤직 플레이어. 높이는 JS(useSyncPlayerHeight)가 카드 그리드 위쪽
-   2행에 맞춰 정확히 재설정한다 — 아래 height는 그 전까지 쓰는 폴백값이다. */
+   2행에 맞춰 정확히 재설정한다 — 아래 height는 그 전까지 쓰는 폴백값이다.
+
+   크기는 전부 base.css의 --u(상자)·--t(글자)의 배수다. 1600px 폭에서 1px이라 그 폭의
+   값이 아래 숫자 그대로이고, 폭이 달라지면 같은 비율로 커지고 작아진다. */
 
 .player {
-  width: min(640px, 44vw); justify-self: end; margin-right: 1.25vw;
+  width: min(calc(640 * var(--u)), 44vw); justify-self: end; margin-right: 1.25vw;
   position: relative; overflow: hidden;
-  display: flex; align-items: stretch; gap: 34px;
-  border-radius: 28px;
-  padding: 36px 34px 36px 22px;
-  height: 560px;
+  display: flex; align-items: stretch; gap: calc(34 * var(--u));
+  border-radius: calc(28 * var(--u));
+  padding: calc(36 * var(--u)) calc(34 * var(--u)) calc(36 * var(--u)) calc(22 * var(--u));
+  height: calc(560 * var(--u));
   box-shadow: 0 20px 54px rgba(0, 0, 0, 0.5);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
@@ -36,19 +39,19 @@
    지금 값으로는 프리즈된 화면과 픽셀 단위로 같다.
 
    블러 배경을 진짜로 살릴지는 화면 인상이 바뀌는 결정이라 임의로 켜지 않았다. */
-.player-left { width: 47%; flex: none; margin-left: 34px; display: flex; flex-direction: column; }
+.player-left { width: 47%; flex: none; margin-left: calc(34 * var(--u)); display: flex; flex-direction: column; }
 
 .cover {
-  width: 100%; aspect-ratio: 1 / 1; border-radius: 12px; object-fit: cover;
+  width: 100%; aspect-ratio: 1 / 1; border-radius: calc(12 * var(--u)); object-fit: cover;
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
 }
 
-.track-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-top: 18px; }
-.track-title { font-size: 18px; font-weight: 800; color: #fff; }
-.track-artist { margin-top: 4px; font-size: 14px; color: rgba(255, 255, 255, 0.62); }
-.track-actions { display: flex; align-items: center; gap: 8px; flex: none; padding-top: 2px; }
+.track-row { display: flex; align-items: flex-start; justify-content: space-between; gap: calc(10 * var(--u)); margin-top: calc(18 * var(--u)); }
+.track-title { font-size: calc(18 * var(--t)); font-weight: 800; color: #fff; }
+.track-artist { margin-top: calc(4 * var(--u)); font-size: calc(14 * var(--t)); color: rgba(255, 255, 255, 0.62); }
+.track-actions { display: flex; align-items: center; gap: calc(8 * var(--u)); flex: none; padding-top: calc(2 * var(--u)); }
 
-.transport { margin-top: auto; padding-top: 20px; }
+.transport { margin-top: auto; padding-top: calc(20 * var(--u)); }
 
 .seek {
   -webkit-appearance: none; appearance: none; width: 100%; height: 3px; margin: 0;
@@ -58,32 +61,39 @@
   outline: 2px solid #fff; outline-offset: 4px; border-radius: 999px;
 }
 .seek::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%;
+  -webkit-appearance: none; width: calc(11 * var(--u)); height: calc(11 * var(--u)); border-radius: 50%;
   background: #fff; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
 }
-.seek::-moz-range-thumb { width: 11px; height: 11px; border: none; border-radius: 50%; background: #fff; }
+.seek::-moz-range-thumb { width: calc(11 * var(--u)); height: calc(11 * var(--u)); border: none; border-radius: 50%; background: #fff; }
 
 .time-row {
   display: flex; justify-content: space-between;
-  font-size: 11px; color: rgba(255, 255, 255, 0.55); margin-top: 7px;
+  font-size: max(11px, calc(11 * var(--t))); color: rgba(255, 255, 255, 0.55); margin-top: calc(7 * var(--u));
 }
 
-.controls-row { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 16px; }
+.controls-row { display: flex; align-items: center; justify-content: center; gap: calc(14 * var(--u)); margin-top: calc(16 * var(--u)); }
+
+/* 컨트롤 아이콘 크기(Controls.css는 둘 다 쓰는 기본형이라 여기서 폭에 맞춘다). */
+.player .icon-btn svg { width: calc(16 * var(--u)); height: calc(16 * var(--u)); }
+.player .play-btn svg { width: calc(22 * var(--u)); height: calc(22 * var(--u)); }
+.player .skip-btn svg { width: calc(19 * var(--u)); height: calc(19 * var(--u)); }
+.player .toggle-btn svg { width: calc(17 * var(--u)); height: calc(17 * var(--u)); }
+.player .vol-icon-btn svg { width: calc(19 * var(--u)); height: calc(19 * var(--u)); }
 
 .volume {
   position: relative;
-  display: flex; align-items: center; gap: 9px;
-  margin-top: 22px;
-  margin-left: -28px; width: calc(100% + 28px);
+  display: flex; align-items: center; gap: calc(9 * var(--u));
+  margin-top: calc(22 * var(--u));
+  margin-left: calc(-28 * var(--u)); width: calc(100% + 28 * var(--u));
 }
 .volume input {
   -webkit-appearance: none; appearance: none; flex: 1; height: 3px; margin: 0;
   background: rgba(255, 255, 255, 0.28); border-radius: 999px; cursor: pointer;
 }
 .volume input::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: #fff;
+  -webkit-appearance: none; width: calc(10 * var(--u)); height: calc(10 * var(--u)); border-radius: 50%; background: #fff;
 }
-.volume input::-moz-range-thumb { width: 10px; height: 10px; border: none; border-radius: 50%; background: #fff; }
+.volume input::-moz-range-thumb { width: calc(10 * var(--u)); height: calc(10 * var(--u)); border: none; border-radius: 50%; background: #fff; }
 
 .lyrics {
   flex: 1; min-width: 0; height: 100%; overflow: hidden; position: relative;
@@ -92,12 +102,13 @@
 }
 .lyrics-track {
   display: flex; flex-direction: column;
-  padding: 260px 0;
+  padding: calc(260 * var(--u)) 0;
   will-change: transform;
 }
 .lyrics-track p {
-  margin: 0; padding: 14px 0;
-  font-size: 21px; font-weight: 700; line-height: 1.4;
+  margin: 0; padding: calc(14 * var(--u)) 0;
+  font-size: calc(21 * var(--t)); font-weight: 700; line-height: 1.4;
+  word-break: keep-all; overflow-wrap: anywhere; /* 어절 단위 줄바꿈 — "놀아/요"처럼 한 글자가 남지 않게 */
   color: rgba(255, 255, 255, 0.26);
 }
 /* 지나간 줄만 아주 살짝 밝게 — "지금 어디까지 왔는지"가 한눈에 잡히도록
@@ -121,6 +132,14 @@
   }
 }
 
-@media (max-width: 1400px) {
-  .lyrics-track p { font-size: 18px; }
+/* 터치 기기: 3px 높이 막대는 손가락으로 잡을 수 없다. 입력 칸 자체를 28px로 키우고 눈에
+   보이는 3px 막대는 배경으로 그린다 — 화면에 보이는 모양은 그대로이고 누를 수 있는 영역만
+   넓어진다. 늘어난 만큼은 음수 여백으로 되돌려 위아래 배치가 변하지 않게 한다. */
+@media (pointer: coarse) {
+  .seek, .volume input {
+    height: 28px;
+    background: linear-gradient(rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.28)) center / 100% 3px no-repeat;
+  }
+  .seek { margin: -12.5px 0; }
+  .volume input { margin: -12.5px 0; }
 }

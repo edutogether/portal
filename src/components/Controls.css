@@ -54,3 +54,11 @@
 .vol-icon-btn.muted .spk-body { fill: var(--muted); }
 .vol-icon-btn.muted .wave1, .vol-icon-btn.muted .wave2, .vol-icon-btn.muted .wave3 { display: none; }
 .vol-icon-btn.muted .mute-x { display: block; stroke: var(--muted); }
+
+/* 터치 기기(손가락이 주 입력)에서는 16~19px짜리 아이콘 버튼이 누르기엔 너무 작다.
+   눈에 보이는 아이콘 크기는 그대로 두고 누를 수 있는 칸만 36px 이상으로 넓힌다.
+   (hover:none)이 아니라 (pointer: coarse)인 이유: 마우스가 있는 PC에서 창을 좁힌 경우에는
+   기존 크기를 그대로 둬야 한다 — 입력 수단으로 가른다. */
+@media (pointer: coarse) {
+  .icon-btn, .play-btn, .skip-btn, .vol-icon-btn { min-width: 36px; min-height: 36px; }
+}

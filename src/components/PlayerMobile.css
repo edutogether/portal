@@ -98,3 +98,37 @@
 }
 .pm-volume input::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: #fff; }
 .pm-volume input::-moz-range-thumb { width: 10px; height: 10px; border: none; border-radius: 50%; background: #fff; }
+
+/* 같은 선택자의 위 기본 규칙보다 **뒤에** 있어야 이긴다(소스 순서 의존 — 이 파일 맨 끝에 둔 이유).
+   태블릿 폭(561~1180px)에서는 하단 바가 화면 전체 폭으로 늘어나는데 안의 글자·아이콘이
+   폰 크기 그대로라 작게 남는다 — 이 폭에서만 한 단계 키운다. */
+@media (min-width: 561px) and (max-width: 1180px) {
+  .player-mobile { padding: 18px 28px calc(20px + env(safe-area-inset-bottom, 0px)); }
+  .pm-cover { width: 68px; height: 68px; border-radius: 12px; }
+  .pm-title { font-size: 18px; }
+  .pm-artist { font-size: 14px; }
+  .pm-time-row { font-size: 12.5px; }
+  .pm-seek { margin-top: 14px; }
+  .pm-top .icon-btn svg { width: 20px; height: 20px; }
+  .pm-controls { gap: 14px; margin-top: 12px; }
+  .pm-controls .play-btn svg { width: 30px; height: 30px; }
+  .pm-controls .skip-btn svg { width: 20px; height: 20px; }
+  .pm-controls .toggle-btn svg { width: 18px; height: 18px; }
+  .pm-volume .vol-icon-btn svg { width: 19px; height: 19px; }
+}
+
+/* 터치 기기: PlayerDesktop.css 끝의 같은 규칙과 같은 이유다(3px 막대 -> 28px 입력 칸).
+   여기서도 눈에 보이는 막대와 위아래 배치는 그대로다. 버튼 칸이 36px로 커진 만큼
+   버튼 사이 간격은 줄여 한 줄에 그대로 들어가게 한다. */
+@media (pointer: coarse) {
+  .pm-seek, .pm-volume input {
+    height: 28px;
+    background: linear-gradient(rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.28)) center / 100% 3px no-repeat;
+  }
+  .pm-seek { margin-top: -2.5px; margin-bottom: -12.5px; }
+  .pm-controls { gap: 2px; }
+}
+@media (pointer: coarse) and (min-width: 561px) and (max-width: 1180px) {
+  .pm-seek { margin-top: 1.5px; }
+  .pm-controls { gap: 8px; }
+}

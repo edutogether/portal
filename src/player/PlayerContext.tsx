@@ -149,6 +149,11 @@ export function PlayerProvider({
       if (!autoplayBlocked.current) return;
       const target = e.target;
       if (target instanceof Element && target.closest('a[target="_blank"]')) return;
+      // 터치로 버튼을 누르면 touchstart가 click보다 **먼저** 온다. 여기서 재생을 시작해 버리면
+      // 뒤따르는 click이 재생/일시정지 버튼의 토글로 처리돼 방금 켠 재생을 다시 꺼 버린다
+      // (자동재생이 막힌 폰에서 재생 버튼을 처음 눌러도 소리가 안 나던 원인). 버튼은 그 뒤의
+      // click이 시작시키므로 touchstart 단계에서는 비켜선다.
+      if (e.type === "touchstart" && target instanceof Element && target.closest("button")) return;
 
       const audio = audioRef.current;
       if (!audio) return;
