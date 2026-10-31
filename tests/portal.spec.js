@@ -235,3 +235,19 @@ test('로딩 화면은 자산이 영영 안 와도 상한(약 8초)에 강제로
   expect(visibleMs, '자산이 안 오는 동안 로딩 화면이 떠 있던 시간(ms)').toBeGreaterThanOrEqual(7800);
   expect(visibleMs, '상한(8000ms)을 훨씬 넘겨 떠 있으면 방문자가 갇힌다').toBeLessThan(10500);
 });
+
+// iOS Safari는 touchstart 리스너가 없으면 :active를 계산하지 않는다. 예전에는 <body ontouchstart="">
+// 속성으로 달았는데 CSP(script-src 'self')가 막아 콘솔 에러만 나고 리스너는 없었다(2026-10-31).
+test('body에 touchstart 리스너가 속성이 아니라 코드로 달려 있다', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.__bodyTouch = 0;
+    const original = EventTarget.prototype.addEventListener;
+    EventTarget.prototype.addEventListener = function (type, ...rest) {
+      if (type === 'touchstart' && this === document.body) window.__bodyTouch += 1;
+      return original.call(this, type, ...rest);
+    };
+  });
+  await page.goto('/');
+  expect(await page.evaluate(() => document.body.hasAttribute('ontouchstart'))).toBe(false);
+  expect(await page.evaluate(() => window.__bodyTouch)).toBeGreaterThanOrEqual(1);
+});

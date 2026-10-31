@@ -32,12 +32,12 @@
      받아뒀다(전체 변수폰트가 아님). -->
 <link rel="stylesheet" href="/assets/fonts/pretendard/pretendard.css" />
 </head>
-<!-- ontouchstart="" 는 장식이 아니라 필수: iOS Safari는 document/body에
-     touchstart 리스너가 하나도 없으면 :active 의사클래스를 아예 계산하지
-     않는다(2026-09-05 대표 확인 — 카드 호버 효과가 모바일에서 전혀 안
-     먹던 원인). 지우면 .app:active / (hover:none) 규칙이 iOS에서 다시
-     조용히 죽는다. -->
-<body ontouchstart="">
+<!-- body의 빈 touchstart 리스너(src/main.tsx)는 장식이 아니라 필수: iOS Safari는
+     document/body에 touchstart 리스너가 하나도 없으면 :active 의사클래스를 아예
+     계산하지 않는다(2026-09-05 대표 확인 — 카드 호버 효과가 모바일에서 전혀 안
+     먹던 원인). 지우면 .app:active / (hover:none) 규칙이 iOS에서 다시 조용히
+     죽는다. 속성(ontouchstart="")으로 달면 CSP(script-src 'self')가 막는다. -->
+<body>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-빌드 산출물(dist/)에 인라인 <script>가 들어있으면 실패시킨다.
+빌드 산출물(dist/)에 인라인 <script>나 인라인 이벤트 핸들러 속성(onclick= 등)이
+들어있으면 실패시킨다. 둘 다 script-src 'self'가 막는다.
 
 이 검사는 원래 "인라인 <script>의 sha256 해시가 CSP 선언과 일치하는가"를 보던
 check-csp-hash.py였다. 리액트로 옮기면서 스크립트가 전부 외부 파일(/assets/*.js)로
@@ -36,6 +37,16 @@ def inline_scripts(html: str) -> list[str]:
     ]
 
 
+def inline_handlers(html: str) -> list[str]:
+    # <body ontouchstart="">처럼 태그 안의 on*= 속성. 인라인 <script>와 똑같이 CSP가 막고,
+    # 막힐 때마다 콘솔에 CSP 위반 에러를 남긴다(2026-10-31 라이브에서 발견).
+    stripped = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+    return [
+        m.group(0)
+        for m in re.finditer(r"<[a-z][^>]*\son[a-z]+\s*=[^>]*>", stripped, flags=re.I)
+    ]
+
+
 def main() -> int:
     missing = [p for p in TARGETS if not p.exists()]
     if missing:
@@ -45,8 +56,16 @@ def main() -> int:
 
     failed = False
     for path in TARGETS:
-        found = inline_scripts(path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8")
+        found = inline_scripts(text)
         rel = path.relative_to(ROOT)
+        handlers = inline_handlers(text)
+        if handlers:
+            failed = True
+            print(f"::error::{rel} 에 인라인 이벤트 핸들러 속성이 {len(handlers)}개 있습니다.")
+            for tag in handlers:
+                print(f"  {tag}")
+            print("  CSP가 막아 콘솔에 에러만 남깁니다. main.tsx에서 addEventListener로 거세요.")
         if found:
             failed = True
             print(f"::error::{rel} 에 인라인 <script>가 {len(found)}개 있습니다.")
