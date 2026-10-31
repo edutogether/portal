@@ -375,7 +375,7 @@ OG 이미지 대조 등)이 전부 세션 자신의 브라우저로 된다 — �
   입력 칸 28px(눈에 보이는 막대는 배경 그라디언트로 3px)이다 — 아이콘 크기를 줄이거나 슬라이더를 다시 3px 높이로 되돌리지 말 것. `pointer: coarse` 규칙은 **같은 선택자의
   기본 규칙보다 뒤에** 있어야 이긴다(소스 순서 — 각 CSS 파일 맨 끝에 둔 이유).
 - **터치에서 `touchstart`와 `click`이 둘 다 재생을 건드리는 것.** 자동재생이 막힌 폰에서 재생 버튼을 처음 누르면 전역 `touchstart` 리스너가 재생을 켠 직후 `click`이 토글로 꺼
-  버렸다(`PlayerContext.tsx`의 `start`). 지금은 `touchstart`가 버튼 위면 비켜서고 뒤따르는 `click`이 시작시킨다. `tests/responsive.spec.js`의 «손가락으로 탭하면» 테스트가 지킨다.
+  버렸다(`PlayerContext.tsx`의 `start`). 지금은 `touchstart`가 버튼 위면 비켜서고 뒤따르는 `click`이 시작시킨다. `tests/responsive.spec.js`의 «손가락으로 탭하면» 테스트와 `tests/autoplay-blocked.spec.js`의 «터치 폰» 테스트가 지킨다(수정 줄을 지워 둘 다 빨간불임을 2026-10-31에 확인했다. 앞의 것은 헤드리스가 자동재생을 막지 않는다는 주석만 보고 «지나지 않는다»고 추정했다가 실측으로 뒤집혔다 — 추정 말고 줄을 지워 돌려볼 것).
 - **하단 고정 플레이어가 푸터를 가리는 것.** 바 높이만큼 비우는 자리는 `body`가 아니라 `footer`의 `padding-bottom`이다 — `body`는 `height: 100%`라 내용이 넘칠 때 body의 아래 padding은
   스크롤 영역에 들어가지 않는다(실측으로 확인).
 

@@ -64,6 +64,22 @@ test('앱 카드를 눌러 바깥으로 나갈 때는 원래 탭에서 재생이
   expect(paused, '카드를 눌러 나갔는데 원래 탭에서 음악이 시작됐다').toBe(true);
 });
 
+// 터치 폰에서 재생 버튼을 처음 누르는 경우(2026-10-27 수정, PlayerContext.start). touchstart가
+// click보다 먼저 와서 재생을 켠 뒤 click의 토글이 다시 꺼 버리던 사고다. responsive.spec.js의
+// 탭 테스트는 헤드리스가 자동재생을 막지 않아 이 경로를 지나지 않으므로, 거부 상태를 만드는
+// 이 파일에서 지킨다.
+test.describe('터치 폰', () => {
+  test.use({ viewport: { width: 360, height: 800 }, hasTouch: true, isMobile: true });
+
+  test('자동재생이 거부된 폰에서 재생 버튼을 처음 탭하면 재생이 시작된 채로 남는다', async ({ page }) => {
+    await page.waitForFunction(() => document.getElementById('loader')?.classList.contains('done'));
+    await page.tap('#playBtnM');
+    await page.waitForTimeout(800);
+    const paused = await page.evaluate(() => document.getElementById('audio').paused);
+    expect(paused, '탭했는데 재생이 켜졌다 곧바로 꺼졌다').toBe(false);
+  });
+});
+
 test('한 번 시작된 뒤에는 조작 리스너가 남아 있지 않다', async ({ page }) => {
   await page.locator('footer').click();
   await expect
