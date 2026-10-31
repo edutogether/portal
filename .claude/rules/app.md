@@ -47,7 +47,7 @@
 ## 명령
 - 로컬 실행: `npm run dev`
 - 빌드: `npm run build` (타입 검사 + Vite 빌드 + 404.html 자동 복사)
-- 테스트: `npm test` (Playwright 46개, 빌드된 `dist/`를 대상으로 돔 — 먼저 빌드할 것)
+- 테스트: `npm test` (Playwright 48개, 빌드된 `dist/`를 대상으로 돔 — 먼저 빌드할 것)
 - 시각 비교: `npm run test:visual` (로컬 전용, 기준 이미지는 gitignore)
 - 린트: `npm run lint`
 - 배포 전 게이트 수동 확인: `python3 scripts/check-inline-script.py`,

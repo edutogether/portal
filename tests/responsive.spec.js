@@ -127,3 +127,31 @@ for (const [width, height] of [[360, 800], [768, 1024]]) {
     });
   });
 }
+
+// 360px 이하에서만 부제를 "…앱들을 / 직접 체험해보세요 !"에서 끊는다(2026-10-31 대표 의견).
+for (const [width, height, broken] of [[360, 800, true], [390, 844, false]]) {
+  test(`부제 줄바꿈 ${width}px — ${broken ? '"앱들을" 뒤에서 끊긴다' : '강제로 끊지 않는다'}`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await settle(page);
+    const r = await page.evaluate(() => {
+      const p = document.querySelector('header p');
+      const br = p.querySelector('br.br-narrow');
+      const last = [...p.childNodes].filter((n) => n.nodeType === 3).pop();
+      const range = document.createRange();
+      range.selectNodeContents(last);
+      return {
+        display: getComputedStyle(br).display,
+        text: last.textContent.trim(),
+        lastTop: range.getClientRects()[0].top,
+        brBottom: br.getBoundingClientRect().bottom,
+      };
+    });
+    expect(r.text).toBe('직접 체험해보세요 !');
+    if (broken) {
+      expect(r.display).toBe('inline');
+      expect(r.lastTop, '둘째 줄은 br 아래에서 시작한다').toBeGreaterThanOrEqual(r.brBottom - 1);
+    } else {
+      expect(r.display).toBe('none');
+    }
+  });
+}

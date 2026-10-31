@@ -8,7 +8,9 @@ export function Header() {
       <p>
         같이교육<span className="edu-particle">이</span>{" "}
         <span className="teacher-word">선생님들이 </span>
-        직접 개발한 다양한 앱들을 직접 체험해보세요 !
+        직접 개발한 다양한 앱들을{" "}
+        <br className="br-narrow" />
+        직접 체험해보세요 !
       </p>
     </header>
   );
