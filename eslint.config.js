@@ -56,6 +56,7 @@ export default [
         document: "readonly",
         window: "readonly",
         Event: "readonly",
+        EventTarget: "readonly",
         DOMException: "readonly",
         HTMLMediaElement: "readonly",
         setInterval: "readonly",
