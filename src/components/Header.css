@@ -23,7 +23,7 @@ header p {
   word-break: keep-all; overflow-wrap: anywhere;
 }
 
-/* 데스크탑은 위 clamp 대신 레이아웃 단위(base.css의 --t)를 따라 폭에 비례해 커진다. */
+/* 데스크탑은 위 clamp 대신 레이아웃 단위(base.css의 --t, 값은 1px 고정)의 배수다. */
 @media (min-width: 1181px) {
   h1 { font-size: calc(78 * var(--t)); }
   header p { font-size: calc(18 * var(--t)); }

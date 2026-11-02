@@ -59,8 +59,7 @@
 /* 한글은 어절 단위로 줄을 바꾼다. 어절 하나가 카드 폭보다 길 때만 글자 단위로 끊는다. */
 .desc { font-size: clamp(12px, 1.1vw, 14px); color: var(--muted); line-height: 1.55; word-break: keep-all; overflow-wrap: anywhere; }
 
-/* 데스크탑은 위 clamp 대신 레이아웃 단위(base.css의 --t)를 따라 폭에 비례해 커진다 —
-   카드 폭이 비례해 커지는데 글자만 고정이면 1920·2560에서 글자가 작아 보인다. */
+/* 데스크탑은 위 clamp 대신 레이아웃 단위(base.css의 --t, 값은 1px 고정)의 배수다. */
 @media (min-width: 1181px) {
   .name { font-size: calc(19 * var(--t)); }
   .desc { font-size: calc(14 * var(--t)); }

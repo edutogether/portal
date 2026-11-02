@@ -77,7 +77,7 @@ npm ci                              # 의존성 설치
 npm run dev                         # 개발 서버
 npm run build                       # 타입 검사 + 빌드 (dist/index.html -> 404.html 복사 포함)
 npm run lint                        # eslint (TypeScript + 훅 의존성 배열)
-npm test                            # Playwright 50개 (스크린샷 비교 제외)
+npm test                            # Playwright 52개 (스크린샷 비교 제외)
 npm run test:visual                 # 스크린샷 비교 (로컬 전용, 아래 참고)
 
 python3 scripts/check-inline-script.py    # 산출물에 인라인 <script>가 없는지
@@ -139,9 +139,8 @@ python3 scripts/check-font-coverage.py    # 폰트 서브셋 글자 커버리지
 - `public/assets/bg-loading.webp`(미사용, 보존) · `prefers-reduced-motion` 미적용 ·
   반딧불이·그리드·플레이어 높이 동기화 값 — 전부 확정된 설계다(전문은 `CLAUDE.md`의
   "LOCKED" 절). 임의로 "개선"하지 말 것.
-- **방문 시 소리 나는 자동재생(볼륨 50%)은 의도된 설계다** — **음소거로 되돌리지
-  말 것.** 차단되면 앱 카드로 나가는 클릭을 제외한 페이지 내 조작에서 재생을
-  시작한다(`tests/autoplay-blocked.spec.js`). 전문은 `.claude/rules/app.md`의
+- **방문하면 노래가 멈춘 채로 나오는 것은 의도된 설계다**(2026-11-02 대표 지시) —
+  **자동재생을 되살리지 말 것.** 재생 단추를 눌러야 소리가 난다(`tests/no-autoplay.spec.js`). 전문은 `.claude/rules/app.md`의
   "소리" 절, 테스트에서 소리를 끄려면 `playwright.config.js`의 `--mute-audio`.
 
 ## 자산 파일

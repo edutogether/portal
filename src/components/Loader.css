@@ -12,7 +12,7 @@
     var(--loader-bg) center/cover no-repeat,
     #0b0e1f;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: max(26px, calc(26 * var(--u))); /* 1600px 이상에서는 폭에 비례해 커진다(아래 max()도 같은 방식) */
+  gap: max(26px, calc(26 * var(--u)));
   transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 #loader.done { opacity: 0; visibility: hidden; }

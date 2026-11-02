@@ -61,7 +61,9 @@ for (const [width, height] of WIDTHS) {
   });
 }
 
-test('반응형 — 데스크탑은 폭에 비례해 커진다(1280 < 1920 < 2560)', async ({ page }) => {
+// 2026-11-02: 폭에 비례해 커지게 했던 것(10/27)을 «엄청 커졌다»는 지적으로 되돌렸다.
+// 데스크탑(1181px~)의 글자 크기는 폭이 달라도 같아야 한다(카드·플레이어 폭은 남는 자리를 채우므로 제외).
+test('반응형 — 데스크탑 글자 크기는 1280·1920·2560에서 같다', async ({ page }) => {
   const sizes = [];
   for (const [width, height] of [[1280, 720], [1920, 1080], [2560, 1440]]) {
     await page.setViewportSize({ width, height });
@@ -73,9 +75,9 @@ test('반응형 — 데스크탑은 폭에 비례해 커진다(1280 < 1920 < 256
       player: document.querySelector('.player').getBoundingClientRect().width,
     })));
   }
-  for (const key of ['h1', 'desc', 'card', 'player']) {
-    expect(sizes[0][key], `${key}: 1280 < 1920`).toBeLessThan(sizes[1][key]);
-    expect(sizes[1][key], `${key}: 1920 < 2560`).toBeLessThan(sizes[2][key]);
+  for (const key of ['h1', 'desc']) {
+    expect(sizes[1][key], `${key}: 1280 = 1920`).toBeCloseTo(sizes[0][key], 1);
+    expect(sizes[2][key], `${key}: 1920 = 2560`).toBeCloseTo(sizes[1][key], 1);
   }
 });
 

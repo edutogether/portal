@@ -2,8 +2,8 @@
 import { test, expect } from '@playwright/test';
 
 // player.spec.js는 뮤직 플레이어 로직 회귀만 다룬다. 이 파일은 그 바깥,
-// 포털 자체의 핵심 계약(카드가 맞는 곳으로 연결되는지, 자동재생이 소리
-// 없이 시작하는지, 동작 줄이기 설정을 지키는지)이 조용히 깨지는 걸 잡는다
+// 포털 자체의 핵심 계약(카드가 맞는 곳으로 연결되는지, 노래가 멈춘 채
+// 시작하는지, 동작 줄이기 설정을 지키는지)이 조용히 깨지는 걸 잡는다
 // — 전부 이번 세션에 추가/변경됐는데 자동 테스트가 없던 항목들
 // (2026-09-01 감사에서 발견).
 
@@ -30,14 +30,10 @@ test('6개 카드가 정확한 URL로, 새 탭(target=_blank, rel=noopener)으�
   }
 });
 
-// 2026-08-31에는 반대로 "항상 음소거로 시작"이 사양이었다. 2026-09-09에 대표가
-// 뒤집었다 — 사람이 직접 주소를 치거나 북마크로 들어오면 소리가 나야 한다.
-// 배경과 두 결정의 이유는 .claude/rules/app.md에 있다.
-//
-// audio.muted를 단언하지 않는 이유: 이 앱은 소리를 volume 하나로만 다루고 muted는
-// 아예 쓰지 않는다. 그리고 muted는 리액트에서 속성이 아니라 DOM 프로퍼티로 들어가서
-// hasAttribute('muted')로 보면 실제 값과 다르게 나온다 — 프로퍼티로 읽어야 한다.
-test('방문하면 음소거가 아니고, 볼륨이 정착값(0.5)까지 올라온다 (2026-09-09 대표 지시)', async ({ page }) => {
+// 2026-11-02 Bumm님 지시: 방문해도 노래가 멈춰 있다(자동재생 없음). 이력: 8/31 "항상 음소거로
+// 시작" → 9/9 "방문하면 소리" → 11/2 "멈춘 채로". 재생·자동재생 단언은 no-autoplay.spec.js가 맡는다.
+// 여기서는 음소거가 아니라는 것(소리는 volume 하나로만 다루고 muted는 안 쓴다)과 볼륨바 값만 본다.
+test('방문하면 멈춘 채로 대기하고, 음소거가 아니며 볼륨바는 정착값(0.5)을 가리킨다', async ({ page }) => {
   await page.goto('/');
   await expect
     .poll(() => page.evaluate(() => document.getElementById('audio').volume), { timeout: 5000 })
@@ -46,12 +42,14 @@ test('방문하면 음소거가 아니고, 볼륨이 정착값(0.5)까지 올라
   const state = await page.evaluate(() => {
     const audio = document.getElementById('audio');
     return {
+      paused: audio.paused,
       mutedProperty: audio.muted,
       mutedAttribute: audio.hasAttribute('muted'),
       sliderValue: Number(document.getElementById('vol').value),
     };
   });
-  expect(state.mutedProperty, '음소거로 시작하면 안 된다').toBe(false);
+  expect(state.paused, '들어오자마자 재생되면 안 된다').toBe(true);
+  expect(state.mutedProperty, '음소거 상태로 두면 안 된다').toBe(false);
   expect(state.mutedAttribute, 'muted 속성 자체를 쓰지 않는다').toBe(false);
   expect(state.sliderValue, '볼륨바도 같은 값을 가리켜야 한다').toBeCloseTo(0.5, 2);
 });
