@@ -54,19 +54,23 @@ test('방문하면 멈춘 채로 대기하고, 음소거가 아니며 볼륨바�
   expect(state.sliderValue, '볼륨바도 같은 값을 가리켜야 한다').toBeCloseTo(0.5, 2);
 });
 
-test('OS의 동작 줄이기(prefers-reduced-motion) 설정이 켜지면 반딧불이 애니메이션이 정지한다', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/');
-  const mote = page.locator('.motes i').first();
-  await expect(mote).toHaveCSS('animation-name', 'none');
-});
-
-test('동작 줄이기 설정이 꺼져 있으면 반딧불이 애니메이션이 정상 작동한다', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/');
-  const mote = page.locator('.motes i').first();
-  await expect(mote).not.toHaveCSS('animation-name', 'none');
-});
+// 2026-11-11 Bumm님 결정: 움직임 줄이기(prefers-reduced-motion) 신호가 있어도 없을 때와 똑같이
+// 돈다 — 원격 접속 등으로 브라우저가 Bumm님이 켜지 않은 reduce를 보고해 연출이 멈춰 보인 일이 있었다.
+// 확인은 reduce·no-preference 둘 다로 한다.
+for (const reducedMotion of ['reduce', 'no-preference']) {
+  test(`동작 줄이기=${reducedMotion}에서도 반딧불이 애니메이션이 정상 작동한다`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion });
+    await page.goto('/');
+    const mote = page.locator('.motes i').first();
+    await expect(mote).not.toHaveCSS('animation-name', 'none');
+    await expect(mote).toHaveCSS('animation-iteration-count', 'infinite');
+    // 실제로 움직이는지: 두 시점의 변형 행렬이 달라야 한다.
+    const before = await mote.evaluate((el) => getComputedStyle(el).transform);
+    await page.waitForTimeout(700);
+    const after = await mote.evaluate((el) => getComputedStyle(el).transform);
+    expect(after, '입자가 멈춰 있다').not.toBe(before);
+  });
+}
 
 test('카드 6개 전부 소개 문구가 비어있지 않고, 느낌표/물음표 앞에 띄어쓰기 규칙을 지킨다', async ({ page }) => {
   await page.goto('/');

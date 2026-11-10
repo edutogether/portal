@@ -57,12 +57,7 @@ export function useVolumeFade(audioRef: RefObject<HTMLAudioElement | null>, init
       if (!audio) return;
       target.current = to;
 
-      // 동작 줄이기 설정이 켜져 있으면 페이드 없이 즉시 반영한다.
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        apply(to);
-        return;
-      }
-
+      // prefers-reduced-motion 신호와 상관없이 늘 서서히 바뀐다(2026-11-11 Bumm님 결정).
       const from = audio.volume;
       const start = performance.now();
       const step = (now: number) => {

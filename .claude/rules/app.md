@@ -30,6 +30,12 @@
 - **외부 리소스에 SRI(`integrity`) 적용.** 과거 실제 장애 이력이 있다.
 - **`prefers-reduced-motion` 정지 로직 부활, `bg-loading.webp` 삭제, 번호 뱃지(①~⑥)
   부활** — 전부 대표가 명시적으로 없애기로 한 것.
+- 🔴 **움직임 줄이기(`prefers-reduced-motion`) 신호로 연출을 멈추거나 줄이지 않는다**(2026-11-11 Bumm님 결정 —
+  여덟 앱 공통: «움직임 줄이기와 상관없이 늘 정상처럼 돈다»). 원격 접속 등으로 브라우저가 Bumm님이
+  켜지 않은 reduce를 보고해 반딧불이가 멈춰 보인 일이 있었다. 반딧불이(`Motes.css`)와 소리 전환
+  (`useVolumeFade.ts`) 두 곳에 있던 분기를 걷어냈고, 새 애니메이션·전환을 더할 때도 `@media (prefers-reduced-motion)`·
+  `matchMedia`로 분기하지 않는다. **확인은 `emulateMedia({ reducedMotion })`의 `reduce`와 `no-preference` 둘 다로 한다**
+  (`tests/portal.spec.js`·`tests/player.spec.js`가 둘 다 돈다).
 - **파비콘을 탭 상태에 따라 바꾸는 것(비활성 회색 전환 등).** 2026-10-07 대표 지시(COMMON_STANDARDS
   §33)로 폐기했다 — 탭에 뜰 때와 즐겨찾기에 들어갈 때 항상 같은 아이콘이어야 한다. 파비콘은
   EDUTOGETHER 로고(`D:\Archives\Work\2025 임시\Logos\Color`의 `EDUTOGETHER.png`)에서 심볼(얼굴
@@ -51,7 +57,7 @@
 ## 명령
 - 로컬 실행: `npm run dev`
 - 빌드: `npm run build` (타입 검사 + Vite 빌드 + 404.html 자동 복사)
-- 테스트: `npm test` (Playwright 52개, 빌드된 `dist/`를 대상으로 돔 — 먼저 빌드할 것)
+- 테스트: `npm test` (Playwright 54개, 빌드된 `dist/`를 대상으로 돔 — 먼저 빌드할 것)
 - 시각 비교: `npm run test:visual` (로컬 전용, 기준 이미지는 gitignore)
 - 린트: `npm run lint`
 - 배포 전 게이트 수동 확인: `python3 scripts/check-inline-script.py`,

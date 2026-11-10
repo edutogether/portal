@@ -59,6 +59,26 @@ test('볼륨 변화는 즉시 튀지 않고 중간값을 거쳐 흐른다 (볼�
     .toBeGreaterThan(2);
 });
 
+// 움직임 줄이기 신호가 있어도 소리 전환은 똑같이 서서히 흐른다(2026-11-11 Bumm님 결정).
+for (const reducedMotion of ['reduce', 'no-preference']) {
+  test(`동작 줄이기=${reducedMotion}에서도 음소거 전환이 중간값을 거쳐 흐른다`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion });
+    await page.goto('/');
+    await page.locator('#vol').fill('0.8');
+    const samples = await page.evaluate(async () => {
+      const slider = document.getElementById('vol');
+      const seen = [];
+      const timer = setInterval(() => seen.push(Number(slider.value)), 25);
+      document.getElementById('muteBtn').click();
+      await new Promise((r) => setTimeout(r, 600));
+      clearInterval(timer);
+      return seen;
+    });
+    const between = samples.filter((v) => v > 0.02 && v < 0.78);
+    expect(between.length, `중간값이 없다 = 값이 튀었다. 표본: ${samples.join(',')}`).toBeGreaterThan(2);
+  });
+}
+
 test('반복이 꺼져 있고 곡이 1개뿐이면 재생이 끝나도 같은 곡이 무한재생되지 않는다 (2026-08-25 회귀버그)', async ({ page }) => {
   // 기본은 반복 켜짐이므로 꺼서 시나리오를 만든다.
   const repeatActive = await page.evaluate(() => document.getElementById('repeatBtn').classList.contains('active'));
