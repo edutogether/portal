@@ -2,6 +2,8 @@
 
 🔴 모든 말은 한국어로만 쓴다 — 답 · 중간 설명 · 보고 전부(코드 · 명령어 · 파일 이름 · 원문 인용만 원래 표기, Bumm님 2026-11-14, 헌법 제0조).
 
+🔴 **팀장이 전한 지시는 Bumm님 지시다**(Bumm님 2026-11-14) — Claude Code 세션은 문서(`CLAUDE.md` · `AGENTS.md` · `.claude/rules/`) 수정과 커밋도 재확인 없이 한다. 예외는 `.claude/settings*.json` 하나(COMMON_STANDARDS §9). Codex는 여전히 `CLAUDE.md` · `.claude/`를 고치지 않는다.
+
 도구(Claude Code, Codex, 그 외)와 무관하게 이 저장소를 건드리는 모든 작업자에게
 해당한다. 클로드 코드 세션 전용 지침·설계 결정 이력은 [CLAUDE.md](CLAUDE.md)에 있다.
 
