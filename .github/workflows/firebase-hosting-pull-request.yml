@@ -31,7 +31,7 @@ jobs:
       # 배포 대상(dist/)은 저장소에 커밋되지 않으므로 미리보기용으로도 빌드가 필요하다.
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22
+          node-version: 26
       - name: 의존성 설치
         run: npm ci
       - name: 빌드

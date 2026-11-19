@@ -334,3 +334,6 @@
 
 ## 2026-11-11
 - **fix**: 움직임 줄이기(`prefers-reduced-motion`) 신호와 상관없이 늘 정상처럼 돈다(Bumm님 결정, 여덟 앱 공통). 원격 접속에서 브라우저가 켜지 않은 reduce를 보고해 반딧불이가 멈춰 보였다. `Motes.css`의 정지 규칙과 `useVolumeFade.ts`의 페이드 생략을 제거했고, 시험은 reduce·no-preference 둘 다로 바꿨다(반딧불이는 두 시점의 변형 값이 달라지는지까지 확인, 테스트 54개). 원칙은 app.md.
+
+## 2026-11-19
+- **chore**: Node 판을 최신 정식판으로 올렸다(대표 결정: 앱도 컴퓨터도 최신 판만 보관). 워크플로 5개(`deploy`·`firebase-hosting-pull-request`·`font-coverage-check`·`player-smoke-test`·`sync-check`)의 `node-version`을 22 → 26으로 바꿨다. 이 저장소에는 `engines`·`.nvmrc`·Functions가 없다. Node 26에서 `npm ci`(취약점 0) · lint · 빌드 · 시험 54개 전부 통과. 직전 태그 `portal-freeze-20261119-pre-node26`.
