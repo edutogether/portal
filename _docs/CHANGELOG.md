@@ -337,3 +337,4 @@
 
 ## 2026-11-19
 - **chore**: Node 판을 최신 정식판으로 올렸다(대표 결정: 앱도 컴퓨터도 최신 판만 보관). 워크플로 5개(`deploy`·`firebase-hosting-pull-request`·`font-coverage-check`·`player-smoke-test`·`sync-check`)의 `node-version`을 22 → 26으로 바꿨다. 이 저장소에는 `engines`·`.nvmrc`·Functions가 없다. Node 26에서 `npm ci`(취약점 0) · lint · 빌드 · 시험 54개 전부 통과. 직전 태그 `portal-freeze-20261119-pre-node26`.
+- **chore**: 의존성 전체를 안정된 최신판으로 올렸다(대표 11/19, COMMON_STANDARDS §36): react·react-dom 19.3.1, vite 8.3.8, @vitejs/plugin-react 6.3.0, eslint 10.15.0, typescript-eslint 8.73.0, @playwright/test 1.65.1, minimatch 11.0.9, fonttools 4.68.0(해시 65개 재고정), 고정 액션 5종(checkout v7.0.1 · setup-node v7.1.0 · cache v6.1.0 · upload-artifact v7.0.2 · download-artifact v8.0.2). 못 올린 것: typescript 7(typescript-eslint가 `<6.1.0`만 허용). 화면 변화 없음. 직전 고정점 `portal-freeze-20261119-pre-deps`.
