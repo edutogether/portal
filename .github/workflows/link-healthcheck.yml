@@ -14,7 +14,7 @@ jobs:
   check-links:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         # 아래 OG 이미지 대조가 포털이 보관한 원본(public/assets/og/*.jpg)과
         # 비교해야 해서 저장소 체크아웃이 필요하다. 나머지 검사는 원래
         # 체크아웃 없이도 됐다.
