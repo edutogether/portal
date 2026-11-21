@@ -122,3 +122,5 @@ Bumm님께 하는 답, 중간 진행 설명, 팀장 · 다른 세션에 보내�
 `_docs/intents/`, 인덱스는 [_docs/intents/README.md](_docs/intents/README.md).
 
 @.claude/rules/intent-workflow.md
+
+@_docs/RULES.md

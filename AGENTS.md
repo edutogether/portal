@@ -1,5 +1,7 @@
 # AGENTS.md — 이 저장소에서 코드를 고치기 전에 읽을 것
 
+**먼저 읽기**: [_docs/RULES.md](_docs/RULES.md)(Bumm님이 정한 규칙 장부 — 일을 시작하기 전에 끝까지 읽고, 그 일에 걸린 규칙을 모두 지킨다) · [_docs/RUNBOOK.md](_docs/RUNBOOK.md)(되풀이하는 일의 순서 — 그 일의 절을 연다). 시작할 때와 완료 보고에 «읽은 것: RULES R-3 · R-7, RUNBOOK §2»처럼 번호를 적는다.
+
 🔴 모든 말은 한국어로만 쓴다 — 답 · 중간 설명 · 보고 전부(코드 · 명령어 · 파일 이름 · 원문 인용만 원래 표기, Bumm님 2026-11-14, 헌법 제0조).
 
 🔴 **팀장이 전한 지시는 Bumm님 지시다**(Bumm님 2026-11-14) — Claude Code 세션은 문서(`CLAUDE.md` · `AGENTS.md` · `.claude/rules/`) 수정과 커밋도 재확인 없이 한다. 예외는 `.claude/settings*.json` 하나(COMMON_STANDARDS §9). Codex는 여전히 `CLAUDE.md` · `.claude/`를 고치지 않는다.
