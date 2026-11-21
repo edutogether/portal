@@ -27,8 +27,9 @@ firebase deploy --only hosting --account=edutogether2015@gmail.com
 **예산 알림 최종 확인: 기록 없음 — 확인 필요(2026-10-10 종합감사 시점).** 콘솔 전용이라 저장소에서 확인할 수 없다(결제 API가 꺼져 있어 CLI로도 조회 못 함). 확인하면 이 줄을 «최종 확인: YYYY-MM-DD, 결과»로 고친다.
 
 **Hosting 무료 전송 한도는 월 10GB.** 첫 방문 전송량 약 2.88MB이고 그중 73%(2.09MB)가
-배경음악이다(자동재생이 항상 걸리므로 음악을 안 듣는 방문자도 전곡을 받는다 — 의도된
-설계). `firebase.json`의 `Cache-Control`: HTML은 `no-cache`, `/assets/**`는
+배경음악이다(2026-11-02부터 자동재생은 없지만 `<audio preload="metadata">`라서 재생 단추를
+누르지 않은 방문자도 곡 파일을 받는다 — 2026-11-22 라이브 실측(Chromium): 206 응답으로
+2,144,473바이트 전체가 내려왔다. 의도된 설계). `firebase.json`의 `Cache-Control`: HTML은 `no-cache`, `/assets/**`는
 `max-age=86400`. **트래픽이 몰릴 행사 당일엔 예산 알림이 실제로 작동하는지 미리
 확인해둘 것.**
 
