@@ -44,7 +44,7 @@
   1. `npm run lint` → **확인**: 경고 · 오류 없이 끝남
   2. `npm run build` → **확인**: `✓ built`, `dist/index.html` · `dist/404.html`이 생김
   3. `npm test` → **확인**: `54 passed`(2분 안팎, 개수는 시험을 더하면 바뀐다 — AGENTS.md 숫자도 같이 고친다)
-  4. `py -3 scripts/check-inline-script.py` → **확인**: `OK — dist\index.html 에 인라인 <script> 없음` 두 줄
+  4. `py -3 scripts/check-inline-script.py` → **확인**: `OK — dist\index.html 에 인라인 <script> 없음` 두 줄(인라인 스크립트 · 이벤트 핸들러 · SRI `integrity=`를 함께 본다)
   5. `py -3 scripts/check-font-coverage.py` → **확인**: `OK — 화면에 그려지는 글자 N자 전부 서브셋에 포함됨`(`npm test`가 만든 `.cache/rendered-text.txt`를 읽으므로 3번 뒤에)
 - **끝나면 남길 것**: 완료 보고에 «규칙 N · 검사기 통과 N · 빨간불 시험 · 직접 열어 본 N»(R-5)
 - **막히면**: 폰트 검사가 «빠진 글자»를 내면 §8. 시험이 흔들리면(가끔만 실패) 시간을 늘려 덮지 말고 `playwright-report`의 trace를 먼저 본다(`.claude/rules/app.md` «자주 틀리는 것»)

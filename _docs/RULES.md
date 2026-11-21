@@ -39,8 +39,8 @@
 | R-21 | 2026-11-11 | 움직임 | `prefers-reduced-motion` 신호로 연출을 멈추거나 줄이지 않고 `@media (prefers-reduced-motion)` · `matchMedia`로 분기하지 않는다. 확인은 `reduce`와 `no-preference` 둘 다로 한다. | «움직임 줄이기와 상관없이 늘 정상처럼 돈다» | `portal` · `player` (reduce · no-preference 둘 다) | 유효 |
 | R-22 | 2026-10-07 | 파비콘 | 파비콘은 EDUTOGETHER 심볼(여백 없이 64x64 투명 PNG) 하나로 고정하고 탭 상태로 바꾸지 않는다. 그림을 바꾸면 주소 끝 `?v=` 날짜도 올린다(지금 `?v=20261008`). | 출처: COMMON_STANDARDS §33(2026-10-07 대표 지시), app.md | `portal` (파비콘 주소 고정) | 유효 |
 | R-23 | 2026-09-02 | 음원 | 음원(산울림 〈개구장이〉) 사용 근거는 대표가 종결했다 — 감점 · «미해결» 재론 금지. «저작권 확보 완료» 같은 과장 표현 금지. | 출처: app.md «음원 — 종결된 사안»(2026-09-02 대표 확정) | 직접 열어 확인 | 유효 |
-| R-24 | 2026-08-23 | 외부 리소스 | 외부 CDN 리소스에 SRI(`integrity`)를 넣지 않는다. | 출처: app.md «폰트 — SRI 금지»(2026-08-23 프로덕션 폰트 차단 장애) | 검사기 없음 | 유효 |
-| R-25 | 2026-09-08 | CSP | `script-src 'self'` 유지 — 인라인 `<script>` 금지(해시를 추가해서 풀지 않는다). `style-src 'unsafe-inline'`은 유지. | 출처: app.md «CSP» | `scripts/check-inline-script.py` | 유효 |
+| R-24 | 2026-08-23 | 외부 리소스 | 외부 CDN 리소스에 SRI(`integrity`)를 넣지 않는다. | 출처: app.md «폰트 — SRI 금지»(2026-08-23 프로덕션 폰트 차단 장애) | `scripts/check-inline-script.py` (산출물 HTML에 `integrity=`가 있으면 실패 — 일부러 넣어 빨간불 확인) | 유효 |
+| R-25 | 2026-09-08 | CSP | `script-src 'self'` 유지 — 인라인 `<script>` 금지(해시를 추가해서 풀지 않는다). `style-src 'unsafe-inline'`은 유지. | 출처: app.md «CSP» | `scripts/check-inline-script.py` (인라인 `<script>` · 이벤트 핸들러) | 유효 |
 | R-26 | 2026-09-09 | 폰트 | 화면에 새 글자가 생기면 Pretendard 서브셋을 다시 만든다. 검사 대상 글자는 렌더된 DOM에서 뽑는다. ⓒ 대신 `©`. | 출처: app.md «폰트» | `scripts/check-font-coverage.py` (`@fonttext` 덤프) | 유효 |
 | R-27 | 2026-09-06 | 문구 수정 | 문구 수정 지시는 받은 그대로만 반영한다 — 임의로 문장을 새로 짓거나 `<br>`을 넣지 않는다. 구조를 유지하라는 말이 있으면 최소 변경만. | 출처: app.md «자주 틀리는 것»(2026-09-06 전체를 되돌린 사고) | 직접 열어 확인 | 유효 |
 | R-28 | 2026-09-11 | 로딩 화면 | 로딩 화면은 반복 애니메이션 두 바퀴(3200ms)를 채우고, 실제 로드가 끝나기 전엔 사라지지 않으며, 자산이 영영 안 와도 약 8초에 강제로 사라진다. | 출처: COMMON_STANDARDS §27(2026-09-11 대표 지시), app.md | `portal` (로딩 화면 3건) | 유효 |

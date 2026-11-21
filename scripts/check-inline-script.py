@@ -2,6 +2,7 @@
 """
 빌드 산출물(dist/)에 인라인 <script>나 인라인 이벤트 핸들러 속성(onclick= 등)이
 들어있으면 실패시킨다. 둘 다 script-src 'self'가 막는다.
+또 SRI(integrity=) 속성이 있어도 실패시킨다(RULES R-24).
 
 이 검사는 원래 "인라인 <script>의 sha256 해시가 CSP 선언과 일치하는가"를 보던
 check-csp-hash.py였다. 리액트로 옮기면서 스크립트가 전부 외부 파일(/assets/*.js)로
@@ -47,6 +48,16 @@ def inline_handlers(html: str) -> list[str]:
     ]
 
 
+def sri_tags(html: str) -> list[str]:
+    # 외부 CDN 리소스에 SRI(integrity=)를 넣지 않는다(RULES R-24) — 2026-08-23에 jsdelivr가
+    # 요청마다 바이트가 다른 응답을 줘서 해시를 넣자마자 프로덕션 폰트가 전면 차단됐다.
+    stripped = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+    return [
+        m.group(0)
+        for m in re.finditer(r"<(?:script|link)[^>]*\bintegrity\s*=[^>]*>", stripped, flags=re.I)
+    ]
+
+
 def main() -> int:
     missing = [p for p in TARGETS if not p.exists()]
     if missing:
@@ -60,6 +71,13 @@ def main() -> int:
         found = inline_scripts(text)
         rel = path.relative_to(ROOT)
         handlers = inline_handlers(text)
+        sri = sri_tags(text)
+        if sri:
+            failed = True
+            print(f"::error::{rel} 에 SRI(integrity=)가 {len(sri)}개 있습니다.")
+            for tag in sri:
+                print(f"  {tag}")
+            print("  외부 CDN 리소스에 SRI를 넣지 않습니다 — 응답 바이트가 바뀌면 리소스가 통째로 차단됩니다.")
         if handlers:
             failed = True
             print(f"::error::{rel} 에 인라인 이벤트 핸들러 속성이 {len(handlers)}개 있습니다.")
