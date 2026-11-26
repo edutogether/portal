@@ -339,3 +339,7 @@
 - **chore**: Node 판을 최신 정식판으로 올렸다(대표 결정: 앱도 컴퓨터도 최신 판만 보관). 워크플로 5개(`deploy`·`firebase-hosting-pull-request`·`font-coverage-check`·`player-smoke-test`·`sync-check`)의 `node-version`을 22 → 26으로 바꿨다. 이 저장소에는 `engines`·`.nvmrc`·Functions가 없다. Node 26에서 `npm ci`(취약점 0) · lint · 빌드 · 시험 54개 전부 통과. 직전 태그 `portal-freeze-20261119-pre-node26`.
 - **chore**: 의존성 전체를 안정된 최신판으로 올렸다(대표 11/19, COMMON_STANDARDS §36): react·react-dom 19.3.1, vite 8.3.8, @vitejs/plugin-react 6.3.0, eslint 10.15.0, typescript-eslint 8.73.0, @playwright/test 1.65.1, minimatch 11.0.9, fonttools 4.68.0(해시 65개 재고정), 고정 액션 5종(checkout v7.0.1 · setup-node v7.1.0 · cache v6.1.0 · upload-artifact v7.0.2 · download-artifact v8.0.2). 못 올린 것: typescript 7(typescript-eslint가 `<6.1.0`만 허용). 화면 변화 없음. 직전 고정점 `portal-freeze-20261119-pre-deps`.
 - **chore**: 위 의존성 최신화는 PR #20(가지 PR CI 초록 → 병합)으로 배포했다. 첫 PR CI에서 `requirements-ci.txt`의 fonttools 블록 줄 이음 표기가 깨져 설치가 실패했고(PR CI가 잡음), 고쳐서 초록이 됐다. 배포 · 라이브(200, 카드 6개, 제목 78px, 정지, 콘솔 오류 0) 확인 끝.
+
+## 2026-11-26
+
+- **ci**: 링크 헬스체크 예약을 한국 시간 09:00에서 08:53으로 변경했다(Bumm님 지시). GitHub Actions 정각 혼잡을 피하기 위한 설정이며 정확한 실행 시각을 보장하지는 않는다. 예약값 검사와 오류 판정 시험을 추가했다.

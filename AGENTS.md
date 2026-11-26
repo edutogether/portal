@@ -49,7 +49,7 @@ dist/               빌드 산출물 = 배포 대상 (커밋하지 않음)
     게이트와 완전히 중복되기 때문(2026-09-01 정리).
   - `font-coverage-check.yml` — push/PR마다 Pretendard 서브셋 커버리지 확인(위
     `check-font-coverage.py`를 CI에서 돌리는 것). 이슈는 main push 실패 때만 별도 job이 만든다.
-  - `link-healthcheck.yml` — 매일 09:00 KST, 6개 앱 + 포털 자신 응답·OG 이미지·주소
+  - `link-healthcheck.yml` — 매일 08:53 KST, 6개 앱 + 포털 자신 응답·OG 이미지·주소
     리다이렉트(`firebase.json`) 확인(아래 "현재 링크" 절 참고).
   - `keepalive.yml` — 매달 빈 커밋. 위 예약 워크플로우들이 60일 뒤 자동
     비활성화되는 걸 막는다.

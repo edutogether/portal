@@ -23,7 +23,7 @@ Be a Googler. 카드를 누르면 각 앱이 새 탭으로 열린다(포털은 �
 지금은 **실운영 모드**다 — 새 기능을 만들지 않고, 피드백이나 버그가 있을 때만 고친다.
 
 - **자동으로 도는 것**: `main`에 push하면 검사(린트·빌드·테스트·폰트 커버리지)를 통과한 산출물이
-  Firebase Hosting에 자동 배포되고 라이브 반영까지 확인한다(`deploy.yml`). 매일 09:00 KST에 6개 앱
+  Firebase Hosting에 자동 배포되고 라이브 반영까지 확인한다(`deploy.yml`). 매일 08:53 KST에 6개 앱
   링크·OG 이미지·주소 리다이렉트를 확인하고 문제가 있으면 GitHub 이슈를 자동으로 만든다
   (`link-healthcheck.yml`). 월 1회 빈 커밋으로 예약 워크플로가 멈추지 않게 한다(`keepalive.yml`).
   Dependabot 보안 알림·CodeQL·비밀 스캔이 켜져 있다.
