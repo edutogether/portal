@@ -167,7 +167,7 @@
   1. 마지막 감사 이후 변화량: `git rev-list --count portal-freeze-20261031-audited-100..main` → **확인**: 숫자(0이면 바뀐 것이 없다)
   2. 종합감사는 팀장 지시가 있을 때만 `D:\Projects\COMMON_STANDARDS.md` §4~§7 원문대로 한다
   3. 매달 1일 Blaze 예산 알림 점검은 팀장의 예약 작업이 한다. 콘솔 전용이라 Bumm님 계정이 필요하다 → **확인**: 팀장 보고
-  4. 매일 09:00 KST `link-healthcheck.yml`(6개 앱 응답 · OG 이미지 · 주소 리다이렉트)이 초록인지는 `gh run list --workflow link-healthcheck.yml --limit 3`
+  4. 매일 08:53 KST `link-healthcheck.yml`(6개 앱 응답 · OG 이미지 · 주소 리다이렉트)이 초록인지는 `gh run list --workflow link-healthcheck.yml --limit 3`
 - **끝나면 남길 것**: 감사 결과는 `_docs/CHANGELOG.md`와 프리즈 태그 메시지
 - **막히면**: 지시 없이 이 세션이 먼저 감사를 시작하지 않는다(R-33)
 

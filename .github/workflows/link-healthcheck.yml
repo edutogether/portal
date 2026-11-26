@@ -6,8 +6,8 @@ permissions:
 
 on:
   schedule:
-    # 매일 09:00 KST(UTC 00:00) — 6개 앱 링크가 살아있는지 확인
-    - cron: '0 0 * * *'
+    # 매일 08:53 KST(전날 UTC 23:53) — 정각 혼잡을 피한다.
+    - cron: '53 23 * * *'
   workflow_dispatch:
 
 jobs:
